@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" />
+<style>
+  html, body { margin:0; padding:0; background:#0a1531; }
+  body { font-family:'Vazirmatn', system-ui, sans-serif; direction:rtl; -webkit-font-smoothing:antialiased; }
+  * { box-sizing:border-box; }
+  a { color:#ff5c66; text-decoration:none; }
+  a:hover { color:#ffffff; }
+  @keyframes stampIn { from { opacity:0; transform:scale(.94) rotate(-1.5deg); } to { opacity:1; transform:none; } }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</helmet>
+
+<div style="min-height:100vh; background:radial-gradient(800px 500px at 70% -10%, rgba(216,31,42,.3), transparent 60%), #0a1531; color:#eaf0ff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:40px 18px; container-type:inline-size">
+
+  <div ref="{{ ticketRef }}" style="width:100%; max-width:520px; background:#0b1533; border-radius:26px; overflow:hidden; position:relative; box-shadow:0 50px 90px -40px rgba(0,0,0,.95); border:1px solid rgba(255,255,255,.14); animation:stampIn .45s ease both">
+    <div style="background:linear-gradient(120deg, #c4121f, #d81f2a 55%, #8f0e18); padding:16px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px">
+      <div style="display:flex; align-items:center; gap:10px; min-width:0">
+        <img src="assets/logo-genavehei.png" alt="" style="width:40px; height:40px; flex:none; object-fit:contain; background:#fff; border-radius:11px; padding:2px" />
+        <div style="line-height:1.4; min-width:0">
+          <div style="font-weight:900; font-size:13.5px; color:#fff; white-space:nowrap">گروه آموزشی استاد محسن گناوه‌ای</div>
+          <div style="font-size:10.5px; color:rgba(255,255,255,.8); letter-spacing:.16em">ADMISSION TICKET · بلیط ورود</div>
+        </div>
+      </div>
+      <div style="flex:none; background:rgba(0,0,0,.28); color:#fff; font-weight:800; font-size:11.5px; padding:6px 10px; border-radius:8px; white-space:nowrap">ورود رایگان</div>
+    </div>
+
+    <div style="display:flex; gap:14px; padding:20px 20px 16px; align-items:flex-start">
+      <div style="flex:none; width:86px; height:104px; border-radius:14px; overflow:hidden; background:#d81f2a; border:1px solid rgba(255,255,255,.2)">
+        <img src="assets/ostad-portrait.png" alt="استاد محسن گناوه‌ای" style="width:100%; height:100%; object-fit:cover; object-position:top center" />
+      </div>
+      <div style="min-width:0">
+        <div style="font-size:11px; color:#93a2c6; margin-bottom:6px">سمینار موفقیت در کنکور و امتحانات نهایی</div>
+        <div style="font-weight:900; font-size:clamp(15px,4cqw,18px); color:#fff; line-height:1.55; text-wrap:pretty">بزرگ‌ترین گردهمایی داوطلبین کنکور ریاضی و تجربی در کشور</div>
+      </div>
+    </div>
+
+    <div style="margin:0 20px 16px; display:flex; align-items:stretch; gap:14px">
+      <span style="flex:none; width:4px; border-radius:4px; background:linear-gradient(#d81f2a, rgba(216,31,42,.25))"></span>
+      <div style="min-width:0; flex:1">
+        <div style="font-size:9.5px; color:#8b98ba; letter-spacing:.22em; font-weight:800; margin-bottom:6px">دارنده بلیط</div>
+        <div style="font-weight:900; font-size:clamp(18px,4.8cqw,23px); color:#fff; line-height:1.35; overflow-wrap:anywhere; margin-bottom:8px">زهرا محمدی</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px">
+          <span style="font-size:11.5px; font-weight:700; color:#cdd7f0; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.13); border-radius:999px; padding:4px 11px">پایه دوازدهم</span>
+          <span style="font-size:11.5px; font-weight:700; color:#ffb3b9; background:rgba(216,31,42,.16); border:1px solid rgba(216,31,42,.4); border-radius:999px; padding:4px 11px">رشته تجربی</span>
+        </div>
+      </div>
+      <div style="flex:none; align-self:stretch; display:flex; flex-direction:column; justify-content:center; gap:6px; text-align:center; padding:12px 14px; border-radius:14px; background:rgba(6,14,36,.55); border:1px solid rgba(255,255,255,.13)">
+        <span style="font-size:9.5px; color:#8b98ba; letter-spacing:.18em; font-weight:800">تاریخ و ساعت</span>
+        <span style="font-weight:900; font-size:15px; color:#fff; white-space:nowrap">۲۵ شهریور ۱۴۰۷</span>
+        <span style="font-weight:700; font-size:12px; color:#ff8d96; white-space:nowrap">۰۹:۰۰ الی ۱۷:۰۰</span>
+      </div>
+    </div>
+
+    <div style="margin:0 20px 16px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:20px; row-gap:2px">
+      <div style="display:flex; align-items:baseline; gap:7px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.07); min-width:0">
+        <span style="flex:none; font-size:10.5px; color:#8b98ba">همراه</span>
+        <span style="flex:1 1 auto; min-width:12px; border-bottom:1px dotted rgba(255,255,255,.22); transform:translateY(-3px)"></span>
+        <span style="flex:0 1 auto; min-width:0; text-align:end; font-weight:800; font-size:12.5px; color:#fff; overflow-wrap:anywhere">رضا محمدی</span>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:7px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.07); min-width:0">
+        <span style="flex:none; font-size:10.5px; color:#8b98ba">شماره همراه</span>
+        <span style="flex:1 1 auto; min-width:12px; border-bottom:1px dotted rgba(255,255,255,.22); transform:translateY(-3px)"></span>
+        <span style="flex:0 1 auto; min-width:0; text-align:end; direction:ltr; font-weight:800; font-size:12.5px; color:#fff">09121234567</span>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:7px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.07); min-width:0">
+        <span style="flex:none; font-size:10.5px; color:#8b98ba">مدرسه</span>
+        <span style="flex:1 1 auto; min-width:12px; border-bottom:1px dotted rgba(255,255,255,.22); transform:translateY(-3px)"></span>
+        <span style="flex:0 1 auto; min-width:0; text-align:end; font-weight:800; font-size:12.5px; color:#fff; overflow-wrap:anywhere">فرزانگان</span>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:7px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.07); min-width:0">
+        <span style="flex:none; font-size:10.5px; color:#8b98ba">شهر</span>
+        <span style="flex:1 1 auto; min-width:12px; border-bottom:1px dotted rgba(255,255,255,.22); transform:translateY(-3px)"></span>
+        <span style="flex:0 1 auto; min-width:0; text-align:end; font-weight:800; font-size:12.5px; color:#fff">تهران</span>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:7px; padding:8px 0; min-width:0">
+        <span style="flex:none; font-size:10.5px; color:#8b98ba">آخرین معدل</span>
+        <span style="flex:1 1 auto; min-width:12px; border-bottom:1px dotted rgba(255,255,255,.22); transform:translateY(-3px)"></span>
+        <span style="flex:0 1 auto; min-width:0; text-align:end; font-weight:800; font-size:12.5px; color:#7ef0b0">۱۸.۷۵</span>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:7px; padding:8px 0; min-width:0">
+        <span style="flex:none; font-size:10.5px; color:#8b98ba">محله</span>
+        <span style="flex:1 1 auto; min-width:12px; border-bottom:1px dotted rgba(255,255,255,.22); transform:translateY(-3px)"></span>
+        <span style="flex:0 1 auto; min-width:0; text-align:end; font-weight:800; font-size:12.5px; color:#fff; overflow-wrap:anywhere">سعادت‌آباد</span>
+      </div>
+    </div>
+
+    <div style="position:relative; height:2px; margin:0 18px; border-top:2px dashed rgba(255,255,255,.28)">
+      <span style="position:absolute; top:-13px; right:-31px; width:26px; height:26px; border-radius:50%; background:#0a1531; border:1px solid rgba(255,255,255,.14)"></span>
+      <span style="position:absolute; top:-13px; left:-31px; width:26px; height:26px; border-radius:50%; background:#0a1531; border:1px solid rgba(255,255,255,.14)"></span>
+    </div>
+
+    <div style="padding:18px 20px; display:flex; align-items:center; justify-content:space-between; gap:14px; background:repeating-linear-gradient(135deg, rgba(255,255,255,.035) 0 10px, transparent 10px 20px)">
+      <div style="flex:none; align-self:stretch; display:flex; align-items:center; justify-content:center; border-inline-end:1px solid rgba(255,255,255,.12); padding-inline-end:14px; margin-inline-end:2px">
+        <span style="writing-mode:vertical-rl; transform:rotate(180deg); font-size:10px; font-weight:900; letter-spacing:.3em; color:#ff8d96">ADMIT ONE</span>
+      </div>
+      <div style="min-width:0; flex:1">
+        <div style="font-size:10.5px; color:#8b98ba; margin-bottom:4px">کد ورود اختصاصی</div>
+        <div style="direction:ltr; font-weight:900; font-size:clamp(24px,6.4cqw,32px); color:#fff; letter-spacing:.12em">a10-1</div>
+        <div style="font-size:11px; color:#ff8d96; font-weight:700; margin-top:6px">تا پایان مراسم نزد خود نگه دارید</div>
+      </div>
+      <div style="flex:none; display:flex; gap:3px; align-items:flex-end; height:56px">
+        <span style="width:3px; height:100%; background:#fff"></span><span style="width:2px; height:64%; background:#7c89ab"></span><span style="width:5px; height:100%; background:#fff"></span><span style="width:2px; height:50%; background:#7c89ab"></span><span style="width:3px; height:88%; background:#fff"></span><span style="width:6px; height:100%; background:#fff"></span><span style="width:2px; height:58%; background:#7c89ab"></span><span style="width:3px; height:100%; background:#fff"></span><span style="width:2px; height:72%; background:#7c89ab"></span><span style="width:4px; height:100%; background:#fff"></span>
+      </div>
+    </div>
+
+    <div style="background:rgba(255,255,255,.05); border-top:1px solid rgba(255,255,255,.1); padding:11px 20px; display:flex; align-items:center; justify-content:space-between; gap:10px">
+      <span style="font-size:11px; color:#8b98ba">وضعیت: در حال صدور نهایی</span>
+      <span style="direction:ltr; font-size:11px; color:#8b98ba">GENAVEHEI · a10-1</span>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:10px; width:100%; max-width:520px">
+    <button onClick="{{ downloadTicket }}" style="flex:1; background:#d81f2a; color:#fff; font-weight:800; font-size:15.5px; border:none; border-radius:14px; padding:15px; cursor:pointer; box-shadow:0 16px 34px -16px rgba(216,31,42,.9)" style-hover="background:#ef2f3b">دانلود بلیط</button>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:600,&quot;height&quot;:820}}">
+class Component extends DCLogic {
+  ticket = React.createRef();
+
+  download = async () => {
+    const el = this.ticket.current;
+    if (!el || !window.html2canvas) return;
+    const canvas = await window.html2canvas(el, { backgroundColor: '#0a1531', scale: 2, useCORS: true });
+    const a = document.createElement('a');
+    a.download = 'ticket-a10-1.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  };
+
+  renderVals() {
+    return { ticketRef: this.ticket, downloadTicket: this.download };
+  }
+}
+
+</script>
+</body>
+</html>

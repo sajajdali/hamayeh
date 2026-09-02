@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" />
+<style>
+  html, body { margin:0; padding:0; }
+  body { font-family:'Vazirmatn', system-ui, sans-serif; direction:rtl; -webkit-font-smoothing:antialiased; }
+  * { box-sizing:border-box; }
+  a { color:#c4121f; text-decoration:none; }
+  a:hover { color:#0b1533; }
+  doc-page:not(:defined) { visibility:hidden; }
+  code, pre { font-family:'JetBrains Mono', ui-monospace, monospace; direction:ltr; text-align:left; }
+</style>
+<script src="./doc-page.js"></script>
+</helmet>
+
+<doc-page margin="0.8in">
+
+  <div slot="header" style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding-bottom:8px; border-bottom:1px solid #d9d3c4; font-size:9pt; color:#6c6553">
+    <span>سند فنی پیاده‌سازی — گردهمایی داوطلبین کنکور</span>
+    <span>گروه آموزشی استاد محسن گناوه‌ای</span>
+  </div>
+
+  <div slot="footer" style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding-top:8px; border-top:1px solid #d9d3c4; font-size:8.5pt; color:#8a8271">
+    <span>نسخه ۱.۰ — شهریور ۱۴۰۵</span>
+    <span>محرمانه / داخلی</span>
+  </div>
+
+  <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px">
+    <span style="display:inline-block; width:34px; height:4px; background:#c4121f; border-radius:2px"></span>
+    <span style="font-size:9.5pt; font-weight:800; color:#c4121f; letter-spacing:.14em">سند فنی پیاده‌سازی</span>
+  </div>
+
+  <h1 style="margin:0 0 10px; font-size:26pt; font-weight:900; line-height:1.45; color:#0b1533">سامانه ثبت‌نام ارجاعی گردهمایی داوطلبین کنکور</h1>
+  <p style="margin:0 0 6px; font-size:12.5pt; line-height:1.85; color:#3d4763">لندینگ اختصاصی هر بلاگر، احراز هویت پیامکی، صدور بلیط با کد یکتا، و پنل مدیریت با نقش‌های چندسطحی.</p>
+  <p style="margin:0 0 26px; font-size:11pt; color:#6c6553">پشته پیشنهادی: <strong style="color:#0b1533">Laravel 13 + Livewire 4 + Alpine + Tailwind 4</strong> · دیتابیس MySQL 8 · صف Redis</p>
+
+  <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:30px; break-inside:avoid">
+    <div style="border:1px solid #d9d3c4; border-radius:10px; padding:12px 14px; background:#faf7f0">
+      <div style="font-size:8.5pt; color:#8a8271; margin-bottom:4px">مدت تخمینی</div>
+      <div style="font-size:13pt; font-weight:900; color:#0b1533">۵ تا ۷ هفته</div>
+    </div>
+    <div style="border:1px solid #d9d3c4; border-radius:10px; padding:12px 14px; background:#faf7f0">
+      <div style="font-size:8.5pt; color:#8a8271; margin-bottom:4px">تیم لازم</div>
+      <div style="font-size:13pt; font-weight:900; color:#0b1533">۱ بک‌اند + ۱ فرانت</div>
+    </div>
+    <div style="border:1px solid #d9d3c4; border-radius:10px; padding:12px 14px; background:#faf7f0">
+      <div style="font-size:8.5pt; color:#8a8271; margin-bottom:4px">بار پیش‌بینی‌شده</div>
+      <div style="font-size:13pt; font-weight:900; color:#0b1533">پیک تبلیغ اینستاگرام</div>
+    </div>
+  </div>
+
+  <h2 style="margin:0 0 12px; font-size:16pt; font-weight:900; color:#0b1533; padding-bottom:8px; border-bottom:2px solid #0b1533">۱. انتخاب پشته و دلیل آن</h2>
+  <p style="margin:0 0 14px; font-size:11.5pt; line-height:2; color:#28324d">این محصول یک لندینگ سئوپذیر با ترافیک پیک، چند فرم چندمرحله‌ای، و یک پنل CRUD با نقش‌هاست؛ نه یک اپلیکیشن سنگین سمت کلاینت. بنابراین معیار انتخاب «کمترین سطح پیچیدگی برای همان خروجی» است.</p>
+
+  <table style="width:100%; border-collapse:collapse; font-size:10.5pt; margin-bottom:14px; break-inside:avoid">
+    <thead>
+      <tr style="background:#0b1533; color:#fff">
+        <th style="text-align:right; padding:9px 12px; font-weight:800">گزینه</th>
+        <th style="text-align:right; padding:9px 12px; font-weight:800">مناسب وقتی که</th>
+        <th style="text-align:right; padding:9px 12px; font-weight:800">حکم برای این پروژه</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">Livewire 4</td>
+        <td style="padding:9px 12px; color:#3d4763">تیم Laravel است و UI عمدتاً فرم/جدول/فیلتر است</td>
+        <td style="padding:9px 12px; font-weight:800; color:#1f7a45">انتخاب اصلی</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">Inertia + Vue</td>
+        <td style="padding:9px 12px; color:#3d4763">تعامل‌های پیچیده کلاینت، درگ‌اند‌دراپ، حالت آفلاین</td>
+        <td style="padding:9px 12px; color:#8a8271">هزینه اضافه، بدون سود ملموس</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">React (SPA/API)</td>
+        <td style="padding:9px 12px; color:#3d4763">تیم فرانت جدا و مصرف‌کننده‌های متعدد API</td>
+        <td style="padding:9px 12px; color:#8a8271">فقط اگر بعداً اپ موبایل بخواهی</td>
+      </tr>
+      <tr>
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">Blade + Alpine</td>
+        <td style="padding:9px 12px; color:#3d4763">صفحات عمومی با بیشترین سرعت بارگذاری</td>
+        <td style="padding:9px 12px; font-weight:800; color:#1f7a45">برای خودِ لندینگ</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="border-inline-start:3px solid #c4121f; background:#faf7f0; padding:12px 16px; border-radius:0 10px 10px 0; margin-bottom:26px; break-inside:avoid">
+    <strong style="color:#0b1533">تصمیم معماری:</strong>
+    <span style="font-size:11pt; line-height:1.95; color:#3d4763">لندینگ <code>/{slug}</code> با Blade رندر سمت سرور (کش‌شونده)، و فقط باکس OTP و فرم ثبت‌نام به‌صورت کامپوننت Livewire. کل پنل مدیریت Livewire. بدون API جدا در فاز اول.</span>
+  </div>
+
+  <h2 style="margin:0 0 12px; font-size:16pt; font-weight:900; color:#0b1533; padding-bottom:8px; border-bottom:2px solid #0b1533">۲. مدل داده</h2>
+
+  <table style="width:100%; border-collapse:collapse; font-size:10pt; margin-bottom:16px">
+    <thead>
+      <tr style="background:#0b1533; color:#fff">
+        <th style="text-align:right; padding:9px 12px; font-weight:800; width:24%">جدول</th>
+        <th style="text-align:right; padding:9px 12px; font-weight:800">ستون‌های کلیدی</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">users</td>
+        <td style="padding:9px 12px; color:#3d4763; direction:ltr; text-align:left">name, username (unique), password, role: enum(super, mid)</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">bloggers</td>
+        <td style="padding:9px 12px; color:#3d4763; direction:ltr; text-align:left">name, code (unique), slug (unique), phone, avatar_path, password, is_active, seq</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">registrations</td>
+        <td style="padding:9px 12px; color:#3d4763; direction:ltr; text-align:left">ticket_code (unique), blogger_id, seq, full_name, phone, grade, field, school, gpa, study_city, father_job, province, city, area, guardian_name, guardian_phone, status</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">activity_logs</td>
+        <td style="padding:9px 12px; color:#3d4763; direction:ltr; text-align:left">registration_id, actor_type, actor_id, type: enum(call, sms, status), body, meta (json)</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">sms_templates</td>
+        <td style="padding:9px 12px; color:#3d4763; direction:ltr; text-align:left">name, body, is_active</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">sms_messages</td>
+        <td style="padding:9px 12px; color:#3d4763; direction:ltr; text-align:left">registration_id, template_id, to, body, provider_message_id, status, sent_at</td>
+      </tr>
+      <tr>
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">otp_codes</td>
+        <td style="padding:9px 12px; color:#3d4763; direction:ltr; text-align:left">phone (index), code_hash, expires_at, attempts, consumed_at</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin:0 0 8px; font-size:12.5pt; font-weight:900; color:#0b1533">صدور کد بلیط — نقطه بحرانی</h3>
+  <p style="margin:0 0 10px; font-size:11pt; line-height:1.95; color:#28324d">کد هر ثبت‌نام <code>{کد بلاگر}-{شماره ترتیبی}</code> است (مثل <code>a10-1</code>). در پیک ثبت‌نام، شمارش بدون قفل حتماً کد تکراری تولید می‌کند. شمارنده روی خود ردیف بلاگر و داخل تراکنش با قفل سطری:</p>
+
+  <pre style="margin:0 0 24px; background:#0b1533; color:#eaf0ff; border-radius:10px; padding:14px 16px; font-size:9.5pt; line-height:1.85; overflow-x:auto; break-inside:avoid">return DB::transaction(function () use ($bloggerId, $data) {
+    $b = Blogger::whereKey($bloggerId)-&gt;lockForUpdate()-&gt;firstOrFail();
+    $b-&gt;increment('seq');
+
+    return Registration::create([
+        ...$data,
+        'blogger_id'  =&gt; $b-&gt;id,
+        'seq'         =&gt; $b-&gt;seq,
+        'ticket_code' =&gt; "{$b-&gt;code}-{$b-&gt;seq}",
+        'status'      =&gt; RegistrationStatus::Pending,
+    ]);
+});</pre>
+
+  <h2 style="margin:0 0 12px; font-size:16pt; font-weight:900; color:#0b1533; padding-bottom:8px; border-bottom:2px solid #0b1533">۳. مسیرها و جریان کاربر</h2>
+
+  <ol style="margin:0 0 16px; padding-inline-start:20px; font-size:11pt; line-height:2.05; color:#28324d">
+    <li><strong>ورود از لینک بلاگر</strong> — <code>GET /{slug}</code> با Route Model Binding روی <code>slug</code> و شرط <code>is_active</code>. شناسه بلاگر در session ذخیره می‌شود (اسناد ارجاع تا ۳۰ روز با کوکی امضاشده).</li>
+    <li><strong>درخواست کد</strong> — کامپوننت Livewire شماره را ولیدیت و OTP را در صف ارسال می‌کند.</li>
+    <li><strong>تأیید کد</strong> — پس از تأیید، <code>verified_phone</code> در session و هدایت به فرم.</li>
+    <li><strong>فرم ثبت‌نام</strong> — ولیدیت با FormRequest، سپس صدور کد بلیط اتمیک.</li>
+    <li><strong>بلیط</strong> — صفحه بلیط + دانلود PNG/PDF + پیامک بلیط؛ وضعیت اولیه «در انتظار تماس».</li>
+    <li><strong>پیگیری</strong> — مدیر تماس می‌گیرد، نتیجه را ثبت می‌کند و وضعیت را نهایی می‌کند.</li>
+  </ol>
+
+  <div style="border:1px solid #d9d3c4; border-radius:10px; padding:13px 16px; background:#faf7f0; margin-bottom:26px; break-inside:avoid">
+    <strong style="color:#0b1533">نکته مسیریابی:</strong>
+    <span style="font-size:10.5pt; line-height:1.95; color:#3d4763">مسیر <code>/{slug}</code> باید آخرین روت فایل باشد تا با <code>/panel</code> و مسیرهای سیستمی تداخل نکند؛ همچنین یک فهرست کلمات رزرو برای slug نگه دار.</span>
+  </div>
+
+  <h2 style="margin:0 0 12px; font-size:16pt; font-weight:900; color:#0b1533; padding-bottom:8px; border-bottom:2px solid #0b1533">۴. احراز هویت پیامکی (OTP)</h2>
+  <ul style="margin:0 0 14px; padding-inline-start:20px; font-size:11pt; line-height:2.05; color:#28324d">
+    <li>پروایدر: کاوه‌نگار یا SMS.ir با <strong>الگوی پیامکی (Verify Lookup)</strong> — تحویل سریع‌تر و بدون فیلترشدن.</li>
+    <li>کد را هش‌شده ذخیره کن (<code>Hash::make</code>)، انقضا ۲ دقیقه، حداکثر ۵ تلاش، پس از مصرف <code>consumed_at</code>.</li>
+    <li>محدودسازی با <code>RateLimiter</code>: حداکثر ۳ ارسال در ۱۰ دقیقه برای هر شماره و هر IP؛ به‌علاوه honeypot روی فرم.</li>
+    <li>ارسال داخل Job با retry و backoff؛ خطای پروایدر نباید تجربه کاربر را قفل کند.</li>
+  </ul>
+
+  <h2 style="margin:0 0 12px; font-size:16pt; font-weight:900; color:#0b1533; padding-bottom:8px; border-bottom:2px solid #0b1533">۵. نقش‌ها و دسترسی</h2>
+  <p style="margin:0 0 10px; font-size:11pt; line-height:1.95; color:#28324d">دو گارد جدا در <code>config/auth.php</code>: گارد <code>web</code> برای مدیران و گارد <code>blogger</code> برای بلاگرها.</p>
+  <table style="width:100%; border-collapse:collapse; font-size:10.5pt; margin-bottom:14px; break-inside:avoid">
+    <thead>
+      <tr style="background:#0b1533; color:#fff">
+        <th style="text-align:right; padding:9px 12px; font-weight:800">نقش</th>
+        <th style="text-align:right; padding:9px 12px; font-weight:800">دسترسی</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">مدیر کل</td>
+        <td style="padding:9px 12px; color:#3d4763">همه بخش‌ها + مدیریت مدیران + حذف بلاگر</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">مدیر میانی</td>
+        <td style="padding:9px 12px; color:#3d4763">ثبت‌نام‌ها، تماس، پیامک، بلاگرها، گزارش — بدون مدیریت مدیران</td>
+      </tr>
+      <tr>
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">بلاگر</td>
+        <td style="padding:9px 12px; color:#3d4763">فقط ثبت‌نام‌ها و آمار خودش؛ بدون تماس، پیامک و تغییر وضعیت</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="margin:0 0 26px; font-size:11pt; line-height:1.95; color:#28324d">اعمال دسترسی را در لایه کوئری انجام بده، نه در ویو: یک scope مثل <code>Registration::visibleTo($actor)</code> به‌علاوه Policy، تا هیچ صفحه‌ای امکان نشت داده نداشته باشد.</p>
+
+  <h2 style="margin:0 0 12px; font-size:16pt; font-weight:900; color:#0b1533; padding-bottom:8px; border-bottom:2px solid #0b1533">۶. بلیط</h2>
+  <ul style="margin:0 0 26px; padding-inline-start:20px; font-size:11pt; line-height:2.05; color:#28324d">
+    <li>رندر سمت سرور از یک Blade view با <strong>Browsershot</strong> (یا <code>spatie/laravel-pdf</code>): خروجی PNG برای پیامک و PDF برای چاپ.</li>
+    <li>QR روی <code>ticket_code</code> با <code>simplesoftwareio/simple-qrcode</code>؛ روز مراسم یک صفحه اسکن ساده برای کنترل ورودی.</li>
+    <li>فایل در <code>storage</code> و دسترسی با <code>URL::temporarySignedRoute</code> — بلیط نباید با حدس‌زدن آدرس قابل دانلود باشد.</li>
+    <li>تولید در صف؛ تا آماده‌شدن، صفحه پیام «در حال صدور نهایی» نشان می‌دهد.</li>
+  </ul>
+
+  <h2 style="margin:0 0 12px; font-size:16pt; font-weight:900; color:#0b1533; padding-bottom:8px; border-bottom:2px solid #0b1533">۷. پیامک‌ها و گزارش فعالیت</h2>
+  <ul style="margin:0 0 26px; padding-inline-start:20px; font-size:11pt; line-height:2.05; color:#28324d">
+    <li>یک <code>SmsService</code> با اینترفیس و درایور به‌ازای پروایدر تا تعویض پروایدر یک خط پیکربندی باشد.</li>
+    <li>قالب‌ها در دیتابیس با متغیرهای <code>{نام} {کد} {تاریخ} {همراه}</code> و رندر با <code>strtr</code>.</li>
+    <li>هر ارسال یک ردیف <code>sms_messages</code> + یک <code>activity_log</code>؛ وضعیت تحویل با webhook پروایدر به‌روز شود.</li>
+    <li>Observer روی <code>Registration</code> برای ثبت خودکار تغییر وضعیت، تا هیچ تغییری بدون ردپا نماند.</li>
+  </ul>
+
+  <h2 style="margin:0 0 12px; font-size:16pt; font-weight:900; color:#0b1533; padding-bottom:8px; border-bottom:2px solid #0b1533">۸. ساختار پنل</h2>
+  <p style="margin:0 0 10px; font-size:11pt; line-height:1.95; color:#28324d">یک کامپوننت Livewire به ازای هر صفحه، همگی زیر <code>app/Livewire/Panel</code>:</p>
+  <pre style="margin:0 0 14px; background:#0b1533; color:#eaf0ff; border-radius:10px; padding:14px 16px; font-size:9.5pt; line-height:1.85; overflow-x:auto; break-inside:avoid">Panel/Registrations       فهرست + فیلتر + صفحه‌بندی + خروجی
+Panel/RegistrationShow    پرونده کامل، بلیط، تماس، پیامک، وضعیت
+Panel/Bloggers            تعریف، آدرس کوتاه، عکس، فعال/غیرفعال، حذف
+Panel/BloggerShow         آمار و ثبت‌نام‌های یک بلاگر
+Panel/SmsTemplates        مدیریت قالب‌های پیامک
+Panel/Admins              مدیر کل / مدیر میانی
+Panel/ActivityLog         گزارش فعالیت با فیلتر و خروجی</pre>
+  <ul style="margin:0 0 26px; padding-inline-start:20px; font-size:11pt; line-height:2.05; color:#28324d">
+    <li>فیلترها با ویژگی <code>#[Url]</code> تا در آدرس بمانند و قابل اشتراک باشند.</li>
+    <li>صفحه‌بندی با <code>WithPagination</code> (سرور-ساید، نه بارگذاری کل جدول).</li>
+    <li>خروجی Excel/CSV با <code>maatwebsite/excel</code> در صف و ارسال لینک دانلود.</li>
+  </ul>
+
+  <h2 style="margin:0 0 12px; font-size:16pt; font-weight:900; color:#0b1533; padding-bottom:8px; border-bottom:2px solid #0b1533">۹. زیرساخت و استقرار</h2>
+  <ul style="margin:0 0 26px; padding-inline-start:20px; font-size:11pt; line-height:2.05; color:#28324d">
+    <li>سرور داخل ایران (آروان/ابرآراز) برای تأخیر کم و پرداخت/پیامک بومی؛ PHP 8.3، MySQL 8، Redis.</li>
+    <li>صف با Horizon زیر Supervisor؛ همه پیامک‌ها و تولید بلیط روی صف.</li>
+    <li>کش صفحه لندینگ (Response Cache) با بی‌اعتبارسازی هنگام تغییر بلاگر — پیک تبلیغ را همین یک قلم می‌گیرد.</li>
+    <li>بکاپ روزانه با <code>spatie/laravel-backup</code> روی فضای ابری جدا؛ داده ثبت‌نام غیرقابل بازتولید است.</li>
+    <li>مانیتورینگ خطا (Sentry) و لاگ ارسال پیامک؛ هشدار روی افت نرخ تحویل.</li>
+  </ul>
+
+  <h2 style="margin:0 0 12px; font-size:16pt; font-weight:900; color:#0b1533; padding-bottom:8px; border-bottom:2px solid #0b1533">۱۰. برنامه اجرا</h2>
+  <table style="width:100%; border-collapse:collapse; font-size:10.5pt; margin-bottom:16px">
+    <thead>
+      <tr style="background:#0b1533; color:#fff">
+        <th style="text-align:right; padding:9px 12px; font-weight:800; width:14%">گام</th>
+        <th style="text-align:right; padding:9px 12px; font-weight:800">خروجی</th>
+        <th style="text-align:right; padding:9px 12px; font-weight:800; width:18%">زمان</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#c4121f">۱</td>
+        <td style="padding:9px 12px; color:#3d4763">مهاجرت‌ها، مدل‌ها، Policy‌ها، سیدر بلاگر و مدیر</td>
+        <td style="padding:9px 12px; color:#3d4763">۴ روز</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#c4121f">۲</td>
+        <td style="padding:9px 12px; color:#3d4763">لندینگ <code>/{slug}</code>، OTP، فرم ثبت‌نام، صدور کد اتمیک</td>
+        <td style="padding:9px 12px; color:#3d4763">۱.۵ هفته</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#c4121f">۳</td>
+        <td style="padding:9px 12px; color:#3d4763">بلیط، QR، دانلود PNG/PDF، پیامک بلیط</td>
+        <td style="padding:9px 12px; color:#3d4763">۱ هفته</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#c4121f">۴</td>
+        <td style="padding:9px 12px; color:#3d4763">پنل مدیر: فهرست، فیلتر، پرونده، تماس، وضعیت، گزارش</td>
+        <td style="padding:9px 12px; color:#3d4763">۱.۵ هفته</td>
+      </tr>
+      <tr>
+        <td style="padding:9px 12px; font-weight:800; color:#c4121f">۵</td>
+        <td style="padding:9px 12px; color:#3d4763">قالب‌های پیامک، پنل بلاگر، مدیران، خروجی اکسل، استقرار</td>
+        <td style="padding:9px 12px; color:#3d4763">۱ هفته</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 style="margin:0 0 12px; font-size:16pt; font-weight:900; color:#0b1533; padding-bottom:8px; border-bottom:2px solid #0b1533">۱۱. ریسک‌ها و پاسخ آن‌ها</h2>
+  <table style="width:100%; border-collapse:collapse; font-size:10.5pt; margin-bottom:20px">
+    <thead>
+      <tr style="background:#0b1533; color:#fff">
+        <th style="text-align:right; padding:9px 12px; font-weight:800; width:34%">ریسک</th>
+        <th style="text-align:right; padding:9px 12px; font-weight:800">پاسخ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">کد بلیط تکراری در پیک</td>
+        <td style="padding:9px 12px; color:#3d4763">شمارنده قفل‌دار در تراکنش + ایندکس unique روی <code>ticket_code</code></td>
+      </tr>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">سوءاستفاده از ارسال پیامک</td>
+        <td style="padding:9px 12px; color:#3d4763">Rate limit شماره/IP، honeypot، سقف روزانه اعتبار پنل پیامکی</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">قطعی پروایدر پیامک</td>
+        <td style="padding:9px 12px; color:#3d4763">درایور دوم به‌عنوان fallback + صف با retry</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e3ddcf">
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">فشار ترافیک لحظه انتشار استوری</td>
+        <td style="padding:9px 12px; color:#3d4763">کش صفحه لندینگ، CDN برای تصاویر، تفکیک صف از وب</td>
+      </tr>
+      <tr>
+        <td style="padding:9px 12px; font-weight:800; color:#0b1533">حذف اشتباهی بلاگر</td>
+        <td style="padding:9px 12px; color:#3d4763">SoftDeletes + تأیید دومرحله‌ای + ثبت در گزارش فعالیت</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="border:1px solid #0b1533; border-radius:12px; padding:16px 18px; background:#0b1533; color:#eaf0ff; break-inside:avoid">
+    <div style="font-weight:900; font-size:12.5pt; margin-bottom:8px">تعریف «تمام‌شده» برای فاز اول</div>
+    <div style="font-size:10.5pt; line-height:2; color:#c8cede">یک بلاگر تعریف می‌شود، لینک کوتاهش را منتشر می‌کند، کاربر با شماره موبایل ثبت‌نام می‌کند، کد یکتا و بلیط قابل دانلود می‌گیرد، مدیر تماس می‌گیرد و وضعیت را نهایی می‌کند، و همه این‌ها با نام عامل در گزارش فعالیت ثبت شده است.</div>
+  </div>
+
+</doc-page>
+
+</x-dc>
+</body>
+</html>

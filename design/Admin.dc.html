@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" />
+<style>
+  html, body { margin:0; padding:0; background:#060d20; }
+  body { font-family:'Vazirmatn', system-ui, sans-serif; direction:rtl; -webkit-font-smoothing:antialiased; }
+  * { box-sizing:border-box; }
+  a { color:#ff5c66; text-decoration:none; }
+  a:hover { color:#ffffff; }
+  input, button, select, textarea { font-family:inherit; }
+  input::placeholder, textarea::placeholder { color:#66739a; }
+  @keyframes riseIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+  [data-nav="desktop"] { display:flex; }
+  [data-nav="mobile"] { display:none; }
+  [data-nav="force-hide"] { display:none; }
+  [data-nav="force-show"] { display:flex; }
+  @media (max-width: 900px) {
+    [data-nav="desktop"] { display:none; }
+    [data-nav="mobile"] { display:flex; }
+  }
+</style>
+</helmet>
+
+<div style="min-height:100vh; background:radial-gradient(760px 460px at 82% -12%, rgba(216,31,42,.2), transparent 62%), #060d20; color:#eaf0ff">
+
+  <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+    <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px">
+      <div style="width:100%; max-width:400px; background:linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.15); border-radius:24px; padding:28px; box-shadow:0 40px 80px -50px rgba(0,0,0,.95); animation:riseIn .4s ease both">
+        <div style="display:flex; align-items:center; gap:11px; margin-bottom:24px">
+          <img src="assets/logo-genavehei.png" alt="" style="width:46px; height:46px; object-fit:contain; background:#fff; border-radius:13px; padding:3px" />
+          <div style="line-height:1.4">
+            <div style="font-weight:900; font-size:15px; color:#fff">پنل مدیریت گردهمایی</div>
+            <div style="font-size:11.5px; color:#8b98ba">گروه آموزشی استاد محسن گناوه‌ای</div>
+          </div>
+        </div>
+        <label style="display:flex; flex-direction:column; gap:7px; margin-bottom:12px">
+          <span style="font-size:12.5px; font-weight:700; color:#cdd7f0">نام کاربری</span>
+          <input value="{{ user }}" onChange="{{ onUser }}" placeholder="admin" style="direction:ltr; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.16); border-radius:13px; padding:13px 14px; color:#fff; font-size:15px; outline:none" style-focus="border-color:#ff4b57" />
+        </label>
+        <label style="display:flex; flex-direction:column; gap:7px; margin-bottom:16px">
+          <span style="font-size:12.5px; font-weight:700; color:#cdd7f0">رمز عبور</span>
+          <input value="{{ pass }}" onChange="{{ onPass }}" onKeyDown="{{ onLoginKey }}" type="password" placeholder="••••" style="direction:ltr; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.16); border-radius:13px; padding:13px 14px; color:#fff; font-size:15px; outline:none" style-focus="border-color:#ff4b57" />
+        </label>
+        <sc-if value="{{ loginError }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-bottom:12px; font-size:13px; font-weight:600; color:#ff8d96">{{ loginError }}</div>
+        </sc-if>
+        <button onClick="{{ doLogin }}" style="width:100%; background:#d81f2a; color:#fff; font-weight:800; font-size:15.5px; border:none; border-radius:13px; padding:14px; cursor:pointer; box-shadow:0 14px 32px -14px rgba(216,31,42,.9)" style-hover="background:#ef2f3b">ورود به پنل</button>
+        <div style="margin-top:14px; font-size:11.5px; color:#66739a; text-align:center; line-height:1.9">مدیر: admin / ۱۲۳۴<br />بلاگر نمونه: alisaburi / a10</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isPanel }}" hint-placeholder-val="{{ false }}">
+    <div style="{{ frameStyle }}">
+      <header style="display:flex; align-items:center; justify-content:space-between; gap:14px; padding:13px clamp(14px,3vw,28px); border-bottom:1px solid rgba(255,255,255,.09); position:sticky; top:0; background:rgba(6,13,32,.92); backdrop-filter:blur(10px); z-index:20; flex-wrap:wrap">
+        <div style="display:flex; align-items:center; gap:10px; min-width:0">
+          <img src="assets/logo-genavehei.png" alt="" style="width:38px; height:38px; flex:none; object-fit:contain; background:#fff; border-radius:11px; padding:2px" />
+          <div style="line-height:1.4; min-width:0">
+            <div style="font-weight:900; font-size:14px; color:#fff; white-space:nowrap">پنل مدیریت گردهمایی</div>
+            <div style="font-size:11px; color:#8b98ba">{{ meLabel }}</div>
+          </div>
+        </div>
+        <div data-nav="{{ navDesktop }}" style="align-items:center; gap:8px; flex-wrap:wrap">
+          <div style="display:flex; gap:4px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:999px; padding:4px">
+            <button onClick="{{ goRegs }}" style="{{ tabRegsStyle }}">ثبت‌نام‌ها</button>
+            <sc-if value="{{ isStaff }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ goBloggers }}" style="{{ tabBloggersStyle }}">بلاگرها</button>
+            </sc-if>
+            <sc-if value="{{ isStaff }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ goSms }}" style="{{ tabSmsStyle }}">پیامک‌ها</button>
+            </sc-if>
+            <sc-if value="{{ isSuper }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ goAdmins }}" style="{{ tabAdminsStyle }}">مدیران</button>
+            </sc-if>
+            <sc-if value="{{ isStaff }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ goLogs }}" style="{{ tabLogsStyle }}">گزارش فعالیت</button>
+            </sc-if>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:999px; padding:4px 12px 4px 4px">
+            <span style="font-size:12px; font-weight:700; color:#cdd7f0; white-space:nowrap">{{ meShort }}</span>
+            <span style="{{ avatarStyle }}">{{ avatarInitial }}</span>
+          </div>
+          <button onClick="{{ doLogout }}" style="flex:none; background:rgba(255,255,255,.06); color:#cdd7f0; border:1px solid rgba(255,255,255,.14); border-radius:11px; padding:9px 14px; font-size:12.5px; font-weight:700; cursor:pointer" style-hover="background:rgba(255,255,255,.14); color:#fff">خروج</button>
+        </div>
+
+        <div data-nav="{{ navMobile }}" style="align-items:center; gap:9px">
+          <div style="display:flex; align-items:center; gap:8px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:999px; padding:4px 12px 4px 4px">
+            <span style="font-size:12px; font-weight:700; color:#cdd7f0; white-space:nowrap">{{ meShort }}</span>
+            <span style="{{ avatarStyle }}">{{ avatarInitial }}</span>
+          </div>
+          <button onClick="{{ toggleMenu }}" style="flex:none; width:40px; height:40px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14); border-radius:12px; cursor:pointer" style-hover="background:rgba(255,255,255,.14)">
+            <span style="width:17px; height:2px; background:#eaf0ff; border-radius:2px"></span>
+            <span style="width:17px; height:2px; background:#eaf0ff; border-radius:2px"></span>
+            <span style="width:17px; height:2px; background:#eaf0ff; border-radius:2px"></span>
+          </button>
+        </div>
+      </header>
+
+      <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ closeMenu }}" style="position:fixed; inset:0; z-index:40; background:rgba(3,7,20,.6); backdrop-filter:blur(4px)">
+          <div style="position:absolute; top:12px; left:12px; width:min(280px, calc(100vw - 24px)); background:#0d1a3c; border:1px solid rgba(255,255,255,.16); border-radius:20px; padding:12px; box-shadow:0 40px 80px -40px rgba(0,0,0,.95); animation:riseIn .22s ease both">
+            <div style="display:flex; align-items:center; gap:10px; padding:10px 10px 14px; border-bottom:1px solid rgba(255,255,255,.1); margin-bottom:10px">
+              <span style="{{ avatarStyleLg }}">{{ avatarInitial }}</span>
+              <div style="min-width:0">
+                <div style="font-weight:800; font-size:13.5px; color:#fff; overflow-wrap:anywhere">{{ meName }}</div>
+                <div style="font-size:11.5px; color:#8b98ba">{{ meRole }}</div>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px">
+              <button onClick="{{ goRegs }}" style="{{ navRegsStyle }}">ثبت‌نام‌ها</button>
+              <sc-if value="{{ isStaff }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ goBloggers }}" style="{{ navBloggersStyle }}">بلاگرها</button>
+              </sc-if>
+              <sc-if value="{{ isStaff }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ goSms }}" style="{{ navSmsStyle }}">پیامک‌ها</button>
+              </sc-if>
+              <sc-if value="{{ isSuper }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ goAdmins }}" style="{{ navAdminsStyle }}">مدیران</button>
+              </sc-if>
+              <sc-if value="{{ isStaff }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ goLogs }}" style="{{ navLogsStyle }}">گزارش فعالیت</button>
+              </sc-if>
+              <button onClick="{{ doLogout }}" style="margin-top:6px; text-align:right; background:rgba(216,31,42,.14); color:#ff8d96; border:1px solid rgba(216,31,42,.4); border-radius:12px; padding:12px 14px; font-size:13.5px; font-weight:800; cursor:pointer" style-hover="background:rgba(216,31,42,.26)">خروج از حساب</button>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <div style="max-width:1320px; margin:0 auto; padding:clamp(18px,3vw,28px) clamp(14px,3vw,28px) 80px; display:flex; flex-direction:column; gap:20px">
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,175px),1fr)); gap:12px">
+          <div style="background:linear-gradient(150deg, rgba(216,31,42,.26), rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.13); border-radius:18px; padding:16px 18px">
+            <div style="font-size:11.5px; color:#e2c9cd; margin-bottom:7px">کل ثبت‌نام‌ها</div>
+            <div style="font-weight:900; font-size:28px; color:#fff">{{ kpiTotal }}</div>
+          </div>
+          <div style="background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.11); border-radius:18px; padding:16px 18px">
+            <div style="font-size:11.5px; color:#8b98ba; margin-bottom:7px">امروز</div>
+            <div style="font-weight:900; font-size:28px; color:#7ef0b0">{{ kpiToday }}</div>
+          </div>
+          <div style="background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.11); border-radius:18px; padding:16px 18px">
+            <div style="font-size:11.5px; color:#8b98ba; margin-bottom:7px">دیروز</div>
+            <div style="font-weight:900; font-size:28px; color:#fff">{{ kpiYesterday }}</div>
+          </div>
+          <div style="background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.11); border-radius:18px; padding:16px 18px">
+            <div style="font-size:11.5px; color:#8b98ba; margin-bottom:7px">در انتظار تماس</div>
+            <div style="font-weight:900; font-size:28px; color:#ffcf6b">{{ kpiPending }}</div>
+          </div>
+          <div style="background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.11); border-radius:18px; padding:16px 18px">
+            <div style="font-size:11.5px; color:#8b98ba; margin-bottom:7px">تأیید نهایی</div>
+            <div style="font-weight:900; font-size:28px; color:#7ef0b0">{{ kpiApproved }}</div>
+          </div>
+        </div>
+
+        <sc-if value="{{ onRegsTab }}" hint-placeholder-val="{{ true }}">
+          <div style="background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.11); border-radius:22px; padding:clamp(16px,2.4vw,22px)">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:16px">
+              <div style="font-weight:900; font-size:17px; color:#fff">لیست ثبت‌نام‌ها <span style="font-weight:700; font-size:13px; color:#8b98ba">({{ resultCount }} نفر)</span></div>
+              <button onClick="{{ exportCsv }}" style="background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.15); color:#cdd7f0; font-size:12.5px; font-weight:700; padding:9px 14px; border-radius:10px; cursor:pointer" style-hover="background:rgba(255,255,255,.15); color:#fff">خروجی CSV</button>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr)); gap:10px; margin-bottom:16px">
+              <input value="{{ q }}" onChange="{{ onQ }}" placeholder="جست‌وجوی نام، کد، شهر، مدرسه" style="background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:11px 13px; color:#fff; font-size:13.5px; outline:none" style-focus="border-color:#ff4b57" />
+              <sc-if value="{{ isStaff }}" hint-placeholder-val="{{ true }}">
+                <select value="{{ fBlogger }}" onChange="{{ onFBlogger }}" style="width:100%; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:11px 13px; color:#fff; font-size:13.5px; outline:none">
+                  <sc-for list="{{ bloggerOptions }}" as="o" hint-placeholder-count="3">
+                    <option value="{{ o.value }}">{{ o.label }}</option>
+                  </sc-for>
+                </select>
+              </sc-if>
+              <select value="{{ fStatus }}" onChange="{{ onFStatus }}" style="background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:11px 13px; color:#fff; font-size:13.5px; outline:none">
+                <option value="all">همه وضعیت‌ها</option>
+                <option value="pending">در انتظار تماس</option>
+                <option value="calling">در حال پیگیری</option>
+                <option value="approved">تأیید نهایی</option>
+                <option value="canceled">منصرف شده</option>
+              </select>
+              <select value="{{ fGrade }}" onChange="{{ onFGrade }}" style="background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:11px 13px; color:#fff; font-size:13.5px; outline:none">
+                <option value="all">همه پایه‌ها</option>
+                <option value="دهم">دهم</option>
+                <option value="یازدهم">یازدهم</option>
+                <option value="دوازدهم">دوازدهم</option>
+                <option value="فارغ‌التحصیل">فارغ‌التحصیل</option>
+              </select>
+              <select value="{{ fField }}" onChange="{{ onFField }}" style="background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:11px 13px; color:#fff; font-size:13.5px; outline:none">
+                <option value="all">هر دو رشته</option>
+                <option value="ریاضی">ریاضی</option>
+                <option value="تجربی">تجربی</option>
+              </select>
+              <select value="{{ fWhen }}" onChange="{{ onFWhen }}" style="background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:11px 13px; color:#fff; font-size:13.5px; outline:none">
+                <option value="all">همه زمان‌ها</option>
+                <option value="today">امروز</option>
+                <option value="yesterday">دیروز</option>
+                <option value="7d">۷ روز گذشته</option>
+              </select>
+            </div>
+
+            <div style="overflow-x:auto">
+              <div style="min-width:900px">
+                <div style="display:grid; grid-template-columns:1.2fr .7fr .8fr .55fr .7fr .85fr 1fr .55fr .75fr; gap:8px; padding:0 13px 10px; font-size:11.5px; color:#8b98ba; font-weight:700">
+                  <span>نام و نام خانوادگی</span><span>کد بلیط</span><span>بلاگر</span><span>پایه</span><span>رشته</span><span>شهر</span><span>وضعیت</span><span>تماس</span><span>تاریخ</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px">
+                  <sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+                    <div onClick="{{ r.open }}" style="display:grid; grid-template-columns:1.2fr .7fr .8fr .55fr .7fr .85fr 1fr .55fr .75fr; gap:8px; align-items:center; background:rgba(6,14,36,.5); border:1px solid rgba(255,255,255,.08); border-radius:13px; padding:13px; font-size:12.5px; color:#dbe4fb; cursor:pointer" style-hover="border-color:rgba(216,31,42,.55); background:rgba(11,21,51,.75)">
+                      <span style="font-weight:800; color:#fff; overflow-wrap:anywhere">{{ r.name }}</span>
+                      <span style="direction:ltr; font-weight:800; color:#ffb3b9">{{ r.code }}</span>
+                      <span>{{ r.blogger }}</span>
+                      <span>{{ r.grade }}</span>
+                      <span>{{ r.field }}</span>
+                      <span>{{ r.city }}</span>
+                      <span style="{{ r.badgeStyle }}">{{ r.statusLabel }}</span>
+                      <span style="color:#8fbcff; font-weight:800">{{ r.callCount }}</span>
+                      <span style="color:#8b98ba">{{ r.date }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+                <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+                  <div style="text-align:center; padding:26px; font-size:13.5px; color:#8b98ba">با این فیلترها ثبت‌نامی پیدا نشد.</div>
+                </sc-if>
+              </div>
+            </div>
+            <sc-if value="{{ regsPagerMulti }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,.08)">
+                <span style="font-size:12px; color:#8b98ba">{{ regsPagerRange }}</span>
+                <div style="display:flex; align-items:center; gap:9px">
+                  <button onClick="{{ regsPrev }}" style="{{ regsPrevStyle }}">قبلی</button>
+                  <span style="font-size:12.5px; font-weight:700; color:#cdd7f0; white-space:nowrap">{{ regsPagerLabel }}</span>
+                  <button onClick="{{ regsNext }}" style="{{ regsNextStyle }}">بعدی</button>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ onBloggersTab }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr)); gap:16px; align-items:start">
+            <div style="background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.11); border-radius:22px; padding:20px">
+              <div style="font-weight:900; font-size:17px; color:#fff; margin-bottom:4px">تعریف بلاگر جدید</div>
+              <div style="font-size:12.5px; color:#8b98ba; margin-bottom:16px">با ثبت بلاگر، لینک اختصاصی و پیش‌شماره کد ساخته می‌شود.</div>
+              <div style="display:flex; flex-direction:column; gap:11px">
+                <input value="{{ newName }}" onChange="{{ onNewName }}" placeholder="نام بلاگر — مثال: علی صبوری" style="background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:12px 14px; color:#fff; font-size:14.5px; outline:none" style-focus="border-color:#ff4b57" />
+                <input value="{{ newCode }}" onChange="{{ onNewCode }}" placeholder="کد اختصاصی — مثال: a10" style="direction:ltr; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:12px 14px; color:#fff; font-size:14.5px; outline:none" style-focus="border-color:#ff4b57" />
+                <input value="{{ newPhone }}" onChange="{{ onNewPhone }}" placeholder="شماره موبایل بلاگر (اختیاری)" style="direction:ltr; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:12px 14px; color:#fff; font-size:14.5px; outline:none" style-focus="border-color:#ff4b57" />
+                <div>
+                  <div style="font-size:12px; color:#8b98ba; margin-bottom:6px">آدرس کوتاه اختصاصی</div>
+                  <div style="display:flex; align-items:center; gap:0; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; overflow:hidden">
+                    <span style="direction:ltr; flex:none; padding:12px 12px; font-size:13px; color:#66739a; border-inline-end:1px solid rgba(255,255,255,.12); white-space:nowrap">{{ shortBase }}</span>
+                    <input value="{{ newSlug }}" onChange="{{ onNewSlug }}" placeholder="alisaburi" style="direction:ltr; flex:1; min-width:0; background:transparent; border:none; padding:12px 12px; color:#fff; font-size:14.5px; outline:none" />
+                  </div>
+                </div>
+                <input value="{{ newPass }}" onChange="{{ onNewPass }}" placeholder="رمز ورود بلاگر (پیش‌فرض: همان کد)" style="direction:ltr; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:12px 14px; color:#fff; font-size:14.5px; outline:none" style-focus="border-color:#ff4b57" />
+                <div style="font-size:11.5px; color:#66739a; line-height:1.8">بلاگر با «آدرس کوتاه» به‌عنوان نام کاربری و همین رمز وارد پنل می‌شود و فقط ثبت‌نام‌های خودش را می‌بیند.</div>
+                <sc-if value="{{ formError }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:12.5px; font-weight:600; color:#ff8d96">{{ formError }}</div>
+                </sc-if>
+                <button onClick="{{ addBlogger }}" style="background:#d81f2a; color:#fff; font-weight:800; font-size:15px; border:none; border-radius:12px; padding:13px; cursor:pointer; box-shadow:0 14px 30px -16px rgba(216,31,42,.9)" style-hover="background:#ef2f3b">ثبت بلاگر</button>
+              </div>
+            </div>
+
+            <div style="background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.11); border-radius:22px; padding:20px">
+              <div style="font-weight:900; font-size:17px; color:#fff; margin-bottom:16px">آمار بلاگرها</div>
+              <div style="display:flex; flex-direction:column; gap:10px">
+                <sc-for list="{{ bloggerRows }}" as="b" hint-placeholder-count="3">
+                  <div onClick="{{ b.open }}" style="{{ b.cardStyle }}">
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:11px; flex-wrap:wrap">
+                      <div style="display:flex; align-items:center; gap:9px; min-width:0">
+                        <span style="font-weight:800; font-size:14.5px; color:#fff">{{ b.name }}</span>
+                        <span style="direction:ltr; background:rgba(216,31,42,.18); border:1px solid rgba(216,31,42,.45); color:#ffb3b9; font-weight:800; font-size:11.5px; padding:3px 9px; border-radius:7px">{{ b.code }}</span>
+                        <span style="{{ b.stateStyle }}">{{ b.stateLabel }}</span>
+                      </div>
+                      <button onClick="{{ b.copy }}" style="flex:none; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.15); color:#cdd7f0; font-size:11.5px; font-weight:700; padding:6px 10px; border-radius:8px; cursor:pointer" style-hover="background:rgba(255,255,255,.16); color:#fff">{{ b.copyLabel }}</button>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:7px">
+                      <div style="text-align:center; background:rgba(255,255,255,.05); border-radius:10px; padding:8px 3px">
+                        <div style="font-weight:900; font-size:16px; color:#fff">{{ b.total }}</div>
+                        <div style="font-size:10px; color:#8b98ba">کل</div>
+                      </div>
+                      <div style="text-align:center; background:rgba(255,255,255,.05); border-radius:10px; padding:8px 3px">
+                        <div style="font-weight:900; font-size:16px; color:#7ef0b0">{{ b.today }}</div>
+                        <div style="font-size:10px; color:#8b98ba">امروز</div>
+                      </div>
+                      <div style="text-align:center; background:rgba(255,255,255,.05); border-radius:10px; padding:8px 3px">
+                        <div style="font-weight:900; font-size:16px; color:#fff">{{ b.yesterday }}</div>
+                        <div style="font-size:10px; color:#8b98ba">دیروز</div>
+                      </div>
+                      <div style="text-align:center; background:rgba(255,255,255,.05); border-radius:10px; padding:8px 3px">
+                        <div style="font-weight:900; font-size:16px; color:#ffcf6b">{{ b.approved }}</div>
+                        <div style="font-size:10px; color:#8b98ba">تأیید</div>
+                      </div>
+                    </div>
+                    <div style="direction:ltr; font-size:11.5px; color:#8fbcff; margin-top:9px; overflow-wrap:anywhere; font-weight:700">{{ b.short }}</div>
+                    <div style="direction:ltr; font-size:10.5px; color:#66739a; margin-top:3px; overflow-wrap:anywhere">{{ b.link }}</div>
+                  </div>
+                </sc-for>
+              </div>
+              <sc-if value="{{ bloggersPagerMulti }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,.08)">
+                  <span style="font-size:12px; color:#8b98ba">{{ bloggersPagerRange }}</span>
+                  <div style="display:flex; align-items:center; gap:9px">
+                    <button onClick="{{ bloggersPrev }}" style="{{ bloggersPrevStyle }}">قبلی</button>
+                    <span style="font-size:12.5px; font-weight:700; color:#cdd7f0; white-space:nowrap">{{ bloggersPagerLabel }}</span>
+                    <button onClick="{{ bloggersNext }}" style="{{ bloggersNextStyle }}">بعدی</button>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ onSmsTab }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr)); gap:16px; align-items:start">
+            <div style="background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.11); border-radius:22px; padding:20px">
+              <div style="font-weight:900; font-size:17px; color:#fff; margin-bottom:4px">افزودن قالب پیامک</div>
+              <div style="font-size:12.5px; color:#8b98ba; margin-bottom:16px">در متن می‌توانید از {نام}، {کد}، {تاریخ} و {همراه} استفاده کنید.</div>
+              <div style="display:flex; flex-direction:column; gap:11px">
+                <input value="{{ tplName }}" onChange="{{ onTplName }}" placeholder="نام قالب — مثال: پیامک یادآوری" style="background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:12px 14px; color:#fff; font-size:14.5px; outline:none" style-focus="border-color:#ff4b57" />
+                <textarea value="{{ tplText }}" onChange="{{ onTplText }}" placeholder="متن پیامک" style="background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:12px 14px; color:#fff; font-size:14px; min-height:110px; resize:vertical; outline:none" style-focus="border-color:#ff4b57"></textarea>
+                <sc-if value="{{ tplError }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:12.5px; font-weight:600; color:#ff8d96">{{ tplError }}</div>
+                </sc-if>
+                <button onClick="{{ addTemplate }}" style="background:#d81f2a; color:#fff; font-weight:800; font-size:15px; border:none; border-radius:12px; padding:13px; cursor:pointer; box-shadow:0 14px 30px -16px rgba(216,31,42,.9)" style-hover="background:#ef2f3b">ثبت قالب</button>
+              </div>
+            </div>
+
+            <div style="background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.11); border-radius:22px; padding:20px">
+              <div style="font-weight:900; font-size:17px; color:#fff; margin-bottom:16px">قالب‌های پیامک</div>
+              <div style="display:flex; flex-direction:column; gap:10px">
+                <sc-for list="{{ templateRows }}" as="t" hint-placeholder-count="3">
+                  <div style="border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:14px; background:rgba(6,14,36,.45)">
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px">
+                      <span style="font-weight:800; font-size:14px; color:#fff">{{ t.name }}</span>
+                      <div style="display:flex; align-items:center; gap:8px">
+                        <span style="font-size:11px; color:#8b98ba">{{ t.sentLabel }}</span>
+                        <button onClick="{{ t.remove }}" style="background:rgba(216,31,42,.14); border:1px solid rgba(216,31,42,.4); color:#ff8d96; font-size:11px; font-weight:700; padding:5px 9px; border-radius:8px; cursor:pointer" style-hover="background:rgba(216,31,42,.26)">حذف</button>
+                      </div>
+                    </div>
+                    <div style="font-size:12.5px; line-height:1.9; color:#aebbdb; white-space:pre-wrap">{{ t.text }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ onAdminsTab }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr)); gap:16px; align-items:start">
+            <div style="background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.11); border-radius:22px; padding:20px">
+              <div style="font-weight:900; font-size:17px; color:#fff; margin-bottom:4px">افزودن مدیر</div>
+              <div style="font-size:12.5px; color:#8b98ba; margin-bottom:16px">مدیر کل به همه بخش‌ها دسترسی دارد؛ مدیر میانی فقط ثبت‌نام‌ها، پیامک و گزارش.</div>
+              <div style="display:flex; flex-direction:column; gap:11px">
+                <input value="{{ adminName }}" onChange="{{ onAdminName }}" placeholder="نام و نام خانوادگی" style="background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:12px 14px; color:#fff; font-size:14.5px; outline:none" style-focus="border-color:#ff4b57" />
+                <input value="{{ adminUser }}" onChange="{{ onAdminUser }}" placeholder="نام کاربری (انگلیسی)" style="direction:ltr; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:12px 14px; color:#fff; font-size:14.5px; outline:none" style-focus="border-color:#ff4b57" />
+                <input value="{{ adminPass }}" onChange="{{ onAdminPass }}" placeholder="رمز عبور" style="direction:ltr; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:12px 14px; color:#fff; font-size:14.5px; outline:none" style-focus="border-color:#ff4b57" />
+                <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:8px">
+                  <button onClick="{{ pickSuper }}" style="{{ superStyle }}">مدیر کل</button>
+                  <button onClick="{{ pickMid }}" style="{{ midStyle }}">مدیر میانی</button>
+                </div>
+                <sc-if value="{{ adminError }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:12.5px; font-weight:600; color:#ff8d96">{{ adminError }}</div>
+                </sc-if>
+                <button onClick="{{ addAdmin }}" style="background:#d81f2a; color:#fff; font-weight:800; font-size:15px; border:none; border-radius:12px; padding:13px; cursor:pointer; box-shadow:0 14px 30px -16px rgba(216,31,42,.9)" style-hover="background:#ef2f3b">ثبت مدیر</button>
+              </div>
+            </div>
+
+            <div style="background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.11); border-radius:22px; padding:20px">
+              <div style="font-weight:900; font-size:17px; color:#fff; margin-bottom:16px">مدیران فعال</div>
+              <div style="display:flex; flex-direction:column; gap:9px">
+                <sc-for list="{{ adminRows }}" as="a" hint-placeholder-count="2">
+                  <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:13px 14px; background:rgba(6,14,36,.45)">
+                    <div style="min-width:0">
+                      <div style="font-weight:800; font-size:14px; color:#fff">{{ a.name }}</div>
+                      <div style="direction:ltr; font-size:11.5px; color:#8b98ba; margin-top:3px">{{ a.user }}</div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px">
+                      <span style="{{ a.roleStyle }}">{{ a.roleLabel }}</span>
+                      <sc-if value="{{ a.removable }}" hint-placeholder-val="{{ false }}">
+                        <button onClick="{{ a.remove }}" style="background:rgba(216,31,42,.14); border:1px solid rgba(216,31,42,.4); color:#ff8d96; font-size:11px; font-weight:700; padding:5px 9px; border-radius:8px; cursor:pointer" style-hover="background:rgba(216,31,42,.26)">حذف</button>
+                      </sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ onLogsTab }}" hint-placeholder-val="{{ false }}">
+          <div style="background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.11); border-radius:22px; padding:20px">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:4px">
+              <div style="font-weight:900; font-size:17px; color:#fff">گزارش فعالیت مدیران <span style="font-weight:700; font-size:13px; color:#8b98ba">({{ logCount }} رویداد)</span></div>
+              <button onClick="{{ exportLogs }}" style="background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.15); color:#cdd7f0; font-size:12.5px; font-weight:700; padding:9px 14px; border-radius:10px; cursor:pointer" style-hover="background:rgba(255,255,255,.15); color:#fff">خروجی CSV</button>
+            </div>
+            <div style="font-size:12.5px; color:#8b98ba; margin-bottom:16px">هر تغییر وضعیت، تماس و پیامک با نام مدیر ثبت می‌شود.</div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr)); gap:10px; margin-bottom:16px">
+              <div style="background:rgba(6,14,36,.5); border:1px solid rgba(255,255,255,.09); border-radius:14px; padding:13px 15px">
+                <div style="font-size:11px; color:#8b98ba; margin-bottom:5px">تماس‌های ثبت‌شده</div>
+                <div style="font-weight:900; font-size:22px; color:#8fbcff">{{ logCalls }}</div>
+              </div>
+              <div style="background:rgba(6,14,36,.5); border:1px solid rgba(255,255,255,.09); border-radius:14px; padding:13px 15px">
+                <div style="font-size:11px; color:#8b98ba; margin-bottom:5px">پیامک‌های ارسالی</div>
+                <div style="font-weight:900; font-size:22px; color:#c8a2ff">{{ logSms }}</div>
+              </div>
+              <div style="background:rgba(6,14,36,.5); border:1px solid rgba(255,255,255,.09); border-radius:14px; padding:13px 15px">
+                <div style="font-size:11px; color:#8b98ba; margin-bottom:5px">تغییر وضعیت</div>
+                <div style="font-weight:900; font-size:22px; color:#7ef0b0">{{ logStatus }}</div>
+              </div>
+              <div style="background:rgba(6,14,36,.5); border:1px solid rgba(255,255,255,.09); border-radius:14px; padding:13px 15px">
+                <div style="font-size:11px; color:#8b98ba; margin-bottom:5px">فعالیت امروز</div>
+                <div style="font-weight:900; font-size:22px; color:#fff">{{ logToday }}</div>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr)); gap:10px; margin-bottom:14px">
+              <input value="{{ logQ }}" onChange="{{ onLogQ }}" placeholder="جست‌وجو در متن، نام مدیر یا کد بلیط" style="background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:11px 13px; color:#fff; font-size:13.5px; outline:none" style-focus="border-color:#ff4b57" />
+              <select value="{{ logType }}" onChange="{{ onLogType }}" style="background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:11px 13px; color:#fff; font-size:13.5px; outline:none">
+                <option value="all">همه رویدادها</option>
+                <option value="call">تماس</option>
+                <option value="sms">پیامک</option>
+                <option value="status">تغییر وضعیت</option>
+              </select>
+              <select value="{{ logWho }}" onChange="{{ onLogWho }}" style="background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:11px 13px; color:#fff; font-size:13.5px; outline:none">
+                <sc-for list="{{ logWhoOptions }}" as="o" hint-placeholder-count="2">
+                  <option value="{{ o.value }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+              <select value="{{ logWhen }}" onChange="{{ onLogWhen }}" style="background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:11px 13px; color:#fff; font-size:13.5px; outline:none">
+                <option value="all">همه زمان‌ها</option>
+                <option value="today">امروز</option>
+                <option value="yesterday">دیروز</option>
+                <option value="7d">۷ روز گذشته</option>
+              </select>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:7px">
+              <sc-for list="{{ globalLogs }}" as="l" hint-placeholder-count="6">
+                <div onClick="{{ l.open }}" style="display:flex; align-items:flex-start; gap:12px; flex-wrap:wrap; background:rgba(6,14,36,.5); border:1px solid rgba(255,255,255,.08); border-radius:13px; padding:12px 14px; cursor:pointer" style-hover="border-color:rgba(216,31,42,.5); background:rgba(11,21,51,.75)">
+                  <span style="{{ l.typeStyle }}">{{ l.typeLabel }}</span>
+                  <span style="font-size:12.5px; color:#fff; font-weight:700; white-space:nowrap">{{ l.who }}</span>
+                  <span style="font-size:12.5px; color:#aebbdb; flex:1; min-width:200px; line-height:1.85; white-space:pre-wrap">{{ l.text }}</span>
+                  <span style="font-size:12px; color:#dbe4fb">{{ l.regName }}</span>
+                  <span style="direction:ltr; font-size:11.5px; color:#ffb3b9; font-weight:700">{{ l.regCode }}</span>
+                  <span style="font-size:11.5px; color:#8b98ba; white-space:nowrap">{{ l.date }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ noLogs }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:24px; font-size:13.5px; color:#8b98ba">هنوز فعالیتی ثبت نشده است.</div>
+            </sc-if>
+            <sc-if value="{{ logsPagerMulti }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,.08)">
+                <span style="font-size:12px; color:#8b98ba">{{ logsPagerRange }}</span>
+                <div style="display:flex; align-items:center; gap:9px">
+                  <button onClick="{{ logsPrev }}" style="{{ logsPrevStyle }}">قبلی</button>
+                  <span style="font-size:12.5px; font-weight:700; color:#cdd7f0; white-space:nowrap">{{ logsPagerLabel }}</span>
+                  <button onClick="{{ logsNext }}" style="{{ logsNextStyle }}">بعدی</button>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasBlogger }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; z-index:70; background:rgba(3,7,20,.78); backdrop-filter:blur(7px); overflow-y:auto; padding:clamp(14px,3vw,32px)">
+      <div style="max-width:880px; margin:0 auto; background:#08122b; border:1px solid rgba(255,255,255,.14); border-radius:24px; overflow:hidden; box-shadow:0 60px 110px -50px rgba(0,0,0,.95); animation:riseIn .3s ease both">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; border-bottom:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.03)">
+          <div style="display:flex; align-items:center; gap:11px; min-width:0; flex-wrap:wrap">
+            <span style="font-weight:900; font-size:17px; color:#fff">{{ bg_name }}</span>
+            <span style="direction:ltr; background:rgba(216,31,42,.2); border:1px solid rgba(216,31,42,.5); color:#ffb3b9; font-weight:800; font-size:12px; padding:4px 10px; border-radius:8px">{{ bg_code }}</span>
+            <span style="{{ bg_stateStyle }}">{{ bg_stateLabel }}</span>
+          </div>
+          <button onClick="{{ closeBlogger }}" style="flex:none; width:34px; height:34px; border-radius:11px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.16); color:#cdd7f0; font-size:17px; cursor:pointer; line-height:1" style-hover="background:rgba(255,255,255,.16); color:#fff">×</button>
+        </div>
+
+        <div style="padding:20px; display:flex; flex-direction:column; gap:16px">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr)); gap:10px">
+            <div style="background:rgba(6,14,36,.5); border:1px solid rgba(255,255,255,.09); border-radius:14px; padding:13px 15px">
+              <div style="font-size:11px; color:#8b98ba; margin-bottom:5px">کل ثبت‌نام</div>
+              <div style="font-weight:900; font-size:22px; color:#fff">{{ bg_total }}</div>
+            </div>
+            <div style="background:rgba(6,14,36,.5); border:1px solid rgba(255,255,255,.09); border-radius:14px; padding:13px 15px">
+              <div style="font-size:11px; color:#8b98ba; margin-bottom:5px">امروز</div>
+              <div style="font-weight:900; font-size:22px; color:#7ef0b0">{{ bg_today }}</div>
+            </div>
+            <div style="background:rgba(6,14,36,.5); border:1px solid rgba(255,255,255,.09); border-radius:14px; padding:13px 15px">
+              <div style="font-size:11px; color:#8b98ba; margin-bottom:5px">دیروز</div>
+              <div style="font-weight:900; font-size:22px; color:#fff">{{ bg_yesterday }}</div>
+            </div>
+            <div style="background:rgba(6,14,36,.5); border:1px solid rgba(255,255,255,.09); border-radius:14px; padding:13px 15px">
+              <div style="font-size:11px; color:#8b98ba; margin-bottom:5px">تأیید نهایی</div>
+              <div style="font-weight:900; font-size:22px; color:#ffcf6b">{{ bg_approved }}</div>
+            </div>
+          </div>
+
+          <div style="background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:18px; padding:18px">
+            <div style="display:flex; align-items:center; gap:14px; margin-bottom:16px; flex-wrap:wrap">
+              <span style="{{ bg_avatarStyle }}">{{ bg_avatarInitial }}</span>
+              <div style="min-width:0">
+                <div style="font-weight:900; font-size:15px; color:#fff; margin-bottom:6px">عکس بلاگر</div>
+                <label style="display:inline-flex; align-items:center; gap:7px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.16); color:#cdd7f0; font-size:12.5px; font-weight:700; padding:8px 13px; border-radius:10px; cursor:pointer">
+                  انتخاب عکس
+                  <input type="file" accept="image/*" onChange="{{ bg_pickAvatar }}" style="display:none" />
+                </label>
+              </div>
+            </div>
+            <div style="font-weight:900; font-size:15px; color:#fff; margin-bottom:12px">اطلاعات بلاگر</div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr)); gap:12px">
+              <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">شماره موبایل</div><div style="direction:ltr; text-align:right; font-weight:800; font-size:13.5px; color:#fff">{{ bg_phone }}</div></div>
+              <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">آدرس کوتاه</div><div style="direction:ltr; text-align:right; font-weight:800; font-size:13.5px; color:#8fbcff; overflow-wrap:anywhere">{{ bg_short }}</div></div>
+              <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">نام کاربری ورود</div><div style="direction:ltr; text-align:right; font-weight:800; font-size:13.5px; color:#fff">{{ bg_user }}</div></div>
+              <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">رمز ورود</div><div style="direction:ltr; text-align:right; font-weight:800; font-size:13.5px; color:#fff">{{ bg_pass }}</div></div>
+              <div style="grid-column:1/-1"><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">لینک کامل</div><div style="direction:ltr; text-align:right; font-size:12px; color:#aebbdb; overflow-wrap:anywhere">{{ bg_link }}</div></div>
+            </div>
+            <div style="display:flex; gap:9px; flex-wrap:wrap; margin-top:16px">
+              <button onClick="{{ bg_toggle }}" style="{{ bg_toggleStyle }}">{{ bg_toggleLabel }}</button>
+              <button onClick="{{ bg_askDelete }}" style="flex:1 1 150px; background:rgba(216,31,42,.14); color:#ff8d96; font-weight:800; font-size:13.5px; border:1px solid rgba(216,31,42,.45); border-radius:12px; padding:12px; cursor:pointer" style-hover="background:rgba(216,31,42,.26)">حذف بلاگر</button>
+            </div>
+          </div>
+
+          <div style="background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:18px; padding:18px">
+            <div style="font-weight:900; font-size:15px; color:#fff; margin-bottom:12px">ثبت‌نام‌های این بلاگر ({{ bg_total }})</div>
+            <div style="display:flex; flex-direction:column; gap:7px">
+              <sc-for list="{{ bg_regs }}" as="r" hint-placeholder-count="3">
+                <div onClick="{{ r.open }}" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; background:rgba(6,14,36,.5); border:1px solid rgba(255,255,255,.08); border-radius:13px; padding:12px 14px; cursor:pointer" style-hover="border-color:rgba(216,31,42,.5)">
+                  <span style="font-weight:800; font-size:13px; color:#fff; flex:1; min-width:120px">{{ r.name }}</span>
+                  <span style="direction:ltr; font-size:12px; font-weight:800; color:#ffb3b9">{{ r.code }}</span>
+                  <span style="{{ r.badgeStyle }}">{{ r.statusLabel }}</span>
+                  <span style="font-size:11.5px; color:#8b98ba">{{ r.date }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ bg_noRegs }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:12.5px; color:#66739a">هنوز ثبت‌نامی از این بلاگر ثبت نشده است.</div>
+            </sc-if>
+            <sc-if value="{{ bgPagerMulti }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,.08)">
+                <span style="font-size:12px; color:#8b98ba">{{ bgPagerRange }}</span>
+                <div style="display:flex; align-items:center; gap:9px">
+                  <button onClick="{{ bgPrev }}" style="{{ bgPrevStyle }}">قبلی</button>
+                  <span style="font-size:12.5px; font-weight:700; color:#cdd7f0; white-space:nowrap">{{ bgPagerLabel }}</span>
+                  <button onClick="{{ bgNext }}" style="{{ bgNextStyle }}">بعدی</button>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ confirmingDelete }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; z-index:90; background:rgba(3,7,20,.85); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; padding:20px">
+      <div style="width:100%; max-width:420px; background:#0d1a3c; border:1px solid rgba(216,31,42,.5); border-radius:22px; padding:24px; box-shadow:0 50px 100px -40px rgba(0,0,0,.95); animation:riseIn .25s ease both">
+        <div style="font-weight:900; font-size:18px; color:#fff; margin-bottom:10px">حذف بلاگر {{ bg_name }}؟</div>
+        <div style="font-size:13.5px; line-height:2; color:#ffb3b9; background:rgba(216,31,42,.12); border:1px solid rgba(216,31,42,.35); border-radius:14px; padding:13px 15px; margin-bottom:18px">
+          هشدار: با حذف این بلاگر، لینک اختصاصی، آمار و همه‌ی {{ bg_total }} ثبت‌نام مرتبط با او برای همیشه پاک می‌شود. این کار قابل بازگشت نیست.
+        </div>
+        <div style="display:flex; gap:9px">
+          <button onClick="{{ bg_confirmDelete }}" style="flex:1; background:#d81f2a; color:#fff; font-weight:800; font-size:14.5px; border:none; border-radius:12px; padding:13px; cursor:pointer" style-hover="background:#ef2f3b">بله، حذف کن</button>
+          <button onClick="{{ bg_cancelDelete }}" style="flex:1; background:rgba(255,255,255,.07); color:#cdd7f0; font-weight:700; font-size:14px; border:1px solid rgba(255,255,255,.18); border-radius:12px; padding:13px; cursor:pointer" style-hover="background:rgba(255,255,255,.15); color:#fff">انصراف</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasDetail }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; z-index:60; background:rgba(3,7,20,.78); backdrop-filter:blur(7px); overflow-y:auto; padding:clamp(14px,3vw,32px)">
+      <div style="max-width:1080px; margin:0 auto; background:#08122b; border:1px solid rgba(255,255,255,.14); border-radius:24px; overflow:hidden; box-shadow:0 60px 110px -50px rgba(0,0,0,.95); animation:riseIn .3s ease both">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; border-bottom:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.03)">
+          <div style="display:flex; align-items:center; gap:11px; min-width:0; flex-wrap:wrap">
+            <span style="font-weight:900; font-size:17px; color:#fff">{{ d_name }}</span>
+            <span style="direction:ltr; background:rgba(216,31,42,.2); border:1px solid rgba(216,31,42,.5); color:#ffb3b9; font-weight:800; font-size:12px; padding:4px 10px; border-radius:8px">{{ d_code }}</span>
+            <span style="{{ d_badgeStyle }}">{{ d_statusLabel }}</span>
+          </div>
+          <button onClick="{{ closeDetail }}" style="flex:none; width:34px; height:34px; border-radius:11px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.16); color:#cdd7f0; font-size:17px; cursor:pointer; line-height:1" style-hover="background:rgba(255,255,255,.16); color:#fff">×</button>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr)); gap:18px; padding:20px">
+
+          <div style="display:flex; flex-direction:column; gap:16px">
+            <div style="background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:18px; padding:18px">
+              <div style="font-weight:900; font-size:15px; color:#fff; margin-bottom:14px">اطلاعات ثبت‌نام</div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr)); gap:12px">
+                <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">پایه سال آینده</div><div style="font-weight:800; font-size:13.5px; color:#fff">{{ d_grade }}</div></div>
+                <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">رشته</div><div style="font-weight:800; font-size:13.5px; color:#fff">{{ d_field }}</div></div>
+                <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">مدرسه</div><div style="font-weight:800; font-size:13.5px; color:#fff; overflow-wrap:anywhere">{{ d_school }}</div></div>
+                <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">آخرین معدل</div><div style="font-weight:800; font-size:13.5px; color:#7ef0b0">{{ d_gpa }}</div></div>
+                <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">استان / شهر</div><div style="font-weight:800; font-size:13.5px; color:#fff">{{ d_place }}</div></div>
+                <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">محله</div><div style="font-weight:800; font-size:13.5px; color:#fff">{{ d_area }}</div></div>
+                <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">شغل پدر</div><div style="font-weight:800; font-size:13.5px; color:#fff">{{ d_fatherJob }}</div></div>
+                <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">شماره دانش‌آموز</div><div style="direction:ltr; text-align:right; font-weight:800; font-size:13.5px; color:#fff">{{ d_phone }}</div></div>
+                <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">نام همراه</div><div style="font-weight:800; font-size:13.5px; color:#fff">{{ d_guardian }}</div></div>
+                <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">شماره همراه</div><div style="direction:ltr; text-align:right; font-weight:800; font-size:13.5px; color:#fff">{{ d_guardianPhone }}</div></div>
+                <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">بلاگر معرف</div><div style="font-weight:800; font-size:13.5px; color:#fff">{{ d_blogger }}</div></div>
+                <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">زمان ثبت‌نام</div><div style="font-weight:800; font-size:13.5px; color:#fff">{{ d_date }}</div></div>
+              </div>
+            </div>
+
+            <sc-if value="{{ isStaff }}" hint-placeholder-val="{{ true }}">
+            <div style="background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:18px; padding:18px">
+              <div style="font-weight:900; font-size:15px; color:#fff; margin-bottom:6px">ثبت نتیجه تماس</div>
+              <div style="font-size:12px; color:#8b98ba; margin-bottom:14px">هر تماس با نام مدیر، تاریخ و نتیجه ثبت می‌شود.</div>
+              <div style="display:flex; flex-direction:column; gap:10px">
+                <select value="{{ callResult }}" onChange="{{ onCallResult }}" style="background:rgba(6,14,36,.8); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:12px 13px; color:#fff; font-size:13.5px; outline:none">
+                  <option value="پاسخ داد — تأیید کرد">پاسخ داد — تأیید کرد</option>
+                  <option value="پاسخ داد — بعداً تماس بگیریم">پاسخ داد — بعداً تماس بگیریم</option>
+                  <option value="پاسخ نداد">پاسخ نداد</option>
+                  <option value="خارج از دسترس">خارج از دسترس</option>
+                  <option value="شماره اشتباه">شماره اشتباه</option>
+                  <option value="منصرف شد">منصرف شد</option>
+                </select>
+                <textarea value="{{ callNote }}" onChange="{{ onCallNote }}" placeholder="یادداشت تماس (اختیاری)" style="background:rgba(6,14,36,.8); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:12px 13px; color:#fff; font-size:13.5px; min-height:70px; resize:vertical; outline:none" style-focus="border-color:#ff4b57"></textarea>
+                <button onClick="{{ addCall }}" style="background:rgba(255,255,255,.09); color:#fff; font-weight:800; font-size:14px; border:1px solid rgba(255,255,255,.2); border-radius:12px; padding:12px; cursor:pointer" style-hover="background:rgba(255,255,255,.18)">ثبت تماس</button>
+              </div>
+            </div>
+
+            <div style="background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:18px; padding:18px">
+              <div style="font-weight:900; font-size:15px; color:#fff; margin-bottom:6px">ارسال پیامک</div>
+              <div style="font-size:12px; color:#8b98ba; margin-bottom:14px">قالب را انتخاب کن؛ متن با اطلاعات همین ثبت‌نام پر می‌شود.</div>
+              <div style="display:flex; flex-direction:column; gap:10px">
+                <select value="{{ smsTpl }}" onChange="{{ onSmsTpl }}" style="background:rgba(6,14,36,.8); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:12px 13px; color:#fff; font-size:13.5px; outline:none">
+                  <sc-for list="{{ templateOptions }}" as="o" hint-placeholder-count="3">
+                    <option value="{{ o.value }}">{{ o.label }}</option>
+                  </sc-for>
+                </select>
+                <div style="background:rgba(6,14,36,.6); border:1px dashed rgba(255,255,255,.2); border-radius:12px; padding:13px; font-size:12.5px; line-height:1.95; color:#dbe4fb; white-space:pre-wrap">{{ smsPreview }}</div>
+                <div style="display:flex; gap:9px; flex-wrap:wrap">
+                  <button onClick="{{ sendToStudent }}" style="flex:1 1 150px; background:#1f6fd8; color:#fff; font-weight:800; font-size:13.5px; border:none; border-radius:12px; padding:12px; cursor:pointer" style-hover="background:#2b83f0">ارسال به دانش‌آموز</button>
+                  <button onClick="{{ sendToGuardian }}" style="flex:1 1 150px; background:rgba(31,111,216,.16); color:#8fbcff; font-weight:800; font-size:13.5px; border:1px solid rgba(31,111,216,.45); border-radius:12px; padding:12px; cursor:pointer" style-hover="background:rgba(31,111,216,.28)">ارسال به همراه</button>
+                </div>
+              </div>
+            </div>
+            </sc-if>
+
+            <div style="background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:18px; padding:18px">
+              <div style="font-weight:900; font-size:15px; color:#fff; margin-bottom:12px">تاریخچه فعالیت ({{ d_logCount }})</div>
+              <div style="display:flex; flex-direction:column; gap:8px">
+                <sc-for list="{{ d_logs }}" as="l" hint-placeholder-count="2">
+                  <div style="background:rgba(6,14,36,.6); border:1px solid rgba(255,255,255,.09); border-radius:12px; padding:11px 13px">
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:5px; flex-wrap:wrap">
+                      <div style="display:flex; align-items:center; gap:8px">
+                        <span style="{{ l.typeStyle }}">{{ l.typeLabel }}</span>
+                        <span style="font-weight:800; font-size:12.5px; color:#fff">{{ l.who }}</span>
+                      </div>
+                      <span style="font-size:11px; color:#8b98ba">{{ l.date }}</span>
+                    </div>
+                    <div style="font-size:12px; color:#aebbdb; line-height:1.85; white-space:pre-wrap">{{ l.text }}</div>
+                  </div>
+                </sc-for>
+              </div>
+              <sc-if value="{{ d_noLogs }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:12.5px; color:#66739a">هنوز فعالیتی ثبت نشده است.</div>
+              </sc-if>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:16px; container-type:inline-size">
+            <div style="background:#0b1533; border:1px solid rgba(255,255,255,.14); border-radius:22px; overflow:hidden">
+              <div style="background:linear-gradient(120deg, #c4121f, #d81f2a 55%, #8f0e18); padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:10px">
+                <div style="display:flex; align-items:center; gap:9px; min-width:0">
+                  <img src="assets/logo-genavehei.png" alt="" style="width:34px; height:34px; flex:none; object-fit:contain; background:#fff; border-radius:10px; padding:2px" />
+                  <div style="line-height:1.35; min-width:0">
+                    <div style="font-weight:900; font-size:12.5px; color:#fff; white-space:nowrap">گروه آموزشی استاد محسن گناوه‌ای</div>
+                    <div style="font-size:9.5px; color:rgba(255,255,255,.82); letter-spacing:.16em">ADMISSION TICKET</div>
+                  </div>
+                </div>
+                <span style="flex:none; background:rgba(0,0,0,.28); color:#fff; font-weight:800; font-size:10.5px; padding:5px 9px; border-radius:7px; white-space:nowrap">ورود رایگان</span>
+              </div>
+              <div style="display:flex; gap:12px; padding:16px 18px 12px; align-items:flex-start">
+                <div style="flex:none; width:66px; height:80px; border-radius:12px; overflow:hidden; background:#d81f2a; border:1px solid rgba(255,255,255,.2)">
+                  <img src="assets/ostad-portrait.png" alt="" style="width:100%; height:100%; object-fit:cover; object-position:top center" />
+                </div>
+                <div style="min-width:0">
+                  <div style="font-size:10.5px; color:#93a2c6; margin-bottom:5px">سمینار موفقیت در کنکور و امتحانات نهایی</div>
+                  <div style="font-weight:900; font-size:14.5px; color:#fff; line-height:1.5; text-wrap:pretty">بزرگ‌ترین گردهمایی داوطلبین کنکور ریاضی و تجربی در کشور</div>
+                </div>
+              </div>
+              <div style="margin:0 18px 14px; display:flex; align-items:stretch; gap:12px">
+                <span style="flex:none; width:4px; border-radius:4px; background:linear-gradient(#d81f2a, rgba(216,31,42,.25))"></span>
+                <div style="min-width:0; flex:1">
+                  <div style="font-size:9px; color:#8b98ba; letter-spacing:.2em; font-weight:800; margin-bottom:5px">دارنده بلیط</div>
+                  <div style="font-weight:900; font-size:17px; color:#fff; line-height:1.35; overflow-wrap:anywhere; margin-bottom:7px">{{ d_name }}</div>
+                  <div style="display:flex; flex-wrap:wrap; gap:6px">
+                    <span style="font-size:11px; font-weight:700; color:#cdd7f0; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.13); border-radius:999px; padding:3px 10px">پایه {{ d_grade }}</span>
+                    <span style="font-size:11px; font-weight:700; color:#ffb3b9; background:rgba(216,31,42,.16); border:1px solid rgba(216,31,42,.4); border-radius:999px; padding:3px 10px">رشته {{ d_field }}</span>
+                  </div>
+                </div>
+                <div style="flex:none; align-self:stretch; display:flex; flex-direction:column; justify-content:center; gap:5px; text-align:center; padding:10px 12px; border-radius:12px; background:rgba(6,14,36,.55); border:1px solid rgba(255,255,255,.13)">
+                  <span style="font-size:9px; color:#8b98ba; letter-spacing:.16em; font-weight:800">تاریخ و ساعت</span>
+                  <span style="font-weight:900; font-size:13.5px; color:#fff; white-space:nowrap">۲۵ شهریور ۱۴۰۷</span>
+                  <span style="font-weight:700; font-size:11px; color:#ff8d96; white-space:nowrap">۰۹:۰۰ الی ۱۷:۰۰</span>
+                </div>
+              </div>
+              <div style="position:relative; height:2px; margin:0 16px; border-top:2px dashed rgba(255,255,255,.28)">
+                <span style="position:absolute; top:-12px; right:-28px; width:24px; height:24px; border-radius:50%; background:#08122b; border:1px solid rgba(255,255,255,.14)"></span>
+                <span style="position:absolute; top:-12px; left:-28px; width:24px; height:24px; border-radius:50%; background:#08122b; border:1px solid rgba(255,255,255,.14)"></span>
+              </div>
+              <div style="padding:16px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; background:repeating-linear-gradient(135deg, rgba(255,255,255,.035) 0 10px, transparent 10px 20px)">
+                <div style="min-width:0">
+                  <div style="font-size:10px; color:#8b98ba; margin-bottom:3px">کد ورود اختصاصی</div>
+                  <div style="direction:ltr; font-weight:900; font-size:26px; color:#fff; letter-spacing:.1em">{{ d_code }}</div>
+                </div>
+                <div style="flex:none; display:flex; gap:3px; align-items:flex-end; height:46px">
+                  <span style="width:3px; height:100%; background:#fff"></span><span style="width:2px; height:64%; background:#7c89ab"></span><span style="width:5px; height:100%; background:#fff"></span><span style="width:2px; height:50%; background:#7c89ab"></span><span style="width:3px; height:88%; background:#fff"></span><span style="width:6px; height:100%; background:#fff"></span><span style="width:2px; height:58%; background:#7c89ab"></span><span style="width:3px; height:100%; background:#fff"></span>
+                </div>
+              </div>
+              <div style="background:rgba(255,255,255,.05); border-top:1px solid rgba(255,255,255,.1); padding:10px 18px; display:flex; align-items:center; justify-content:space-between; gap:10px">
+                <span style="font-size:10.5px; color:#8b98ba">وضعیت: {{ d_statusLabel }}</span>
+                <span style="direction:ltr; font-size:10.5px; color:#8b98ba">GENAVEHEI · {{ d_code }}</span>
+              </div>
+            </div>
+
+            <sc-if value="{{ isStaff }}" hint-placeholder-val="{{ true }}">
+            <div style="background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:18px; padding:18px">
+              <div style="font-weight:900; font-size:15px; color:#fff; margin-bottom:12px">تصمیم مدیر</div>
+              <div style="display:flex; flex-direction:column; gap:9px">
+                <button onClick="{{ approve }}" style="background:#1f9d5b; color:#fff; font-weight:800; font-size:14.5px; border:none; border-radius:12px; padding:13px; cursor:pointer" style-hover="background:#25b76a">تأیید نهایی ثبت‌نام</button>
+                <button onClick="{{ markCalling }}" style="background:rgba(255,207,107,.14); color:#ffcf6b; font-weight:800; font-size:14px; border:1px solid rgba(255,207,107,.4); border-radius:12px; padding:12px; cursor:pointer" style-hover="background:rgba(255,207,107,.24)">در حال پیگیری</button>
+                <button onClick="{{ cancelReg }}" style="background:rgba(216,31,42,.14); color:#ff8d96; font-weight:800; font-size:14px; border:1px solid rgba(216,31,42,.45); border-radius:12px; padding:12px; cursor:pointer" style-hover="background:rgba(216,31,42,.24)">منصرف / رد شد</button>
+              </div>
+            </div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const FA = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+const fa = n => String(n).replace(/\d/g, d => FA[+d]);
+const DAY = 86400000;
+const CITIES = ['تهران','اصفهان','شیراز','مشهد','تبریز','کرج','اهواز','قم'];
+const SCHOOLS = ['فرزانگان','شهید بهشتی','علامه حلی','نمونه مفید','سلام','هدف'];
+const JOBS = ['کارمند','آزاد','پزشک','معلم','مهندس','بازنشسته'];
+const AREAS = ['سعادت‌آباد','پونک','جنت‌آباد','ولنجک','گیشا','یوسف‌آباد'];
+const STATUS = {
+  pending: { label: 'در انتظار تماس', color: '#ffcf6b', bg: 'rgba(255,207,107,.14)', bd: 'rgba(255,207,107,.4)' },
+  calling: { label: 'در حال پیگیری', color: '#8fbcff', bg: 'rgba(143,188,255,.14)', bd: 'rgba(143,188,255,.4)' },
+  approved: { label: 'تأیید نهایی', color: '#7ef0b0', bg: 'rgba(126,240,176,.14)', bd: 'rgba(126,240,176,.4)' },
+  canceled: { label: 'منصرف شده', color: '#ff8d96', bg: 'rgba(216,31,42,.16)', bd: 'rgba(216,31,42,.45)' }
+};
+const TYPES = {
+  call: { label: 'تماس', color: '#8fbcff', bg: 'rgba(143,188,255,.14)', bd: 'rgba(143,188,255,.4)' },
+  sms: { label: 'پیامک', color: '#c8a2ff', bg: 'rgba(200,162,255,.14)', bd: 'rgba(200,162,255,.4)' },
+  status: { label: 'وضعیت', color: '#7ef0b0', bg: 'rgba(126,240,176,.14)', bd: 'rgba(126,240,176,.4)' }
+};
+const DEFAULT_TPLS = [
+  { id: 't1', name: 'پیامک یادآوری', text: '{نام} عزیز، یادآوری می‌کنیم گردهمایی بزرگ داوطلبین کنکور در {تاریخ} برگزار می‌شود. کد ورود شما: {کد}' },
+  { id: 't2', name: 'پیامک بلیط', text: '{نام} عزیز، بلیط شما صادر شد. کد ورود: {کد} — این کد را تا پایان مراسم نزد خود نگه دارید.' },
+  { id: 't3', name: 'پیامک آدرس', text: '{نام} عزیز، محل برگزاری گردهمایی {تاریخ}: (آدرس سالن اینجا درج شود). همراه شما: {همراه}' }
+];
+
+class Component extends DCLogic {
+  state = {
+    authed: false, me: null, user: '', pass: '', loginError: '',
+    tab: 'regs', bloggers: [], regs: [], admins: [], templates: [], selected: null,
+    newName: '', newCode: '', newPhone: '', newSlug: '', newPass: '', formError: '', copied: '',
+    openBlogger: null, confirmDelete: false, menuOpen: false, mobilePreview: false,
+    pageRegs: 1, pageLogs: 1, pageBg: 1, pageBloggers: 1,
+    callResult: 'پاسخ داد — تأیید کرد', callNote: '',
+    smsTpl: 't1',
+    tplName: '', tplText: '', tplError: '',
+    adminName: '', adminUser: '', adminPass: '', adminRole: 'mid', adminError: '',
+    q: '', fBlogger: 'all', fGrade: 'all', fField: 'all', fWhen: 'all', fStatus: 'all',
+    logQ: '', logType: 'all', logWho: 'all', logWhen: 'all'
+  };
+
+  componentDidMount() {
+    let bloggers = this.read('genavehei.bloggers');
+    let regs = this.read('genavehei.registrations');
+    let admins = this.read('genavehei.admins');
+    let templates = this.read('genavehei.smsTemplates');
+    if (!bloggers || !bloggers.length) {
+      bloggers = [
+        { code: 'a10', name: 'علی صبوری', slug: 'alisaburi', user: 'alisaburi', pass: 'a10', phone: '09121110000', active: true, avatar: '' },
+        { code: 'b22', name: 'مریم کاظمی', slug: 'maryamk', user: 'maryamk', pass: 'b22', phone: '09122220000', active: true, avatar: '' },
+        { code: 'k7', name: 'کیان رستمی', slug: 'kianr', user: 'kianr', pass: 'k7', phone: '09123330000', active: true, avatar: '' }
+      ];
+      this.write('genavehei.bloggers', bloggers);
+    }
+    if (!admins || !admins.length) {
+      admins = [{ user: 'admin', pass: '1234', name: 'مدیر کل', role: 'super' }];
+      this.write('genavehei.admins', admins);
+    }
+    if (!templates || !templates.length) { templates = DEFAULT_TPLS.slice(); this.write('genavehei.smsTemplates', templates); }
+    if (!regs || !regs.length) { regs = this.seed(bloggers); this.write('genavehei.registrations', regs); }
+    regs = regs.map(r => Object.assign({ status: 'pending', logs: [] }, r));
+    this.setState({ bloggers, regs, admins, templates, smsTpl: templates[0] ? templates[0].id : '' });
+  }
+
+  read(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+  write(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  persist(regs) { this.write('genavehei.registrations', regs); this.setState({ regs }); }
+
+  seed(bloggers) {
+    const names = ['زهرا محمدی','امیر کریمی','نگار احمدی','سینا رضایی','فاطمه نوری','محمد حسینی','یاسمن قاسمی','آرش سلطانی','هستی مرادی','پارسا شریفی','ریحانه یوسفی','مهدی اکبری'];
+    const grades = ['دهم','یازدهم','دوازدهم','فارغ‌التحصیل'];
+    const seq = {}, out = [];
+    names.forEach((n, i) => {
+      const b = bloggers[i % bloggers.length];
+      seq[b.code] = (seq[b.code] || 0) + 1;
+      const daysAgo = i < 4 ? 0 : i < 7 ? 1 : (i % 6) + 1;
+      out.push({
+        code: b.code + '-' + seq[b.code], blogger: b.code, name: n,
+        grade: grades[i % grades.length], field: i % 2 ? 'تجربی' : 'ریاضی',
+        school: SCHOOLS[i % SCHOOLS.length], city: CITIES[i % CITIES.length], province: CITIES[i % CITIES.length],
+        area: AREAS[i % AREAS.length], fatherJob: JOBS[i % JOBS.length],
+        gpa: (17 + (i % 3) + 0.25 * (i % 4)).toFixed(2),
+        phone: '0912' + (2000000 + i * 5431),
+        guardian: 'والد ' + n.split(' ')[1], guardianPhone: '0912' + (1000000 + i * 7654),
+        status: i % 5 === 0 ? 'approved' : 'pending', logs: [],
+        at: Date.now() - daysAgo * DAY - i * 900000
+      });
+    });
+    return out;
+  }
+
+  dayStart(t) { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); }
+  faDate(t) {
+    try { return new Intl.DateTimeFormat('fa-IR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(t)); }
+    catch (e) { return ''; }
+  }
+  chip(map, key) {
+    const s = map[key] || Object.values(map)[0];
+    return { color: s.color, background: s.bg, border: '1px solid ' + s.bd, borderRadius: '999px', padding: '4px 10px', fontSize: '11px', fontWeight: 800, textAlign: 'center', whiteSpace: 'nowrap' };
+  }
+  tabStyle(on) {
+    return { border: 'none', borderRadius: '999px', padding: '8px 14px', fontSize: '12.5px', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap', background: on ? '#d81f2a' : 'transparent', color: on ? '#fff' : '#9dabcd' };
+  }
+  roleStyleOf(role) {
+    return role === 'super'
+      ? { color: '#7ef0b0', background: 'rgba(126,240,176,.14)', border: '1px solid rgba(126,240,176,.4)', borderRadius: '999px', padding: '4px 10px', fontSize: '11px', fontWeight: 800, whiteSpace: 'nowrap' }
+      : { color: '#8fbcff', background: 'rgba(143,188,255,.14)', border: '1px solid rgba(143,188,255,.4)', borderRadius: '999px', padding: '4px 10px', fontSize: '11px', fontWeight: 800, whiteSpace: 'nowrap' };
+  }
+
+  login = () => {
+    const u = this.state.user.trim().toLowerCase(), p = this.state.pass.trim();
+    const admin = this.state.admins.find(a => a.user.toLowerCase() === u && a.pass === p);
+    if (admin) return this.setState({ authed: true, me: admin, loginError: '', pass: '', tab: 'regs' });
+    const b = this.state.bloggers.find(x => ((x.user || x.slug || x.code) + '').toLowerCase() === u && (x.pass || x.code) === p);
+    if (!b) return this.setState({ loginError: 'نام کاربری یا رمز عبور درست نیست.' });
+    if (b.active === false) return this.setState({ loginError: 'حساب این بلاگر غیرفعال شده است.' });
+    this.setState({ authed: true, me: { name: b.name, role: 'blogger', code: b.code, avatar: b.avatar || '' }, loginError: '', pass: '', tab: 'regs' });
+  };
+
+  navStyle(on) {
+    return {
+      textAlign: 'right', background: on ? 'rgba(216,31,42,.18)' : 'transparent',
+      color: on ? '#fff' : '#cdd7f0', border: on ? '1px solid rgba(216,31,42,.5)' : '1px solid transparent',
+      borderRadius: '12px', padding: '12px 14px', fontSize: '13.5px', fontWeight: 800, cursor: 'pointer'
+    };
+  }
+
+  pickAvatar = (code) => (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    const file = e && e.target && e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const bloggers = this.state.bloggers.map(b => b.code === code ? Object.assign({}, b, { avatar: reader.result }) : b);
+      this.write('genavehei.bloggers', bloggers);
+      const me = this.state.me && this.state.me.role === 'blogger' && this.state.me.code === code
+        ? Object.assign({}, this.state.me, { avatar: reader.result }) : this.state.me;
+      this.setState({ bloggers, me });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  log(code, type, text) {
+    const who = (this.state.me && this.state.me.name) || 'مدیر';
+    const regs = this.state.regs.map(r => r.code === code
+      ? Object.assign({}, r, { logs: (r.logs || []).concat([{ at: Date.now(), by: who, type, text }]) })
+      : r);
+    return regs;
+  }
+
+  update(code, patch, logText) {
+    let regs = logText ? this.log(code, 'status', logText) : this.state.regs;
+    regs = regs.map(r => r.code === code ? Object.assign({}, r, patch) : r);
+    this.persist(regs);
+  }
+
+  setStatus = (status) => () => {
+    const d = this.current();
+    if (!d) return;
+    this.update(d.code, { status }, 'تغییر وضعیت به «' + STATUS[status].label + '»');
+  };
+
+  logCall = () => {
+    const d = this.current();
+    if (!d) return;
+    const note = this.state.callNote.trim();
+    const status = this.state.callResult === 'پاسخ داد — تأیید کرد' ? 'approved'
+      : this.state.callResult === 'منصرف شد' ? 'canceled' : 'calling';
+    let regs = this.log(d.code, 'call', 'نتیجه تماس: ' + this.state.callResult + (note ? '\n' + note : ''));
+    regs = regs.map(r => r.code === d.code ? Object.assign({}, r, { status }) : r);
+    this.persist(regs);
+    this.setState({ callNote: '' });
+  };
+
+  fill(text, r) {
+    return String(text || '')
+      .split('{نام}').join(r.name || '')
+      .split('{کد}').join(r.code || '')
+      .split('{تاریخ}').join('۲۵ شهریور ۱۴۰۷')
+      .split('{همراه}').join(r.guardian || '');
+  }
+
+  sendSms = (to) => () => {
+    const d = this.current();
+    if (!d) return;
+    const tpl = this.state.templates.find(t => t.id === this.state.smsTpl);
+    if (!tpl) return;
+    const target = to === 'guardian' ? (d.guardianPhone || '—') : (d.phone || '—');
+    const label = to === 'guardian' ? 'همراه' : 'دانش‌آموز';
+    this.persist(this.log(d.code, 'sms', 'ارسال «' + tpl.name + '» به ' + label + ' (' + target + ')\n' + this.fill(tpl.text, d)));
+  };
+
+  addTemplate = () => {
+    const name = this.state.tplName.trim(), text = this.state.tplText.trim();
+    if (!name) return this.setState({ tplError: 'نام قالب را وارد کنید.' });
+    if (text.length < 10) return this.setState({ tplError: 'متن پیامک خیلی کوتاه است.' });
+    const templates = this.state.templates.concat([{ id: 't' + Date.now(), name, text }]);
+    this.write('genavehei.smsTemplates', templates);
+    this.setState({ templates, tplName: '', tplText: '', tplError: '' });
+  };
+  removeTemplate(id) {
+    return () => {
+      const templates = this.state.templates.filter(t => t.id !== id);
+      this.write('genavehei.smsTemplates', templates);
+      this.setState({ templates, smsTpl: templates[0] ? templates[0].id : '' });
+    };
+  }
+
+  addAdmin = () => {
+    const name = this.state.adminName.trim(), user = this.state.adminUser.trim(), pass = this.state.adminPass.trim();
+    if (!name) return this.setState({ adminError: 'نام مدیر را وارد کنید.' });
+    if (!/^[a-zA-Z0-9._-]{3,20}$/.test(user)) return this.setState({ adminError: 'نام کاربری ۳ تا ۲۰ حرف انگلیسی باشد.' });
+    if (pass.length < 4) return this.setState({ adminError: 'رمز عبور حداقل ۴ کاراکتر باشد.' });
+    if (this.state.admins.some(a => a.user === user)) return this.setState({ adminError: 'این نام کاربری قبلاً ثبت شده است.' });
+    const admins = this.state.admins.concat([{ name, user, pass, role: this.state.adminRole }]);
+    this.write('genavehei.admins', admins);
+    this.setState({ admins, adminName: '', adminUser: '', adminPass: '', adminError: '' });
+  };
+  removeAdmin(user) {
+    return () => {
+      const admins = this.state.admins.filter(a => a.user !== user);
+      this.write('genavehei.admins', admins);
+      this.setState({ admins });
+    };
+  }
+
+  add = () => {
+    const name = this.state.newName.trim();
+    const code = this.state.newCode.trim().toLowerCase();
+    const slug = (this.state.newSlug.trim() || code).toLowerCase();
+    if (!name) return this.setState({ formError: 'نام بلاگر را وارد کنید.' });
+    if (!/^[a-z0-9]{2,10}$/.test(code)) return this.setState({ formError: 'کد باید ۲ تا ۱۰ حرف/رقم انگلیسی باشد (مثال: a10).' });
+    if (!/^[a-z0-9_-]{2,24}$/.test(slug)) return this.setState({ formError: 'آدرس کوتاه فقط حروف/ارقام انگلیسی، خط تیره و زیرخط (۲ تا ۲۴ کاراکتر).' });
+    if (this.state.bloggers.some(b => b.code === code)) return this.setState({ formError: 'این کد قبلاً ثبت شده است.' });
+    if (this.state.bloggers.some(b => (b.slug || b.code) === slug)) return this.setState({ formError: 'این آدرس کوتاه قبلاً استفاده شده است.' });
+    const bloggers = this.state.bloggers.concat([{ code, name, slug, user: slug, pass: this.state.newPass.trim() || code, phone: this.state.newPhone.trim(), active: true, avatar: '' }]);
+    this.write('genavehei.bloggers', bloggers);
+    this.setState({ bloggers, newName: '', newCode: '', newPhone: '', newSlug: '', newPass: '', formError: '' });
+  };
+
+  toggleBlogger = () => {
+    const code = this.state.openBlogger;
+    const bloggers = this.state.bloggers.map(b => b.code === code ? Object.assign({}, b, { active: b.active === false }) : b);
+    this.write('genavehei.bloggers', bloggers);
+    this.setState({ bloggers });
+  };
+
+  deleteBlogger = () => {
+    const code = this.state.openBlogger;
+    const bloggers = this.state.bloggers.filter(b => b.code !== code);
+    const regs = this.state.regs.filter(r => r.blogger !== code);
+    this.write('genavehei.bloggers', bloggers);
+    this.write('genavehei.registrations', regs);
+    this.setState({ bloggers, regs, openBlogger: null, confirmDelete: false, selected: null });
+  };
+
+  shortBase() {
+    try { return location.host.replace(/^www\./, '') + '/'; } catch (e) { return 'genavehei.ir/'; }
+  }
+  shortFor(b) { return this.shortBase() + (b.slug || b.code); }
+
+  current() { return this.state.regs.find(r => r.code === this.state.selected) || null; }
+
+  pager(list, key, size) {
+    const pages = Math.max(1, Math.ceil(list.length / size));
+    const page = Math.min(Math.max(1, this.state[key] || 1), pages);
+    const go = p => () => this.setState({ [key]: Math.min(Math.max(1, p), pages) });
+    const btn = on => ({
+      background: on ? 'rgba(255,255,255,.08)' : 'rgba(255,255,255,.03)',
+      border: '1px solid rgba(255,255,255,' + (on ? '.18' : '.08') + ')',
+      color: on ? '#cdd7f0' : '#4d587a', borderRadius: '10px', padding: '8px 14px',
+      fontSize: '12.5px', fontWeight: 700, cursor: on ? 'pointer' : 'default'
+    });
+    return {
+      items: list.slice((page - 1) * size, page * size),
+      multi: pages > 1,
+      label: 'صفحه ' + fa(page) + ' از ' + fa(pages),
+      range: list.length ? 'نمایش ' + fa((page - 1) * size + 1) + ' تا ' + fa(Math.min(page * size, list.length)) + ' از ' + fa(list.length) : '',
+      prev: go(page - 1), next: go(page + 1),
+      prevStyle: btn(page > 1), nextStyle: btn(page < pages)
+    };
+  }
+
+  scoped() {
+    const me = this.state.me;
+    return me && me.role === 'blogger' ? this.state.regs.filter(r => r.blogger === me.code) : this.state.regs;
+  }
+
+  filtered() {
+    const s = this.state;
+    const t0 = this.dayStart(Date.now());
+    const q = s.q.trim().toLowerCase();
+    return this.scoped().filter(r => {
+      if (s.fBlogger !== 'all' && r.blogger !== s.fBlogger) return false;
+      if (s.fGrade !== 'all' && r.grade !== s.fGrade) return false;
+      if (s.fField !== 'all' && r.field !== s.fField) return false;
+      if (s.fStatus !== 'all' && (r.status || 'pending') !== s.fStatus) return false;
+      if (s.fWhen === 'today' && r.at < t0) return false;
+      if (s.fWhen === 'yesterday' && (r.at < t0 - DAY || r.at >= t0)) return false;
+      if (s.fWhen === '7d' && r.at < t0 - 6 * DAY) return false;
+      if (q && [r.name, r.code, r.school, r.city, r.blogger, r.guardian].join(' ').toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    }).sort((a, b) => b.at - a.at);
+  }
+
+  allLogsList() {
+    const out = [];
+    this.state.regs.forEach(r => (Array.isArray(r.logs) ? r.logs : []).forEach(l => {
+      if (!l) return;
+      out.push({ at: l.at || 0, who: l.by || 'مدیر', type: l.type || 'status', text: String(l.text || ''), regCode: r.code, regName: r.name });
+    }));
+    return out.sort((a, b) => b.at - a.at);
+  }
+
+  filterLogs(list) {
+    const s = this.state;
+    const t0 = this.dayStart(Date.now());
+    const q = (s.logQ || '').trim().toLowerCase();
+    return list.filter(l => {
+      if (s.logType && s.logType !== 'all' && l.type !== s.logType) return false;
+      if (s.logWho && s.logWho !== 'all' && l.who !== s.logWho) return false;
+      if (s.logWhen === 'today' && l.at < t0) return false;
+      if (s.logWhen === 'yesterday' && (l.at < t0 - DAY || l.at >= t0)) return false;
+      if (s.logWhen === '7d' && l.at < t0 - 6 * DAY) return false;
+      if (q && [l.text, l.who, l.regCode, l.regName].join(' ').toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+  }
+
+  exportLogs = () => {
+    const head = ['زمان','نوع','مدیر','کد بلیط','نام','شرح'];
+    const types = { call: 'تماس', sms: 'پیامک', status: 'تغییر وضعیت' };
+    const body = this.filterLogs(this.allLogsList()).map(l => [new Date(l.at).toISOString(), types[l.type] || l.type, l.who, l.regCode, l.regName, l.text.replace(/\n/g, ' | ')]);
+    const csv = '\uFEFF' + [head].concat(body).map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    a.download = 'activity-log.csv';
+    a.click();
+  };
+
+  exportCsv = () => {
+    const head = ['کد بلیط','نام','بلاگر','پایه','رشته','مدرسه','شهر','معدل','همراه','شماره همراه','وضعیت','تماس‌ها','پیامک‌ها','تاریخ'];
+    const body = this.filtered().map(r => {
+      const logs = r.logs || [];
+      return [r.code, r.name, r.blogger, r.grade, r.field, r.school, r.city, r.gpa, r.guardian, r.guardianPhone,
+        (STATUS[r.status || 'pending'] || {}).label, logs.filter(l => l.type === 'call').length, logs.filter(l => l.type === 'sms').length,
+        new Date(r.at).toISOString()];
+    });
+    const csv = '\uFEFF' + [head].concat(body).map(l => l.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    a.download = 'registrations.csv';
+    a.click();
+  };
+
+  copyLink(code) {
+    return (e) => {
+      if (e && e.stopPropagation) e.stopPropagation();
+      try { navigator.clipboard.writeText(this.linkFor(code)); } catch (e) {}
+      this.setState({ copied: code });
+      setTimeout(() => this.setState({ copied: '' }), 1600);
+    };
+  }
+  linkFor(code) {
+    const base = typeof location !== 'undefined' ? location.origin + location.pathname.replace(/[^/]*$/, 'Landing.dc.html') : '';
+    return base + '?ref=' + code;
+  }
+  nameOf(code) { return (this.state.bloggers.find(b => b.code === code) || {}).name || code; }
+
+  renderVals() {
+    const s = this.state;
+    const t0 = this.dayStart(Date.now());
+    const inRange = (list, from, to) => list.filter(r => r.at >= from && r.at < to).length;
+    const rows = this.filtered();
+    const d = this.current();
+    const isSuper = !!s.me && s.me.role === 'super';
+    const isBlogger = !!s.me && s.me.role === 'blogger';
+    const isStaff = !!s.me && !isBlogger;
+    const roleLabel = isBlogger ? 'بلاگر' : (isSuper ? 'مدیر کل' : 'مدیر میانی');
+    const myAvatar = isBlogger ? (s.me.avatar || (s.bloggers.find(b => b.code === s.me.code) || {}).avatar || '') : '';
+    const avatarBase = { width: '30px', height: '30px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '13px', color: '#fff', flex: 'none', background: '#d81f2a', backgroundSize: 'cover', backgroundPosition: 'center' };
+    const avatarStyle = myAvatar ? Object.assign({}, avatarBase, { backgroundImage: 'url(' + myAvatar + ')', color: 'transparent' }) : avatarBase;
+    const avatarStyleLg = Object.assign({}, avatarStyle, { width: '42px', height: '42px', fontSize: '16px' });
+    const tpl = s.templates.find(t => t.id === s.smsTpl);
+    const allLogs = [];
+    const smsCount = {};
+    s.regs.forEach(r => (Array.isArray(r.logs) ? r.logs : []).forEach(l => {
+      if (!l) return;
+      const text = typeof l.text === 'string' ? l.text : '';
+      if (l.type === 'sms') {
+        const m = text.match(/«([^»]*)»/);
+        if (m) smsCount[m[1]] = (smsCount[m[1]] || 0) + 1;
+      }
+      allLogs.push({ at: l.at || 0, who: l.by || 'مدیر', type: l.type || 'status', text, regCode: r.code });
+    }));
+    allLogs.sort((a, b) => b.at - a.at);
+    const shownLogs = this.filterLogs(allLogs);
+    const bg = s.bloggers.find(b => b.code === s.openBlogger) || null;
+    const bgRegs = bg ? s.regs.filter(r => r.blogger === bg.code) : [];
+    const scopedRegs = this.scoped();
+    const regsPage = this.pager(rows, 'pageRegs', 10);
+    const logsPage = this.pager(shownLogs, 'pageLogs', 12);
+    const bloggersPage = this.pager(s.bloggers, 'pageBloggers', 6);
+    const bgPage = this.pager(bgRegs.slice().sort((a, b2) => b2.at - a.at), 'pageBg', 8);
+
+    return {
+      isLogin: !s.authed, isPanel: s.authed, isSuper, isBlogger, isStaff,
+      meName: s.me ? s.me.name : '',
+      meShort: s.me ? (s.me.name || '').split(' ')[0] : '',
+      meRole: roleLabel,
+      avatarInitial: s.me && !myAvatar ? (s.me.name || '؟').trim().charAt(0) : '',
+      avatarStyle, avatarStyleLg,
+      menuOpen: s.menuOpen,
+      navDesktop: 'desktop',
+      navMobile: 'mobile',
+      frameStyle: { width: '100%' },
+      toggleMenu: () => this.setState({ menuOpen: !s.menuOpen }),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      navRegsStyle: this.navStyle(s.tab === 'regs'),
+      navBloggersStyle: this.navStyle(s.tab === 'bloggers'),
+      navSmsStyle: this.navStyle(s.tab === 'sms'),
+      navAdminsStyle: this.navStyle(s.tab === 'admins'),
+      navLogsStyle: this.navStyle(s.tab === 'logs'),
+      meLabel: s.me ? s.me.name + ' · ' + (s.me.role === 'super' ? 'مدیر کل' : 'مدیر میانی') : '',
+      user: s.user, pass: s.pass, loginError: s.loginError,
+      onUser: e => this.setState({ user: e.target.value, loginError: '' }),
+      onPass: e => this.setState({ pass: e.target.value, loginError: '' }),
+      onLoginKey: e => { if (e.key === 'Enter') this.login(); },
+      doLogin: this.login,
+      doLogout: () => this.setState({ authed: false, me: null, user: '', pass: '', selected: null }),
+
+      onRegsTab: s.tab === 'regs' || (isBlogger && s.tab !== 'regs'),
+      onBloggersTab: s.tab === 'bloggers' && isStaff,
+      onSmsTab: s.tab === 'sms' && isStaff,
+      onAdminsTab: s.tab === 'admins' && isSuper,
+      onLogsTab: s.tab === 'logs' && isStaff,
+      goRegs: () => this.setState({ tab: 'regs', menuOpen: false }),
+      goBloggers: () => this.setState({ tab: 'bloggers', menuOpen: false }),
+      goSms: () => this.setState({ tab: 'sms', menuOpen: false }),
+      goAdmins: () => this.setState({ tab: 'admins', menuOpen: false }),
+      goLogs: () => this.setState({ tab: 'logs', menuOpen: false }),
+      tabRegsStyle: this.tabStyle(s.tab === 'regs'),
+      tabBloggersStyle: this.tabStyle(s.tab === 'bloggers'),
+      tabSmsStyle: this.tabStyle(s.tab === 'sms'),
+      tabAdminsStyle: this.tabStyle(s.tab === 'admins'),
+      tabLogsStyle: this.tabStyle(s.tab === 'logs'),
+
+      kpiTotal: fa(scopedRegs.length),
+      kpiToday: fa(inRange(scopedRegs, t0, t0 + DAY)),
+      kpiYesterday: fa(inRange(scopedRegs, t0 - DAY, t0)),
+      kpiPending: fa(scopedRegs.filter(r => (r.status || 'pending') === 'pending').length),
+      kpiApproved: fa(scopedRegs.filter(r => r.status === 'approved').length),
+
+      newName: s.newName, newCode: s.newCode, newPhone: s.newPhone, formError: s.formError,
+      onNewName: e => this.setState({ newName: e.target.value, formError: '' }),
+      onNewCode: e => this.setState({ newCode: e.target.value, formError: '' }),
+      onNewPhone: e => this.setState({ newPhone: e.target.value, formError: '' }),
+      addBlogger: this.add,
+
+      bloggersPagerMulti: bloggersPage.multi, bloggersPagerLabel: bloggersPage.label, bloggersPagerRange: bloggersPage.range,
+      bloggersPrev: bloggersPage.prev, bloggersNext: bloggersPage.next,
+      bloggersPrevStyle: bloggersPage.prevStyle, bloggersNextStyle: bloggersPage.nextStyle,
+      bloggerRows: bloggersPage.items.map(b => {
+        const mine = s.regs.filter(r => r.blogger === b.code);
+        const off = b.active === false;
+        return {
+          name: b.name, code: b.code, link: this.linkFor(b.code), short: this.shortFor(b),
+          total: fa(mine.length), today: fa(inRange(mine, t0, t0 + DAY)), yesterday: fa(inRange(mine, t0 - DAY, t0)),
+          approved: fa(mine.filter(r => r.status === 'approved').length),
+          copy: this.copyLink(b.code), copyLabel: s.copied === b.code ? 'کپی شد ✓' : 'کپی لینک',
+          open: () => this.setState({ openBlogger: b.code, pageBg: 1 }),
+          cardStyle: {
+            border: '1px solid rgba(255,255,255,.1)', borderRadius: '16px', padding: '14px',
+            background: 'rgba(6,14,36,.45)', cursor: 'pointer', opacity: off ? .6 : 1
+          },
+          stateLabel: off ? 'غیرفعال' : 'فعال',
+          stateStyle: off
+            ? { color: '#ff8d96', background: 'rgba(216,31,42,.16)', border: '1px solid rgba(216,31,42,.45)', borderRadius: '999px', padding: '3px 9px', fontSize: '10.5px', fontWeight: 800 }
+            : { color: '#7ef0b0', background: 'rgba(126,240,176,.14)', border: '1px solid rgba(126,240,176,.4)', borderRadius: '999px', padding: '3px 9px', fontSize: '10.5px', fontWeight: 800 }
+        };
+      }),
+      shortBase: this.shortBase(),
+      newSlug: s.newSlug, newPass: s.newPass,
+      onNewSlug: e => this.setState({ newSlug: e.target.value, formError: '' }),
+      onNewPass: e => this.setState({ newPass: e.target.value, formError: '' }),
+      bg_user: bg ? (bg.user || bg.slug || bg.code) : '',
+      bg_pass: bg ? (bg.pass || bg.code) : '',
+      bg_avatarInitial: bg && !bg.avatar ? (bg.name || '؟').trim().charAt(0) : '',
+      bg_avatarStyle: bg && bg.avatar
+        ? { width: '58px', height: '58px', borderRadius: '50%', flex: 'none', backgroundImage: 'url(' + bg.avatar + ')', backgroundSize: 'cover', backgroundPosition: 'center', border: '2px solid rgba(255,255,255,.2)' }
+        : { width: '58px', height: '58px', borderRadius: '50%', flex: 'none', background: '#d81f2a', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: '21px' },
+      bg_pickAvatar: bg ? this.pickAvatar(bg.code) : (() => {}),
+
+      hasBlogger: !!bg,
+      closeBlogger: () => this.setState({ openBlogger: null, confirmDelete: false }),
+      bg_name: bg ? bg.name : '', bg_code: bg ? bg.code : '',
+      bg_phone: bg ? (bg.phone || '—') : '',
+      bg_short: bg ? this.shortFor(bg) : '', bg_link: bg ? this.linkFor(bg.code) : '',
+      bg_total: fa(bgRegs.length),
+      bg_today: fa(inRange(bgRegs, t0, t0 + DAY)),
+      bg_yesterday: fa(inRange(bgRegs, t0 - DAY, t0)),
+      bg_approved: fa(bgRegs.filter(r => r.status === 'approved').length),
+      bg_stateLabel: bg && bg.active === false ? 'غیرفعال' : 'فعال',
+      bg_stateStyle: bg && bg.active === false
+        ? { color: '#ff8d96', background: 'rgba(216,31,42,.16)', border: '1px solid rgba(216,31,42,.45)', borderRadius: '999px', padding: '4px 10px', fontSize: '11px', fontWeight: 800 }
+        : { color: '#7ef0b0', background: 'rgba(126,240,176,.14)', border: '1px solid rgba(126,240,176,.4)', borderRadius: '999px', padding: '4px 10px', fontSize: '11px', fontWeight: 800 },
+      bg_toggle: this.toggleBlogger,
+      bg_toggleLabel: bg && bg.active === false ? 'فعال کردن بلاگر' : 'غیرفعال کردن بلاگر',
+      bg_toggleStyle: bg && bg.active === false
+        ? { flex: '1 1 150px', background: '#1f9d5b', color: '#fff', fontWeight: 800, fontSize: '13.5px', border: 'none', borderRadius: '12px', padding: '12px', cursor: 'pointer' }
+        : { flex: '1 1 150px', background: 'rgba(255,207,107,.14)', color: '#ffcf6b', fontWeight: 800, fontSize: '13.5px', border: '1px solid rgba(255,207,107,.4)', borderRadius: '12px', padding: '12px', cursor: 'pointer' },
+      bg_askDelete: () => this.setState({ confirmDelete: true }),
+      bg_cancelDelete: () => this.setState({ confirmDelete: false }),
+      bg_confirmDelete: this.deleteBlogger,
+      confirmingDelete: !!bg && s.confirmDelete,
+      bg_noRegs: !!bg && bgRegs.length === 0,
+      bg_regs: bgPage.items.map(r => ({
+        name: r.name, code: r.code, date: this.faDate(r.at),
+        statusLabel: (STATUS[r.status || 'pending'] || STATUS.pending).label,
+        badgeStyle: this.chip(STATUS, r.status || 'pending'),
+        open: () => this.setState({ selected: r.code, openBlogger: null })
+      })),
+      bloggerOptions: [{ value: 'all', label: 'همه بلاگرها' }].concat(s.bloggers.map(b => ({ value: b.code, label: b.name + ' (' + b.code + ')' }))),
+
+      templateRows: s.templates.map(t => ({
+        name: t.name, text: t.text, remove: this.removeTemplate(t.id),
+        sentLabel: fa(smsCount[t.name] || 0) + ' ارسال'
+      })),
+      templateOptions: s.templates.map(t => ({ value: t.id, label: t.name })),
+      tplName: s.tplName, tplText: s.tplText, tplError: s.tplError,
+      onTplName: e => this.setState({ tplName: e.target.value, tplError: '' }),
+      onTplText: e => this.setState({ tplText: e.target.value, tplError: '' }),
+      addTemplate: this.addTemplate,
+
+      adminRows: s.admins.map(a => ({
+        name: a.name, user: a.user,
+        roleLabel: a.role === 'super' ? 'مدیر کل' : 'مدیر میانی',
+        roleStyle: this.roleStyleOf(a.role),
+        removable: !!s.me && a.user !== s.me.user,
+        remove: this.removeAdmin(a.user)
+      })),
+      adminName: s.adminName, adminUser: s.adminUser, adminPass: s.adminPass, adminError: s.adminError,
+      onAdminName: e => this.setState({ adminName: e.target.value, adminError: '' }),
+      onAdminUser: e => this.setState({ adminUser: e.target.value, adminError: '' }),
+      onAdminPass: e => this.setState({ adminPass: e.target.value, adminError: '' }),
+      pickSuper: () => this.setState({ adminRole: 'super' }),
+      pickMid: () => this.setState({ adminRole: 'mid' }),
+      superStyle: this.tabStyle(s.adminRole === 'super'),
+      midStyle: this.tabStyle(s.adminRole === 'mid'),
+      addAdmin: this.addAdmin,
+
+      globalLogs: logsPage.items.map(l => ({
+        who: l.who, text: l.text, regCode: l.regCode, regName: l.regName, date: this.faDate(l.at),
+        typeLabel: (TYPES[l.type] || TYPES.status).label, typeStyle: this.chip(TYPES, l.type),
+        open: () => this.setState({ selected: l.regCode })
+      })),
+      noLogs: shownLogs.length === 0,
+      logCount: fa(shownLogs.length),
+      logCalls: fa(allLogs.filter(l => l.type === 'call').length),
+      logSms: fa(allLogs.filter(l => l.type === 'sms').length),
+      logStatus: fa(allLogs.filter(l => l.type === 'status').length),
+      logToday: fa(allLogs.filter(l => l.at >= t0).length),
+      logQ: s.logQ, logType: s.logType, logWho: s.logWho, logWhen: s.logWhen,
+      onLogQ: e => this.setState({ logQ: e.target.value, pageLogs: 1 }),
+      onLogType: e => this.setState({ logType: e.target.value, pageLogs: 1 }),
+      onLogWho: e => this.setState({ logWho: e.target.value, pageLogs: 1 }),
+      onLogWhen: e => this.setState({ logWhen: e.target.value, pageLogs: 1 }),
+      logWhoOptions: [{ value: 'all', label: 'همه مدیران' }].concat(
+        Array.from(new Set(allLogs.map(l => l.who))).map(w => ({ value: w, label: w }))
+      ),
+      exportLogs: this.exportLogs,
+
+      q: s.q, fBlogger: s.fBlogger, fGrade: s.fGrade, fField: s.fField, fWhen: s.fWhen, fStatus: s.fStatus,
+      onQ: e => this.setState({ q: e.target.value, pageRegs: 1 }),
+      onFBlogger: e => this.setState({ fBlogger: e.target.value, pageRegs: 1 }),
+      onFGrade: e => this.setState({ fGrade: e.target.value, pageRegs: 1 }),
+      onFField: e => this.setState({ fField: e.target.value, pageRegs: 1 }),
+      onFWhen: e => this.setState({ fWhen: e.target.value, pageRegs: 1 }),
+      onFStatus: e => this.setState({ fStatus: e.target.value, pageRegs: 1 }),
+
+      resultCount: fa(rows.length),
+      noResults: rows.length === 0,
+      regsPagerMulti: regsPage.multi, regsPagerLabel: regsPage.label, regsPagerRange: regsPage.range,
+      regsPrev: regsPage.prev, regsNext: regsPage.next, regsPrevStyle: regsPage.prevStyle, regsNextStyle: regsPage.nextStyle,
+      logsPagerMulti: logsPage.multi, logsPagerLabel: logsPage.label, logsPagerRange: logsPage.range,
+      logsPrev: logsPage.prev, logsNext: logsPage.next, logsPrevStyle: logsPage.prevStyle, logsNextStyle: logsPage.nextStyle,
+      bgPagerMulti: bgPage.multi, bgPagerLabel: bgPage.label, bgPagerRange: bgPage.range,
+      bgPrev: bgPage.prev, bgNext: bgPage.next, bgPrevStyle: bgPage.prevStyle, bgNextStyle: bgPage.nextStyle,
+      rows: regsPage.items.map(r => ({
+        name: r.name, code: r.code, grade: r.grade, field: r.field, city: r.city,
+        blogger: this.nameOf(r.blogger), date: this.faDate(r.at),
+        callCount: fa((r.logs || []).filter(l => l.type === 'call').length),
+        statusLabel: (STATUS[r.status || 'pending'] || STATUS.pending).label,
+        badgeStyle: this.chip(STATUS, r.status || 'pending'),
+        open: () => this.setState({ selected: r.code })
+      })),
+      exportCsv: this.exportCsv,
+
+      hasDetail: !!d,
+      closeDetail: () => this.setState({ selected: null }),
+      d_name: d ? d.name : '', d_code: d ? d.code : '', d_grade: d ? d.grade : '', d_field: d ? d.field : '',
+      d_school: d ? d.school : '', d_gpa: d ? fa(d.gpa) : '',
+      d_place: d ? ((d.province || d.city || '—') + ' / ' + (d.city || '—')) : '',
+      d_area: d ? (d.area || '—') : '', d_fatherJob: d ? (d.fatherJob || '—') : '',
+      d_phone: d ? (d.phone || '—') : '', d_guardian: d ? (d.guardian || '—') : '',
+      d_guardianPhone: d ? (d.guardianPhone || '—') : '',
+      d_blogger: d ? this.nameOf(d.blogger) : '', d_date: d ? this.faDate(d.at) : '',
+      d_statusLabel: d ? (STATUS[d.status || 'pending'] || STATUS.pending).label : '',
+      d_badgeStyle: this.chip(STATUS, (d && d.status) || 'pending'),
+      d_logs: d ? (d.logs || []).slice().reverse().map(l => ({
+        who: l.by, text: l.text, date: this.faDate(l.at),
+        typeLabel: (TYPES[l.type] || TYPES.status).label, typeStyle: this.chip(TYPES, l.type)
+      })) : [],
+      d_logCount: d ? fa((d.logs || []).length) : '۰',
+      d_noLogs: !!d && !(d.logs || []).length,
+
+      callResult: s.callResult, callNote: s.callNote,
+      onCallResult: e => this.setState({ callResult: e.target.value }),
+      onCallNote: e => this.setState({ callNote: e.target.value }),
+      addCall: this.logCall,
+
+      smsTpl: s.smsTpl,
+      onSmsTpl: e => this.setState({ smsTpl: e.target.value }),
+      smsPreview: d && tpl ? this.fill(tpl.text, d) : 'قالبی انتخاب نشده است.',
+      sendToStudent: this.sendSms('student'),
+      sendToGuardian: this.sendSms('guardian'),
+
+      approve: this.setStatus('approved'),
+      markCalling: this.setStatus('calling'),
+      cancelReg: this.setStatus('canceled')
+    };
+  }
+}
+
+</script>
+</body>
+</html>
