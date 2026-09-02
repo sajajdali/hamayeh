@@ -4,7 +4,9 @@ use App\Http\Controllers\BloggerController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ReferenceDesignController;
 use App\Http\Controllers\RegistrationCallController;
+use App\Http\Controllers\RegistrationSmsController;
 use App\Http\Controllers\RegistrationStatusController;
+use App\Http\Controllers\SmsTemplateController;
 use Illuminate\Support\Facades\Route;
 
 Route::livewire('/', 'pages::panel-login')->name('home');
@@ -18,6 +20,9 @@ Route::post('/panel/bloggers/{blogger:code}/avatar', [BloggerController::class, 
 Route::delete('/panel/bloggers/{blogger:code}', [BloggerController::class, 'destroy'])->middleware(['auth.panel', 'super'])->name('panel.bloggers.destroy');
 Route::post('/panel/r/{registration:ticket_code}/calls', RegistrationCallController::class)->middleware(['auth.panel', 'staff'])->name('panel.registration.calls');
 Route::put('/panel/r/{registration:ticket_code}/status', RegistrationStatusController::class)->middleware(['auth.panel', 'staff'])->name('panel.registration.status');
+Route::post('/panel/r/{registration:ticket_code}/sms', RegistrationSmsController::class)->middleware(['auth.panel', 'staff'])->name('panel.registration.sms');
+Route::post('/panel/sms-templates', [SmsTemplateController::class, 'store'])->middleware(['auth.panel', 'staff'])->name('panel.sms-templates.store');
+Route::delete('/panel/sms-templates/{smsTemplate}', [SmsTemplateController::class, 'destroy'])->middleware(['auth.panel', 'staff'])->name('panel.sms-templates.destroy');
 Route::get('/s/{blogger:code}', [ReferenceDesignController::class, 'landing'])->name('landing');
 Route::get('/ticket/{registration:ticket_code}', [ReferenceDesignController::class, 'ticket'])->middleware('signed')->name('ticket.show');
 Route::get('/design/support.js', [ReferenceDesignController::class, 'support'])->name('design.support');

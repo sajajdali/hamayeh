@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Blogger;
 use App\Models\Registration;
+use App\Models\SmsTemplate;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
@@ -77,7 +78,8 @@ class ReferenceDesignController extends Controller
                     'user' => $user->username,
                     'role' => $user->role->value,
                 ])->values(),
-            'templates' => [],
+            'templates' => $isBlogger ? collect() : SmsTemplate::query()->where('is_active', true)->get()
+                ->map(fn (SmsTemplate $template): array => ['id' => (string) $template->id, 'name' => $template->name, 'text' => $template->body])->values(),
             'regs' => $registrations->getCollection()->map(fn (Registration $registration): array => [
                 'code' => $registration->ticket_code,
                 'blogger' => $registration->blogger?->code,
@@ -207,6 +209,11 @@ class ReferenceDesignController extends Controller
         $html = str_replace('return this.shortBase() + (b.slug || b.code);', 'return location.origin + \'/s/\' + b.code;', $html);
         $phaseFiveActions = "saveCall = () => { const d = this.current(); if (!d) return; window.panelRegistrationAction(d.code, '/calls', { result: this.state.callResult, note: this.state.callNote }, 'POST'); };\n"
             ."saveStatus = (status) => () => { const d = this.current(); if (!d) return; window.panelRegistrationAction(d.code, '/status', { status }, 'PUT'); };\n\n";
+        $phaseSevenActions = "createSmsTemplate = () => window.panelSmsTemplateAction('', { name: this.state.tplName, body: this.state.tplText }, 'POST');\n"
+            ."deleteSmsTemplate = (id) => () => window.panelSmsTemplateAction(id, {}, 'DELETE');\n"
+            ."sendRegistrationSms = (recipient) => () => { const d = this.current(); if (d) window.panelRegistrationAction(d.code, '/sms', { template_id: this.state.smsTpl, recipient }, 'POST'); };\n\n";
+        $html = str_replace('  renderVals() {', '  '.$phaseSevenActions.'  renderVals() {', $html);
+        $html = str_replace(['addTemplate: this.addTemplate', 'sendToStudent: this.sendSms(\'student\')', 'sendToGuardian: this.sendSms(\'guardian\')', 'remove: this.removeTemplate(t.id)'], ['addTemplate: this.createSmsTemplate', 'sendToStudent: this.sendRegistrationSms(\'student\')', 'sendToGuardian: this.sendRegistrationSms(\'guardian\')', 'remove: this.deleteSmsTemplate(t.id)'], $html);
         $html = str_replace('  renderVals() {', '  '.$phaseFiveActions.'  renderVals() {', $html);
         $html = str_replace([
             'addCall: this.logCall',
@@ -235,7 +242,7 @@ class ReferenceDesignController extends Controller
         $html = str_replace('./support.js', route('design.support'), $html);
         $html = str_replace('assets/', url('/design/assets/').'/', $html);
 
-        $logout = '<script>window.panelLogout=()=>fetch('.Js::from(route('panel.logout')).',{method:"POST",headers:{"X-CSRF-TOKEN":'.Js::from(csrf_token()).'}}).then(()=>location.assign('.Js::from(route('panel.login')).'));window.panelRegistrationAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/r/')).'+encodeURIComponent(code)+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(r=>{if(!r.ok)throw new Error("panel action failed");location.reload()});window.panelBloggerAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/bloggers/')).'+(code?encodeURIComponent(code):\'\')+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(r=>{if(!r.ok)throw new Error("blogger action failed");location.reload()});window.panelBloggerAvatar=(code,file)=>{const body=new FormData();body.append("avatar",file);return fetch('.Js::from(url('/panel/bloggers/')).'+encodeURIComponent(code)+"/avatar",{method:"POST",headers:{"Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body}).then(r=>{if(!r.ok)throw new Error("avatar upload failed");location.reload()})};</script>';
+        $logout = '<script>window.panelLogout=()=>fetch('.Js::from(route('panel.logout')).',{method:"POST",headers:{"X-CSRF-TOKEN":'.Js::from(csrf_token()).'}}).then(()=>location.assign('.Js::from(route('panel.login')).'));window.panelRegistrationAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/r/')).'+encodeURIComponent(code)+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(r=>{if(!r.ok)throw new Error("panel action failed");location.reload()});window.panelBloggerAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/bloggers/')).'+(code?encodeURIComponent(code):\'\')+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(r=>{if(!r.ok)throw new Error("blogger action failed");location.reload()});window.panelBloggerAvatar=(code,file)=>{const body=new FormData();body.append("avatar",file);return fetch('.Js::from(url('/panel/bloggers/')).'+encodeURIComponent(code)+"/avatar",{method:"POST",headers:{"Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body}).then(r=>{if(!r.ok)throw new Error("avatar upload failed");location.reload()})};window.panelSmsTemplateAction=(id,data,method)=>fetch('.Js::from(url('/panel/sms-templates/')).'+(id?encodeURIComponent(id):\'\'),{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(r=>{if(!r.ok)throw new Error("sms template action failed");location.reload()});</script>';
         $html = str_replace('</head>', $logout.'<script type="module" src="'.Vite::asset('resources/js/app.js').'"></script></head>', $html);
 
         return response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
