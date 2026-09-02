@@ -6,6 +6,7 @@ use App\Http\Controllers\BloggerController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ReferenceDesignController;
 use App\Http\Controllers\RegistrationCallController;
+use App\Http\Controllers\RegistrationExcelExportController;
 use App\Http\Controllers\RegistrationSmsController;
 use App\Http\Controllers\RegistrationStatusController;
 use App\Http\Controllers\SmsTemplateController;
@@ -20,6 +21,7 @@ Route::post('/panel/admins', [AdminController::class, 'store'])->middleware(['au
 Route::patch('/panel/admins/{user:username}/toggle', [AdminController::class, 'toggle'])->middleware(['auth.panel', 'super'])->name('panel.admins.toggle');
 Route::delete('/panel/admins/{user:username}', [AdminController::class, 'destroy'])->middleware(['auth.panel', 'super'])->name('panel.admins.destroy');
 Route::get('/panel/activity/export', ActivityLogExportController::class)->middleware(['auth.panel', 'staff'])->name('panel.activity.export');
+Route::post('/panel/registrations/export/excel', RegistrationExcelExportController::class)->middleware(['auth.panel', 'staff'])->name('panel.registrations.export.excel');
 Route::post('/panel/bloggers', [BloggerController::class, 'store'])->middleware(['auth.panel', 'staff'])->name('panel.bloggers.store');
 Route::patch('/panel/bloggers/{blogger:code}/toggle', [BloggerController::class, 'toggle'])->middleware(['auth.panel', 'staff'])->name('panel.bloggers.toggle');
 Route::post('/panel/bloggers/{blogger:code}/avatar', [BloggerController::class, 'avatar'])->middleware(['auth.panel', 'staff'])->name('panel.bloggers.avatar');

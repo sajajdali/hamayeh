@@ -1,10 +1,12 @@
 <?php
 
 use App\Enums\ActivityType;
+use App\Jobs\ExportRegistrationsExcel;
 use App\Models\ActivityLog;
 use App\Models\Registration;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\Bus;
 
 uses(LazilyRefreshDatabase::class);
 
@@ -67,4 +69,16 @@ it('exports activity logs as utf8 csv with a Persian header and bom', function (
         ->toContain('زمان,نوع,مدیر')
         ->toContain('کد بلیط')
         ->toContain($registration->ticket_code);
+});
+
+it('queues an Excel export of registrations', function () {
+    Bus::fake();
+    $manager = User::factory()->create();
+
+    $this->actingAs($manager)
+        ->postJson(route('panel.registrations.export.excel'))
+        ->assertAccepted()
+        ->assertJsonPath('path', fn (string $path): bool => str_starts_with($path, 'exports/registrations-') && str_ends_with($path, '.xlsx'));
+
+    Bus::assertDispatched(ExportRegistrationsExcel::class);
 });
