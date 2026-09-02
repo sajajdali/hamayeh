@@ -185,6 +185,20 @@ class ReferenceDesignController extends Controller
         $html = str_replace('authed: false, me: null, user:', 'authed: true, me: '.Js::from($identity).', user:', $html);
         $html = str_replace(['if (!bloggers || !bloggers.length)', 'if (!admins || !admins.length)', 'if (!templates || !templates.length)', 'if (!regs || !regs.length)'], 'if (false)', $html);
         $html = str_replace('doLogout: () => this.setState({ authed: false, me: null, user: \'\', pass: \'\', selected: null }),', 'doLogout: () => window.panelLogout(),', $html);
+        $phaseFiveActions = "saveCall = () => { const d = this.current(); if (!d) return; window.panelRegistrationAction(d.code, '/calls', { result: this.state.callResult, note: this.state.callNote }, 'POST'); };\n"
+            ."saveStatus = (status) => () => { const d = this.current(); if (!d) return; window.panelRegistrationAction(d.code, '/status', { status }, 'PUT'); };\n\n";
+        $html = str_replace('  renderVals() {', '  '.$phaseFiveActions.'  renderVals() {', $html);
+        $html = str_replace([
+            'addCall: this.logCall',
+            'approve: this.setStatus(\'approved\')',
+            'markCalling: this.setStatus(\'calling\')',
+            'cancelReg: this.setStatus(\'canceled\')',
+        ], [
+            'addCall: this.saveCall',
+            'approve: this.saveStatus(\'approved\')',
+            'markCalling: this.saveStatus(\'calling\')',
+            'cancelReg: this.saveStatus(\'canceled\')',
+        ], $html);
         $html = str_replace([
             'kpiTotal: fa(scopedRegs.length)',
             'kpiToday: fa(inRange(scopedRegs, t0, t0 + DAY))',
@@ -201,7 +215,7 @@ class ReferenceDesignController extends Controller
         $html = str_replace('./support.js', route('design.support'), $html);
         $html = str_replace('assets/', url('/design/assets/').'/', $html);
 
-        $logout = '<script>window.panelLogout=()=>fetch('.Js::from(route('panel.logout')).',{method:"POST",headers:{"X-CSRF-TOKEN":'.Js::from(csrf_token()).'}}).then(()=>location.assign('.Js::from(route('panel.login')).'));</script>';
+        $logout = '<script>window.panelLogout=()=>fetch('.Js::from(route('panel.logout')).',{method:"POST",headers:{"X-CSRF-TOKEN":'.Js::from(csrf_token()).'}}).then(()=>location.assign('.Js::from(route('panel.login')).'));window.panelRegistrationAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/r/')).'+encodeURIComponent(code)+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(r=>{if(!r.ok)throw new Error("panel action failed");location.reload()});</script>';
         $html = str_replace('</head>', $logout.'<script type="module" src="'.Vite::asset('resources/js/app.js').'"></script></head>', $html);
 
         return response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
