@@ -46,3 +46,16 @@ it('filters registrations in the panel', function () {
         ->assertSee($approved->ticket_code)
         ->assertDontSee($pending->first()->ticket_code);
 });
+
+it('includes a central user-facing error handler for every panel action', function () {
+    $manager = User::factory()->create();
+
+    $this->actingAs($manager)
+        ->get(route('panel.registrations'))
+        ->assertOk()
+        ->assertSee('window.panelNotifyError', false)
+        ->assertSee('panelBloggerAction', false)
+        ->assertSee('panelRegistrationAction', false)
+        ->assertSee('panelSmsTemplateAction', false)
+        ->assertSee('panelAdminAction', false);
+});
