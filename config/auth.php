@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Blogger;
 use App\Models\User;
 
 return [
@@ -42,6 +43,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'blogger' => [
+            'driver' => 'session',
+            'provider' => 'bloggers',
+        ],
     ],
 
     /*
@@ -65,6 +70,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', User::class),
+        ],
+        'bloggers' => [
+            'driver' => 'eloquent',
+            'model' => Blogger::class,
         ],
 
         // 'users' => [

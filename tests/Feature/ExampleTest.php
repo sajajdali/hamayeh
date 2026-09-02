@@ -14,6 +14,6 @@ class ExampleTest extends TestCase
     {
         $response = $this->get('/');
 
-        $response->assertOk()->assertSee('ورود به پنل مدیریت');
+        $response->assertOk()->assertSee('پنل مدیریت گردهمایی');
     }
 }
