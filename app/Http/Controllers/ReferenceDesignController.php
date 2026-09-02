@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Vite;
@@ -138,10 +139,12 @@ class ReferenceDesignController extends Controller
     {
         abort_unless($blogger->is_active, 404);
 
-        return $this->design('Landing.dc.html', [
+        $html = Cache::remember('landing:blogger:'.$blogger->getKey(), now()->addHour(), fn (): string => $this->design('Landing.dc.html', [
             'علی صبوری' => $blogger->name,
             'a10' => $blogger->code,
-        ]);
+        ])->getContent());
+
+        return response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
     }
 
     public function ticket(Registration $registration): Response

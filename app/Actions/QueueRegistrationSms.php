@@ -24,7 +24,7 @@ class QueueRegistrationSms
             'status' => SmsStatus::Queued,
         ]);
 
-        SendSmsMessage::dispatch($message->id, $actor->getMorphClass(), $actor->getKey());
+        SendSmsMessage::dispatch($message->id, $actor->getMorphClass(), $actor->getKey())->onQueue('sms');
 
         return $message;
     }

@@ -25,7 +25,7 @@
 | ۶ | بلاگرها، لینک کوتاه و آواتار | انجام شد |
 | ۷ | قالب‌ها و ارسال پیامک | انجام شد |
 | ۸ | مدیران و گزارش فعالیت | انجام شد |
-| ۹ | سخت‌سازی و استقرار | در انتظار |
+| ۹ | سخت‌سازی و استقرار | انجام شد |
 
 ## راه‌اندازی
 
@@ -59,6 +59,15 @@ php artisan db:seed --class=DemoSeeder
 - تب گزارش فعالیت از رخدادهای واقعی سامانه تغذیه می‌شود و رویداد با انتخاب آن، پروندهٔ ثبت‌نام مربوط را باز می‌کند.
 - خروجی `/panel/activity/export` یک CSV با UTF-8 BOM و سربرگ فارسی تولید می‌کند تا در Excel فارسی درست باز شود.
 - خروجی Excel ثبت‌نام‌ها با `maatwebsite/excel` در صف `default` قرار می‌گیرد و فایل را در دیسک عمومی، زیر `exports/` ذخیره می‌کند.
+
+## فاز ۹ و استقرار
+
+- Horizon با صف‌های `default` و `sms` پیکربندی شده است. در استقرار، فایل [hamayesh-horizon.conf](/Applications/XAMPP/xamppfiles/htdocs/github/hamayesh/deploy/supervisor/hamayesh-horizon.conf) را در Supervisor قرار دهید و پس از هر deploy، `php artisan horizon:terminate` اجرا کنید.
+- کش لندینگ هر بلاگر یک ساعت اعتبار دارد و با هر تغییر، حذف یا بازیابی بلاگر بی‌درنگ invalid می‌شود.
+- پشتیبان‌گیری روزانهٔ دیتابیس ساعت ۰۲:۳۰ تهران اجرا می‌شود و مقصد پیش‌فرض آن دیسک S3 است. اطلاعات فضای ابری را فقط در محیط تولید وارد کنید.
+- Sentry از `SENTRY_LARAVEL_DSN` فعال می‌شود. نمونهٔ امن تنظیمات تولید در [.env.production.example](/Applications/XAMPP/xamppfiles/htdocs/github/hamayesh/.env.production.example) است؛ در تولید `APP_DEBUG=false` الزامی است.
+- پاسخ‌ها هدرهای امنیتی پایه دارند و برنامه در محیط production اجباراً HTTPS تولید می‌کند.
+- تست بار نمونه: `k6 run -e BASE_URL=https://example.com -e BLOGGER_CODE=t525 tests/Load/landing.js`.
 
 ## سازگاری نسخه‌ها
 
