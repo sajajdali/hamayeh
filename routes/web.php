@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ActivityLogExportController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BloggerController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ReferenceDesignController;
@@ -14,6 +16,10 @@ Route::livewire('/panel/login', 'pages::panel-login')->name('panel.login');
 Route::post('/panel/logout', LogoutController::class)->name('panel.logout');
 Route::get('/panel', [ReferenceDesignController::class, 'admin'])->middleware('auth.panel')->name('panel.registrations');
 Route::get('/panel/admins', [ReferenceDesignController::class, 'admin'])->middleware(['auth.panel', 'super'])->name('panel.admins');
+Route::post('/panel/admins', [AdminController::class, 'store'])->middleware(['auth.panel', 'super'])->name('panel.admins.store');
+Route::patch('/panel/admins/{user:username}/toggle', [AdminController::class, 'toggle'])->middleware(['auth.panel', 'super'])->name('panel.admins.toggle');
+Route::delete('/panel/admins/{user:username}', [AdminController::class, 'destroy'])->middleware(['auth.panel', 'super'])->name('panel.admins.destroy');
+Route::get('/panel/activity/export', ActivityLogExportController::class)->middleware(['auth.panel', 'staff'])->name('panel.activity.export');
 Route::post('/panel/bloggers', [BloggerController::class, 'store'])->middleware(['auth.panel', 'staff'])->name('panel.bloggers.store');
 Route::patch('/panel/bloggers/{blogger:code}/toggle', [BloggerController::class, 'toggle'])->middleware(['auth.panel', 'staff'])->name('panel.bloggers.toggle');
 Route::post('/panel/bloggers/{blogger:code}/avatar', [BloggerController::class, 'avatar'])->middleware(['auth.panel', 'staff'])->name('panel.bloggers.avatar');

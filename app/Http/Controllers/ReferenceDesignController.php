@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Blogger;
 use App\Models\Registration;
 use App\Models\SmsTemplate;
@@ -103,6 +104,19 @@ class ReferenceDesignController extends Controller
                     'text' => $log->body,
                 ])->values(),
             ])->values(),
+            'activityLogs' => $isBlogger ? collect() : ActivityLog::query()
+                ->with(['actor', 'registration'])
+                ->latest()
+                ->limit(100)
+                ->get()
+                ->map(fn (ActivityLog $log): array => [
+                    'at' => $log->created_at->getTimestampMs(),
+                    'who' => $log->actor?->name ?? 'سامانه',
+                    'type' => $log->type->value,
+                    'text' => $log->body,
+                    'regCode' => $log->registration?->ticket_code ?? '—',
+                    'regName' => $log->registration?->full_name ?? '—',
+                ])->values(),
         ];
 
         $statistics = [
@@ -184,7 +198,8 @@ class ReferenceDesignController extends Controller
             .'this.write(\'genavehei.bloggers\', serverState.bloggers);'
             .'this.write(\'genavehei.registrations\', serverState.regs);'
             .'this.write(\'genavehei.admins\', serverState.admins);'
-            .'this.write(\'genavehei.smsTemplates\', serverState.templates);';
+            .'this.write(\'genavehei.smsTemplates\', serverState.templates);'
+            .'this.setState({serverLogs: serverState.activityLogs});';
 
         $html = str_replace('componentDidMount() {', 'componentDidMount() {'.$bootstrap, $html);
         $html = str_replace('authed: false, me: null, user:', 'authed: true, me: '.Js::from($identity).', user:', $html);
@@ -214,6 +229,19 @@ class ReferenceDesignController extends Controller
             ."sendRegistrationSms = (recipient) => () => { const d = this.current(); if (d) window.panelRegistrationAction(d.code, '/sms', { template_id: this.state.smsTpl, recipient }, 'POST'); };\n\n";
         $html = str_replace('  renderVals() {', '  '.$phaseSevenActions.'  renderVals() {', $html);
         $html = str_replace(['addTemplate: this.addTemplate', 'sendToStudent: this.sendSms(\'student\')', 'sendToGuardian: this.sendSms(\'guardian\')', 'remove: this.removeTemplate(t.id)'], ['addTemplate: this.createSmsTemplate', 'sendToStudent: this.sendRegistrationSms(\'student\')', 'sendToGuardian: this.sendRegistrationSms(\'guardian\')', 'remove: this.deleteSmsTemplate(t.id)'], $html);
+        $phaseEightActions = "createAdmin = () => window.panelAdminAction('', { name: this.state.adminName, username: this.state.adminUser, password: this.state.adminPass, role: this.state.adminRole }, 'POST');\n"
+            ."deleteAdminBackend = (username) => () => window.panelAdminAction(username, {}, 'DELETE');\n\n";
+        $html = str_replace('  renderVals() {', '  '.$phaseEightActions.'  renderVals() {', $html);
+        $html = str_replace([
+            'remove: this.removeAdmin(a.user)',
+            'addAdmin: this.addAdmin',
+            'exportLogs: this.exportLogs',
+        ], [
+            'remove: this.deleteAdminBackend(a.user)',
+            'addAdmin: this.createAdmin',
+            'exportLogs: () => location.assign(window.panelActivityExport)',
+        ], $html);
+        $html = str_replace("  allLogsList() {\n    const out = [];\n    this.state.regs.forEach(r => (Array.isArray(r.logs) ? r.logs : []).forEach(l => {\n      if (!l) return;\n      out.push({ at: l.at || 0, who: l.by || 'مدیر', type: l.type || 'status', text: String(l.text || ''), regCode: r.code, regName: r.name });\n    }));\n    return out.sort((a, b) => b.at - a.at);\n  }", "  allLogsList() {\n    return (this.state.serverLogs || []).slice().sort((a, b) => b.at - a.at);\n  }", $html);
         $html = str_replace('  renderVals() {', '  '.$phaseFiveActions.'  renderVals() {', $html);
         $html = str_replace([
             'addCall: this.logCall',
@@ -242,7 +270,7 @@ class ReferenceDesignController extends Controller
         $html = str_replace('./support.js', route('design.support'), $html);
         $html = str_replace('assets/', url('/design/assets/').'/', $html);
 
-        $logout = '<script>window.panelLogout=()=>fetch('.Js::from(route('panel.logout')).',{method:"POST",headers:{"X-CSRF-TOKEN":'.Js::from(csrf_token()).'}}).then(()=>location.assign('.Js::from(route('panel.login')).'));window.panelRegistrationAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/r/')).'+encodeURIComponent(code)+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(r=>{if(!r.ok)throw new Error("panel action failed");location.reload()});window.panelBloggerAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/bloggers/')).'+(code?encodeURIComponent(code):\'\')+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(r=>{if(!r.ok)throw new Error("blogger action failed");location.reload()});window.panelBloggerAvatar=(code,file)=>{const body=new FormData();body.append("avatar",file);return fetch('.Js::from(url('/panel/bloggers/')).'+encodeURIComponent(code)+"/avatar",{method:"POST",headers:{"Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body}).then(r=>{if(!r.ok)throw new Error("avatar upload failed");location.reload()})};window.panelSmsTemplateAction=(id,data,method)=>fetch('.Js::from(url('/panel/sms-templates/')).'+(id?encodeURIComponent(id):\'\'),{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(r=>{if(!r.ok)throw new Error("sms template action failed");location.reload()});</script>';
+        $logout = '<script>window.panelLogout=()=>fetch('.Js::from(route('panel.logout')).',{method:"POST",headers:{"X-CSRF-TOKEN":'.Js::from(csrf_token()).'}}).then(()=>location.assign('.Js::from(route('panel.login')).'));window.panelRegistrationAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/r/')).'+encodeURIComponent(code)+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(r=>{if(!r.ok)throw new Error("panel action failed");location.reload()});window.panelBloggerAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/bloggers/')).'+(code?encodeURIComponent(code):\'\')+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(r=>{if(!r.ok)throw new Error("blogger action failed");location.reload()});window.panelBloggerAvatar=(code,file)=>{const body=new FormData();body.append("avatar",file);return fetch('.Js::from(url('/panel/bloggers/')).'+encodeURIComponent(code)+"/avatar",{method:"POST",headers:{"Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body}).then(r=>{if(!r.ok)throw new Error("avatar upload failed");location.reload()})};window.panelSmsTemplateAction=(id,data,method)=>fetch('.Js::from(url('/panel/sms-templates/')).'+(id?encodeURIComponent(id):\'\'),{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(r=>{if(!r.ok)throw new Error("sms template action failed");location.reload()});window.panelAdminAction=(username,data,method)=>fetch('.Js::from(url('/panel/admins/')).'+(username?encodeURIComponent(username):\'\'),{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(r=>{if(!r.ok)throw new Error("admin action failed");location.reload()});window.panelActivityExport='.Js::from(route('panel.activity.export')).';</script>';
         $html = str_replace('</head>', $logout.'<script type="module" src="'.Vite::asset('resources/js/app.js').'"></script></head>', $html);
 
         return response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
