@@ -9,6 +9,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\Js;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -61,11 +62,13 @@ class ReferenceDesignController extends Controller
 
         $isBlogger = $actor instanceof Blogger;
         $state = [
-            'bloggers' => ($isBlogger ? collect([$actor]) : Blogger::query()->where('is_active', true)->get())
+            'bloggers' => ($isBlogger ? collect([$actor]) : Blogger::query()->get())
                 ->map(fn (Blogger $blogger): array => [
                     'code' => $blogger->code,
                     'name' => $blogger->name,
                     'phone' => $blogger->phone,
+                    'slug' => $blogger->slug,
+                    'avatar' => $blogger->avatar_path ? Storage::disk('public')->url($blogger->avatar_path) : null,
                     'active' => $blogger->is_active,
                 ])->values(),
             'admins' => $isBlogger ? collect() : User::query()->where('is_active', true)->get()
@@ -185,6 +188,23 @@ class ReferenceDesignController extends Controller
         $html = str_replace('authed: false, me: null, user:', 'authed: true, me: '.Js::from($identity).', user:', $html);
         $html = str_replace(['if (!bloggers || !bloggers.length)', 'if (!admins || !admins.length)', 'if (!templates || !templates.length)', 'if (!regs || !regs.length)'], 'if (false)', $html);
         $html = str_replace('doLogout: () => this.setState({ authed: false, me: null, user: \'\', pass: \'\', selected: null }),', 'doLogout: () => window.panelLogout(),', $html);
+        $phaseSixActions = "createBlogger = () => window.panelBloggerAction('', '', { name: this.state.newName, code: this.state.newCode, slug: this.state.newSlug, phone: this.state.newPhone, password: this.state.newPass }, 'POST');\n"
+            ."toggleBloggerBackend = () => { const b = this.state.bloggers.find(b => b.code === this.state.openBlogger); if (b) window.panelBloggerAction(b.code, '/toggle', {}, 'PATCH'); };\n"
+            ."deleteBloggerBackend = () => { const b = this.state.bloggers.find(b => b.code === this.state.openBlogger); if (b) window.panelBloggerAction(b.code, '', {}, 'DELETE'); };\n"
+            ."uploadBloggerAvatar = (e) => { const b = this.state.bloggers.find(b => b.code === this.state.openBlogger); const file = e.target.files[0]; if (b && file) window.panelBloggerAvatar(b.code, file); };\n\n";
+        $html = str_replace('  renderVals() {', '  '.$phaseSixActions.'  renderVals() {', $html);
+        $html = str_replace([
+            'addBlogger: this.add',
+            'bg_toggle: this.toggleBlogger',
+            'bg_confirmDelete: this.deleteBlogger',
+            'bg_pickAvatar: bg ? this.pickAvatar(bg.code) : (() => {})',
+        ], [
+            'addBlogger: this.createBlogger',
+            'bg_toggle: this.toggleBloggerBackend',
+            'bg_confirmDelete: this.deleteBloggerBackend',
+            'bg_pickAvatar: this.uploadBloggerAvatar',
+        ], $html);
+        $html = str_replace('return this.shortBase() + (b.slug || b.code);', 'return location.origin + \'/s/\' + b.code;', $html);
         $phaseFiveActions = "saveCall = () => { const d = this.current(); if (!d) return; window.panelRegistrationAction(d.code, '/calls', { result: this.state.callResult, note: this.state.callNote }, 'POST'); };\n"
             ."saveStatus = (status) => () => { const d = this.current(); if (!d) return; window.panelRegistrationAction(d.code, '/status', { status }, 'PUT'); };\n\n";
         $html = str_replace('  renderVals() {', '  '.$phaseFiveActions.'  renderVals() {', $html);
@@ -215,7 +235,7 @@ class ReferenceDesignController extends Controller
         $html = str_replace('./support.js', route('design.support'), $html);
         $html = str_replace('assets/', url('/design/assets/').'/', $html);
 
-        $logout = '<script>window.panelLogout=()=>fetch('.Js::from(route('panel.logout')).',{method:"POST",headers:{"X-CSRF-TOKEN":'.Js::from(csrf_token()).'}}).then(()=>location.assign('.Js::from(route('panel.login')).'));window.panelRegistrationAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/r/')).'+encodeURIComponent(code)+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(r=>{if(!r.ok)throw new Error("panel action failed");location.reload()});</script>';
+        $logout = '<script>window.panelLogout=()=>fetch('.Js::from(route('panel.logout')).',{method:"POST",headers:{"X-CSRF-TOKEN":'.Js::from(csrf_token()).'}}).then(()=>location.assign('.Js::from(route('panel.login')).'));window.panelRegistrationAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/r/')).'+encodeURIComponent(code)+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(r=>{if(!r.ok)throw new Error("panel action failed");location.reload()});window.panelBloggerAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/bloggers/')).'+(code?encodeURIComponent(code):\'\')+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(r=>{if(!r.ok)throw new Error("blogger action failed");location.reload()});window.panelBloggerAvatar=(code,file)=>{const body=new FormData();body.append("avatar",file);return fetch('.Js::from(url('/panel/bloggers/')).'+encodeURIComponent(code)+"/avatar",{method:"POST",headers:{"Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body}).then(r=>{if(!r.ok)throw new Error("avatar upload failed");location.reload()})};</script>';
         $html = str_replace('</head>', $logout.'<script type="module" src="'.Vite::asset('resources/js/app.js').'"></script></head>', $html);
 
         return response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
