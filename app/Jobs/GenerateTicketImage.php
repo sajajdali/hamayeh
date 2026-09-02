@@ -25,7 +25,11 @@ class GenerateTicketImage implements ShouldQueue
         Storage::disk('local')->makeDirectory('tickets');
         $temporaryPath = Storage::disk('local')->path($path);
 
-        $browsershot = Browsershot::html($html)->windowSize(900, 1200);
+        $browsershot = Browsershot::html($html)
+            ->setChromePath('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome')
+            ->setNodeBinary('/opt/homebrew/bin/node')
+            ->setNodeModulePath(base_path('node_modules'))
+            ->windowSize(900, 1200);
         $browsershot->save($temporaryPath);
         $browsershot->savePdf(Storage::disk('local')->path("tickets/{$registration->ticket_code}.pdf"));
 
