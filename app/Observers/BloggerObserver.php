@@ -25,5 +25,7 @@ class BloggerObserver
     private function forgetLanding(Blogger $blogger): void
     {
         Cache::forget('landing:blogger:'.$blogger->getKey());
+        Cache::forget('landing:v2:blogger:'.$blogger->getKey());
+        Cache::forget('landing:v3:blogger:'.$blogger->getKey());
     }
 }

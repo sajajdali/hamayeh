@@ -19,10 +19,10 @@ it('invalidates the cached blogger landing when blogger data changes', function 
     $blogger = Blogger::factory()->create(['code' => 't525', 'name' => 'نام نخست']);
 
     $this->get('/s/t525')->assertOk()->assertSee('نام نخست');
-    expect(Cache::has('landing:blogger:'.$blogger->id))->toBeTrue();
+    expect(Cache::has('landing:v3:blogger:'.$blogger->id))->toBeTrue();
 
     $blogger->update(['name' => 'نام جدید']);
 
-    expect(Cache::has('landing:blogger:'.$blogger->id))->toBeFalse();
+    expect(Cache::has('landing:v3:blogger:'.$blogger->id))->toBeFalse();
     $this->get('/s/t525')->assertOk()->assertSee('نام جدید');
 });

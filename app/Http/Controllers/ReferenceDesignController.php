@@ -139,7 +139,7 @@ class ReferenceDesignController extends Controller
     {
         abort_unless($blogger->is_active, 404);
 
-        $html = Cache::remember('landing:blogger:'.$blogger->getKey(), now()->addHour(), fn (): string => $this->design('Landing.dc.html', [
+        $html = Cache::remember('landing:v3:blogger:'.$blogger->getKey(), now()->addHour(), fn (): string => $this->design('Landing.dc.html', [
             'علی صبوری' => $blogger->name,
             'a10' => $blogger->code,
         ])->getContent());
@@ -186,9 +186,12 @@ class ReferenceDesignController extends Controller
             $html = str_replace($search, e($replacement), $html);
         }
 
-        $html = str_replace('./support.js', route('design.support'), $html);
+        $supportUrl = route('design.support');
+        $appScript = '<script src="'.Vite::asset('resources/js/app.js').'"></script>';
+        $html = str_replace('./support.js', $supportUrl, $html);
+        $html = str_replace('<script src="'.$supportUrl.'"></script>', '__APP_SCRIPT__<script src="'.$supportUrl.'"></script>', $html);
         $html = str_replace('assets/', url('/design/assets/').'/', $html);
-        $html = str_replace('</head>', '<script type="module" src="'.Vite::asset('resources/js/app.js').'"></script></head>', $html);
+        $html = str_replace('__APP_SCRIPT__', $appScript, $html);
 
         return response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
     }
@@ -270,12 +273,16 @@ class ReferenceDesignController extends Controller
             'kpiPending: fa('.$statistics['pending'].')',
             'kpiApproved: fa('.$statistics['approved'].')',
         ], $html);
-        $html = str_replace('./support.js', route('design.support'), $html);
+        $supportUrl = route('design.support');
+        $appScript = '<script src="'.Vite::asset('resources/js/app.js').'"></script>';
+        $html = str_replace('./support.js', $supportUrl, $html);
+        $html = str_replace('<script src="'.$supportUrl.'"></script>', '__APP_SCRIPT__<script src="'.$supportUrl.'"></script>', $html);
         $html = str_replace('assets/', url('/design/assets/').'/', $html);
+        $html = str_replace('__APP_SCRIPT__', $appScript, $html);
 
         $logout = '<script>window.panelError=async r=>{const b=await r.json().catch(()=>null);return Object.values((b&&b.errors)||{}).flat().join(" ")||"عملیات انجام نشد."};window.panelLogout=()=>fetch('.Js::from(route('panel.logout')).',{method:"POST",headers:{"X-CSRF-TOKEN":'.Js::from(csrf_token()).'}}).then(()=>location.assign('.Js::from(route('panel.login')).'));window.panelRegistrationAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/r/')).'+encodeURIComponent(code)+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));location.reload()});window.panelBloggerAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/bloggers/')).'+(code?encodeURIComponent(code):\'\')+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));location.reload()});window.panelBloggerAvatar=(code,file)=>{const body=new FormData();body.append("avatar",file);return fetch('.Js::from(url('/panel/bloggers/')).'+encodeURIComponent(code)+"/avatar",{method:"POST",headers:{"Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));location.reload()})};window.panelSmsTemplateAction=(id,data,method)=>fetch('.Js::from(url('/panel/sms-templates/')).'+(id?encodeURIComponent(id):\'\'),{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));location.reload()});window.panelAdminAction=(username,data,method)=>fetch('.Js::from(url('/panel/admins/')).'+(username?encodeURIComponent(username):\'\'),{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));location.reload()});window.panelActivityExport='.Js::from(route('panel.activity.export')).';</script>';
         $errorNotifier = '<script>window.panelNotifyError=message=>window.alert(message||"عملیات انجام نشد.");["panelRegistrationAction","panelBloggerAction","panelBloggerAvatar","panelSmsTemplateAction","panelAdminAction"].forEach(name=>{const action=window[name];window[name]=async(...args)=>{try{return await action(...args)}catch(error){window.panelNotifyError(error.message);throw error}}});window.addEventListener("unhandledrejection",event=>{if(event.reason instanceof Error){window.panelNotifyError(event.reason.message);event.preventDefault()}});</script>';
-        $html = str_replace('</head>', $logout.$errorNotifier.'<script type="module" src="'.Vite::asset('resources/js/app.js').'"></script></head>', $html);
+        $html = str_replace('</head>', $logout.$errorNotifier.'</head>', $html);
 
         return response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
     }
