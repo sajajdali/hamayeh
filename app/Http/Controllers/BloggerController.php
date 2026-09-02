@@ -16,7 +16,7 @@ class BloggerController extends Controller
         $data = $request->validated();
         $data['code'] = mb_strtolower($data['code']);
         $data['slug'] = mb_strtolower($data['slug']);
-        $data['password'] = $data['password'] ?: $data['code'];
+        $data['password'] = $data['password'] ?? $data['code'];
 
         $blogger = Blogger::query()->create($data);
 

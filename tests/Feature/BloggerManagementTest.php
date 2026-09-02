@@ -25,6 +25,19 @@ it('creates a blogger with a four-character referral code', function () {
     $this->assertDatabaseHas('bloggers', ['code' => 't525', 'slug' => 'testblogger']);
 });
 
+it('uses the referral code as the short address when the address is omitted', function () {
+    $manager = User::factory()->create();
+
+    $this->actingAs($manager)
+        ->postJson(route('panel.bloggers.store'), [
+            'name' => 'بلاگر تست',
+            'code' => 't526',
+        ])
+        ->assertCreated();
+
+    $this->assertDatabaseHas('bloggers', ['code' => 't526', 'slug' => 't526']);
+});
+
 it('rejects referral codes that are not exactly four characters', function () {
     $manager = User::factory()->create();
 

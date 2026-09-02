@@ -10,6 +10,10 @@ class StoreBloggerRequest extends FormRequest
 {
     protected function prepareForValidation(): void
     {
+        if ($this->filled('code') && blank($this->input('slug'))) {
+            $this->merge(['slug' => $this->string('code')->lower()->toString()]);
+        }
+
         if ($this->filled('phone')) {
             $this->merge(['phone' => app(NormalizeIranianPhone::class)->handle($this->string('phone')->toString())]);
         }
