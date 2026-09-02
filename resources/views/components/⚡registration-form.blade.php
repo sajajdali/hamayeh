@@ -1,0 +1,13 @@
+<?php
+
+use Livewire\Component;
+
+new class extends Component
+{
+    public array $form = []; public ?string $done = null;
+    protected function rules(): array { return ['form.full_name'=>'required|string','form.grade'=>'required|in:10,11,12,alumni','form.field'=>'required|in:math,science','form.school'=>'required','form.gpa'=>'nullable|numeric|between:0,20','form.study_city'=>'required','form.father_job'=>'nullable','form.province'=>'required','form.city'=>'required','form.area'=>'nullable','form.guardian_name'=>'required','form.guardian_phone'=>['required','regex:/^09\d{9}$/']]; }
+    public function submit(): void { abort_unless(session()->has('otp_verified_phone'), 403); $data=$this->validate()['form']; $data['phone']=session('otp_verified_phone'); $bloggerId=session('ref_blogger_id'); $registration=app(\App\Actions\IssueRegistration::class)->handle($bloggerId ? \App\Models\Blogger::find($bloggerId) : null,$data); $this->done=$registration->ticket_code; }
+};
+?>
+
+<div>@if ($done)<div class="rounded-3xl bg-emerald-500/15 p-6"><p class="font-bold">{{ __('event.completion_message') }}</p><p class="mt-3 text-2xl font-black" dir="ltr">{{ $done }}</p></div>@elseif(session()->has('otp_verified_phone'))<form wire:submit="submit" class="grid gap-3 rounded-3xl bg-white/5 p-6 md:grid-cols-2"><h2 class="md:col-span-2 text-xl font-bold">فرم ثبت‌نام</h2>@foreach(['full_name'=>'نام و نام خانوادگی','school'=>'مدرسه','study_city'=>'شهر محل تحصیل','province'=>'استان','city'=>'شهر','guardian_name'=>'نام همراه','guardian_phone'=>'شماره همراه'] as $key=>$label)<label class="grid gap-1"><span>{{ $label }}</span><input wire:model="form.{{ $key }}" class="rounded-xl bg-slate-950 p-3"></label>@endforeach<label>پایه<select wire:model="form.grade" class="w-full rounded-xl bg-slate-950 p-3"><option value="">انتخاب</option><option value="10">دهم</option><option value="11">یازدهم</option><option value="12">دوازدهم</option><option value="alumni">فارغ‌التحصیل</option></select></label><label>رشته<select wire:model="form.field" class="w-full rounded-xl bg-slate-950 p-3"><option value="">انتخاب</option><option value="math">ریاضی</option><option value="science">تجربی</option></select></label><label>معدل<input wire:model="form.gpa" class="w-full rounded-xl bg-slate-950 p-3"></label><label>شغل پدر<input wire:model="form.father_job" class="w-full rounded-xl bg-slate-950 p-3"></label><label>منطقه<input wire:model="form.area" placeholder="سعادت‌آباد" class="w-full rounded-xl bg-slate-950 p-3"></label><button class="md:col-span-2 rounded-xl bg-rose-600 p-4 font-bold">ثبت‌نام و صدور بلیط</button></form>@endif</div>
