@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['registration_id', 'sms_template_id', 'to', 'body', 'provider_message_id', 'status', 'error', 'sent_at'])]
+#[Fillable(['registration_id', 'sms_template_id', 'to', 'body', 'provider_template', 'parameters', 'provider_message_id', 'status', 'error', 'sent_at'])]
 class SmsMessage extends Model
 {
     /** @use HasFactory<SmsMessageFactory> */
@@ -30,6 +30,7 @@ class SmsMessage extends Model
     protected function casts(): array
     {
         return [
+            'parameters' => 'array',
             'sent_at' => 'datetime',
             'status' => SmsStatus::class,
         ];

@@ -57,12 +57,10 @@ it('sends a SHSMS template with generated registration parameters', function () 
     $registration = Registration::factory()->create(['full_name' => 'زهرا محمدی']);
     $template = SmsTemplate::factory()->create(['name' => 'legacy-template']);
     $message = SmsMessage::factory()->for($registration)->for($template)->create(['status' => SmsStatus::Queued]);
-    DB::table('settings')->insert([
-        'key' => 'shsms_template',
-        'value' => 'reminder',
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
+    DB::table('settings')->updateOrInsert(
+        ['key' => 'shsms_template'],
+        ['value' => 'reminder', 'created_at' => now(), 'updated_at' => now()],
+    );
 
     (new SendSmsMessage($message->id, $manager->getMorphClass(), $manager->id))->handle();
 
@@ -71,6 +69,27 @@ it('sends a SHSMS template with generated registration parameters', function () 
             || ($request['template'] === 'reminder' && $request['param'][0] === 'زهرا محمدی');
     });
 
+    expect($message->refresh()->status)->toBe(SmsStatus::Sent);
+});
+
+it('sends a registration confirmation with the configured name parameter', function () {
+    config()->set('shsms.sandbox', false);
+    config()->set('shsms.api_token', 'test-token');
+    Http::preventStrayRequests();
+    Http::fake(['shsms.ir/api/v1/sendms*' => Http::response(['id' => 'shsms-confirmation'])]);
+
+    $registration = Registration::factory()->create(['full_name' => 'زهرا محمدی']);
+    $message = SmsMessage::factory()->for($registration)->create([
+        'body' => "سلام زهرا محمدی عزیز\nعضویت شما انجام شد و بلیط برای شما صادر شده و برای تایید نهایی با شما تماس گرفته خواهد شد",
+        'provider_template' => 'registration_confirmed',
+        'parameters' => ['زهرا محمدی'],
+        'status' => SmsStatus::Queued,
+    ]);
+
+    (new SendSmsMessage($message->id))->handle();
+
+    Http::assertSent(fn (Request $request): bool => $request['template'] === 'registration_confirmed'
+        && $request['param'] === ['زهرا محمدی']);
     expect($message->refresh()->status)->toBe(SmsStatus::Sent);
 });
 
@@ -88,12 +107,10 @@ it('queues a template message without requiring a legacy local template', functi
 });
 
 it('uses the configured OTP template with only the login code parameter', function () {
-    DB::table('settings')->insert([
-        'key' => 'shsms_otp_template',
-        'value' => 'login_code',
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
+    DB::table('settings')->updateOrInsert(
+        ['key' => 'shsms_otp_template'],
+        ['value' => 'login_code', 'created_at' => now(), 'updated_at' => now()],
+    );
 
     $payload = (new OtpCodeNotification('4821', '09121234567'))->toArray(new stdClass);
 

@@ -292,14 +292,14 @@
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                         <h2 class="text-base font-black text-white">پیامک واقعی SHSMS</h2>
-                        <p class="mt-1 max-w-2xl text-sm leading-7 text-[#cdd7f0]">فقط نام الگویی را که در پنل SHSMS ساخته‌اید وارد کنید. موقع ارسال، پارامترها خودکار جایگزین می‌شوند.</p>
+                        <p class="mt-1 max-w-2xl text-sm leading-7 text-[#cdd7f0]">نام الگویی را که در پنل SHSMS برای تأیید عضویت ساخته‌اید وارد کنید. پیامک عضویت با نام ثبت‌نام‌کننده ارسال می‌شود.</p>
                     </div>
-                    <span class="rounded-full border border-rose-300/25 bg-rose-400/10 px-3 py-1.5 text-xs font-black text-rose-100">param1 تا param4</span>
+                    <span class="rounded-full border border-rose-300/25 bg-rose-400/10 px-3 py-1.5 text-xs font-black text-rose-100">فقط param1: نام</span>
                 </div>
 
                 <label class="mt-5 block max-w-xl space-y-2">
-                    <span class="text-xs font-bold text-[#cdd7f0]">نام الگوی پیامک رویداد</span>
-                    <input name="shsms_template" value="{{ old('shsms_template', $shsmsTemplate) }}" placeholder="reminder" dir="ltr" class="w-full rounded-xl border border-white/15 bg-[#060e24]/80 px-3.5 py-3 text-sm font-bold text-white outline-none transition focus:border-rose-400 focus:ring-4 focus:ring-rose-400/15">
+                    <span class="text-xs font-bold text-[#cdd7f0]">نام الگوی تأیید عضویت</span>
+                    <input name="shsms_template" value="{{ old('shsms_template', $shsmsTemplate) }}" placeholder="registration_confirmed" dir="ltr" class="w-full rounded-xl border border-white/15 bg-[#060e24]/80 px-3.5 py-3 text-sm font-bold text-white outline-none transition focus:border-rose-400 focus:ring-4 focus:ring-rose-400/15">
                     @error('shsms_template')
                         <p class="text-sm font-bold text-rose-300">{{ $message }}</p>
                     @enderror
@@ -314,7 +314,7 @@
                 </label>
 
                 <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                    @foreach (['param1' => 'نام ثبت‌نام‌کننده', 'param2' => 'تاریخ رویداد', 'param3' => 'ساعت شروع', 'param4' => 'عنوان رویداد'] as $parameter => $value)
+                    @foreach (['param1' => 'نام ثبت‌نام‌کننده'] as $parameter => $value)
                         <div class="rounded-2xl border border-white/10 bg-[#060e24]/60 p-3.5">
                             <p class="font-mono text-xs font-black text-rose-200">{{ $parameter }}</p>
                             <p class="mt-1 text-sm font-bold text-white">{{ $value }}</p>

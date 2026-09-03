@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\IssueRegistration;
+use App\Actions\QueueRegistrationConfirmationSms;
 use App\Models\Blogger;
 use App\Models\Registration;
 use App\Support\NormalizeIranianPhone;
@@ -25,7 +26,7 @@ class PublicRegistrationController extends Controller
         ]);
     }
 
-    public function store(Request $request, Blogger $blogger, IssueRegistration $issueRegistration): JsonResponse
+    public function store(Request $request, Blogger $blogger, IssueRegistration $issueRegistration, QueueRegistrationConfirmationSms $queueRegistrationConfirmationSms): JsonResponse
     {
         $phone = $this->verifiedPhone($request);
         abort_unless($phone, 403);
@@ -58,6 +59,7 @@ class PublicRegistrationController extends Controller
         ]);
 
         $registration = $issueRegistration->handle($blogger, [...$data, 'phone' => $phone]);
+        $queueRegistrationConfirmationSms->handle($registration);
 
         return response()->json([
             'ticket_code' => $registration->ticket_code,

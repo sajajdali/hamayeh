@@ -1,7 +1,10 @@
 <?php
 
+use App\Jobs\SendSmsMessage;
 use App\Models\Blogger;
+use App\Models\SmsMessage;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 
 uses(LazilyRefreshDatabase::class);
 
@@ -25,6 +28,7 @@ function registrationPayload(): array
 
 it('keeps a verified visitor signed in and creates their registration', function () {
     $blogger = Blogger::factory()->create();
+    Queue::fake([SendSmsMessage::class]);
 
     $response = $this->withSession(['otp_verified_phone' => '09121111111'])
         ->postJson(route('landing.registrations.store', $blogger), registrationPayload())
@@ -32,6 +36,18 @@ it('keeps a verified visitor signed in and creates their registration', function
         ->assertJsonPath('ticket_code', $blogger->code.'-1');
 
     $this->assertDatabaseHas('registrations', ['phone' => '09121111111', 'ticket_code' => $response->json('ticket_code')]);
+    $this->assertDatabaseHas('sms_messages', [
+        'to' => '09121111111',
+        'body' => "سلام زهرا محمدی عزیز\nعضویت شما انجام شد و بلیط برای شما صادر شده و برای تایید نهایی با شما تماس گرفته خواهد شد",
+    ]);
+
+    $message = SmsMessage::query()->sole();
+    expect($message->parameters)->toBe(['زهرا محمدی']);
+    Queue::assertPushed(SendSmsMessage::class, function (SendSmsMessage $job): bool {
+        return $job->smsMessageId === SmsMessage::query()->sole()->id
+            && $job->actorType === null
+            && $job->actorId === null;
+    });
 
     $this->withSession(['otp_verified_phone' => '09121111111'])
         ->getJson(route('landing.registration-state', $blogger))

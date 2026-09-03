@@ -25,7 +25,7 @@ class SendSmsMessage implements ShouldQueue
 
     public int $tries = 1;
 
-    public function __construct(public int $smsMessageId, public string $actorType, public int $actorId) {}
+    public function __construct(public int $smsMessageId, public ?string $actorType = null, public ?int $actorId = null) {}
 
     public function handle(): void
     {
@@ -37,7 +37,7 @@ class SendSmsMessage implements ShouldQueue
                 Log::info('SMS sandbox', ['to' => $message->to, 'body' => $message->body]);
             } else {
                 $token = (string) config('shsms.api_token');
-                $template = (string) DB::table('settings')->where('key', 'shsms_template')->value('value');
+                $template = $message->provider_template ?: (string) DB::table('settings')->where('key', 'shsms_template')->value('value');
                 $template = $template !== '' ? $template : ($message->smsTemplate?->name ?? '');
 
                 if ($token === '' || $template === '') {
@@ -50,7 +50,7 @@ class SendSmsMessage implements ShouldQueue
                     ->get((string) config('shsms.endpoint'), [
                         'receptor' => $message->to,
                         'template' => $template,
-                        'param' => $this->parameters($message->registration),
+                        'param' => $message->parameters ?? $this->parameters($message->registration),
                     ]);
 
                 $response->throw();
