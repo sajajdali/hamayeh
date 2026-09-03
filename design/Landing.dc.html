@@ -538,7 +538,7 @@ const myTicketUrl = '{{ myTicketUrl }}';
 const csrfToken = '{{ csrfToken }}';
 
 class Component extends DCLogic {
-  state = { step: 'phone', phone: '', otp: '', error: '', now: Date.now(), code: '', blogger: null, page: 'landing', form: { province: 'تهران', city: 'تهران' }, formError: '', submitted: false, registered: false, ticketUrl: '', sendingOtp: false, verifyingOtp: false, submitting: false };
+  state = { step: 'phone', phone: '', otp: '', error: '', now: Date.now(), code: '', blogger: null, page: 'landing', form: { studyCity: 'تهران', province: 'تهران', city: 'تهران' }, formError: '', submitted: false, registered: false, ticketUrl: '', sendingOtp: false, verifyingOtp: false, submitting: false };
   otpInput = React.createRef();
 
   componentDidMount() {
@@ -740,7 +740,7 @@ class Component extends DCLogic {
     try {
       await fetch(otpLogoutUrl, { method: 'POST', headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken } });
     } catch (e) {}
-    this.setState({ step: 'phone', phone: '', otp: '', code: '', page: 'landing', registered: false, ticketUrl: '', submitted: false, form: { province: 'تهران', city: 'تهران' }, error: '' });
+    this.setState({ step: 'phone', phone: '', otp: '', code: '', page: 'landing', registered: false, ticketUrl: '', submitted: false, form: { studyCity: 'تهران', province: 'تهران', city: 'تهران' }, error: '' });
   };
 
   renderVals() {

@@ -73,6 +73,7 @@ it('keeps the registration form behind OTP verification in the landing interface
 
     $this->get(route('landing', $blogger))
         ->assertOk()
+        ->assertSee("form: { studyCity: 'تهران', province: 'تهران', city: 'تهران' }", false)
         ->assertSee("if (this.state.step === 'otp')", false)
         ->assertSee("if (this.state.step === 'done')", false)
         ->assertSee("this.state.step === 'done' ? 'تکمیل فرم ثبت‌نام'", false);
