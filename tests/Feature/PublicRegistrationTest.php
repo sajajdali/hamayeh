@@ -68,6 +68,16 @@ it('does not let an unverified visitor create a registration', function () {
         ->assertForbidden();
 });
 
+it('keeps the registration form behind OTP verification in the landing interface', function () {
+    $blogger = Blogger::factory()->create();
+
+    $this->get(route('landing', $blogger))
+        ->assertOk()
+        ->assertSee("if (this.state.step === 'otp')", false)
+        ->assertSee("if (this.state.step === 'done')", false)
+        ->assertSee("this.state.step === 'done' ? 'تکمیل فرم ثبت‌نام'", false);
+});
+
 it('normalizes Persian digits in a guardian mobile number before saving', function () {
     $blogger = Blogger::factory()->create();
     $payload = registrationPayload();

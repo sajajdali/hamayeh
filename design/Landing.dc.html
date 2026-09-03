@@ -30,6 +30,22 @@
   @keyframes stampIn { from { opacity:0; transform:scale(.94) rotate(-1.5deg); } to { opacity:1; transform:none; } }
   @keyframes riseIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
   @keyframes buttonSpin { to { transform:rotate(360deg); } }
+  .teacher-grid { display:grid !important; grid-template-columns:repeat(2, minmax(0, 1fr)); justify-content:center; }
+  .teacher-grid > article { width:100% !important; min-width:0; }
+  .otp-request-row { flex-wrap:wrap; }
+  .otp-request-row input { min-width:0; }
+  @container (min-width:560px) {
+    .teacher-grid { grid-template-columns:repeat(auto-fit, minmax(160px, 184px)); }
+  }
+  @container (max-width:460px) {
+    .landing-header { gap:8px !important; }
+    .landing-brand { min-width:0; gap:8px !important; }
+    .landing-brand-copy { min-width:0; overflow:hidden; }
+    .landing-brand-copy span { overflow:hidden; text-overflow:ellipsis; }
+    .landing-primary-cta { flex:none; padding:9px 12px !important; font-size:12px !important; }
+    .otp-request-row { flex-direction:column; }
+    .otp-request-row button { width:100%; min-height:52px; }
+  }
 </style>
 </helmet>
 
@@ -39,16 +55,16 @@
   <sc-if value="{{ isLanding }}" hint-placeholder-val="{{ true }}">
   <div>
 
-  <header style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px clamp(14px,4cqw,32px); max-width:1240px; margin:0 auto">
-    <div style="display:flex; align-items:center; gap:12px">
+  <header class="landing-header" style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px clamp(14px,4cqw,32px); max-width:1240px; margin:0 auto">
+    <div class="landing-brand" style="display:flex; align-items:center; gap:12px">
       <img src="assets/logo-genavehei.png" alt="گروه آموزشی استاد محسن گناوه‌ای" style="width:clamp(40px,11cqw,52px); height:clamp(40px,11cqw,52px); flex:none; object-fit:contain; background:#fff; border-radius:14px; padding:3px" />
-      <div style="display:flex; flex-direction:column; line-height:1.35">
+      <div class="landing-brand-copy" style="display:flex; flex-direction:column; line-height:1.35">
         <span style="font-weight:800; font-size:clamp(12.5px,3.6cqw,15px); color:#fff; white-space:nowrap">{{ landing.hero.brand_title }}</span>
         <span style="font-size:clamp(9px,2.7cqw,12px); color:#93a2c6; letter-spacing:.05em; white-space:nowrap">{{ landing.hero.brand_subtitle }}</span>
       </div>
     </div>
     <div style="display:flex; align-items:center; gap:8px">
-      <button onClick="{{ primaryAction }}" style="display:inline-flex; align-items:center; gap:8px; background:#d81f2a; color:#fff; font-family:inherit; font-weight:700; font-size:clamp(11.5px,3cqw,14px); padding:9px clamp(12px,3.4cqw,20px); border:0; border-radius:999px; white-space:nowrap; box-shadow:0 12px 30px -12px rgba(216,31,42,.9); cursor:pointer" style-hover="background:#ef2f3b; color:#fff">{{ primaryCta }}</button>
+      <button class="landing-primary-cta" onClick="{{ primaryAction }}" style="display:inline-flex; align-items:center; gap:8px; background:#d81f2a; color:#fff; font-family:inherit; font-weight:700; font-size:clamp(11.5px,3cqw,14px); padding:9px clamp(12px,3.4cqw,20px); border:0; border-radius:999px; white-space:nowrap; box-shadow:0 12px 30px -12px rgba(216,31,42,.9); cursor:pointer" style-hover="background:#ef2f3b; color:#fff">{{ primaryCta }}</button>
       <sc-if value="{{ isLoggedIn }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ logout }}" aria-label="خروج" title="خروج" style="width:34px; height:34px; border:1px solid rgba(255,255,255,.2); border-radius:50%; background:rgba(255,255,255,.08); color:#cdd7f0; font-size:16px; cursor:pointer">↪</button>
       </sc-if>
@@ -90,7 +106,7 @@
           <div>
             <div style="font-weight:800; font-size:clamp(16px,4.4cqw,19px); color:#fff; margin-bottom:6px">برای ثبت‌نام شماره موبایل خود را وارد کنید</div>
             <div style="font-size:13px; color:#9dabcd; margin-bottom:18px">کد تأیید چهاررقمی به همین شماره پیامک می‌شود.</div>
-            <div style="display:flex; gap:10px; align-items:stretch">
+            <div class="otp-request-row" style="display:flex; gap:10px; align-items:stretch">
               <input value="{{ phone }}" onChange="{{ onPhone }}" onKeyDown="{{ onPhoneKey }}" type="tel" inputMode="numeric" autoComplete="tel" lang="en" dir="ltr" data-phone-input placeholder="09123456789" style="flex:1; direction:ltr; text-align:center; letter-spacing:.1em; font-size:clamp(15px,4cqw,18px); font-weight:700; color:#fff; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.18); border-radius:14px; padding:14px 12px; outline:none" style-focus="border-color:#ff4b57" />
               <button onClick="{{ sendOtp }}" disabled="{{ isSendingOtp }}" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; background:#d81f2a; color:#fff; font-weight:800; font-size:clamp(13.5px,3.6cqw,16px); border:none; border-radius:14px; padding:0 clamp(14px,4.5cqw,26px); cursor:pointer; white-space:nowrap; flex:none; box-shadow:0 14px 32px -14px rgba(216,31,42,.9); opacity:{{ sendButtonOpacity }}" style-hover="background:#ef2f3b"><sc-if value="{{ isSendingOtp }}" hint-placeholder-val="{{ false }}"><span style="width:15px; height:15px; border:2px solid rgba(255,255,255,.42); border-top-color:#fff; border-radius:50%; animation:buttonSpin .7s linear infinite"></span></sc-if>{{ sendOtpLabel }}</button>
             </div>
@@ -230,7 +246,7 @@
     <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">{{ teachers.eyebrow }}</div>
     <h2 style="margin:0; font-size:clamp(22px,5.8cqw,34px); font-weight:900; color:#fff; line-height:1.5">{{ teachers.title }}</h2>
     <p style="max-width:720px; margin:14px auto 28px; font-size:clamp(13px,3.5cqw,16px); line-height:2; color:#aebbdb">{{ teachers.description }}</p>
-    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:clamp(12px,2.2cqw,18px)">
+    <div class="teacher-grid" style="gap:clamp(12px,2.2cqw,18px)">
       <sc-for list="{{ teachers.items }}" as="teacher" hint-placeholder-count="10">
         <article style="width:min(100%, 184px); min-height:240px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.13); border-radius:21px; padding:18px 14px" style-hover="border-color:rgba(216,31,42,.56); transform:translateY(-3px)">
           <div style="width:116px; height:116px; overflow:hidden; border-radius:50%; padding:4px; background:linear-gradient(145deg, #ff8d96, #2d3d78 45%, #ffb36d); box-shadow:0 12px 26px -18px rgba(0,0,0,.95); margin-bottom:14px">
@@ -708,7 +724,11 @@ class Component extends DCLogic {
       location.assign(this.state.ticketUrl);
       return;
     }
-    if (this.state.phone) {
+    if (this.state.step === 'otp') {
+      this.focusOtp();
+      return;
+    }
+    if (this.state.step === 'done') {
       this.setState({ page: 'register', formError: '' });
       try { window.scrollTo(0, 0); } catch (e) {}
       return;
@@ -739,8 +759,8 @@ class Component extends DCLogic {
       otp: this.state.otp,
       error: this.state.error,
       userCode: this.state.code || 'تأیید شد',
-      isLoggedIn: !!this.state.phone,
-      primaryCta: this.state.registered ? 'مشاهده بلیط' : (this.state.phone ? 'تکمیل فرم ثبت‌نام' : landingContent.hero.cta_label),
+      isLoggedIn: this.state.step === 'done',
+      primaryCta: this.state.registered ? 'مشاهده بلیط' : (this.state.step === 'done' ? 'تکمیل فرم ثبت‌نام' : landingContent.hero.cta_label),
       accountTitle: this.state.registered ? 'ثبت‌نام شما تکمیل شده است' : 'شماره شما تأیید شد',
       accountDescription: this.state.registered ? 'ثبت‌نام شما با موفقیت انجام شده است. برای دیدن بلیط ورود روی دکمه زیر بزنید.' : 'برای تکمیل اطلاعات و صدور بلیط، فرم ثبت‌نام را پر کنید.',
       accountCodeLabel: this.state.registered ? 'کد بلیط شما' : 'وضعیت ورود',
