@@ -5,10 +5,12 @@ use App\Notifications\OtpCodeNotification;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use Livewire\Livewire;
 
 uses(LazilyRefreshDatabase::class);
 
 it('requests an OTP for a valid Iranian mobile number', function () {
+    config()->set('shsms.sandbox', false);
     Notification::fake();
 
     $this->postJson(route('otp.store'), ['phone' => '09121234567'])
@@ -47,4 +49,12 @@ it('does not send SMS and accepts 1234 in the SMS sandbox', function () {
         ->assertNoContent();
 
     expect(OtpCode::query()->sole()->consumed_at)->not->toBeNull();
+});
+
+it('renders an OTP field that supports browser autofill', function () {
+    Livewire::test('otp-box')
+        ->set('sent', true)
+        ->assertSee('autocomplete="one-time-code"', false)
+        ->assertSee('requestOtpAutofill', false)
+        ->assertSee('otp-code-received', false);
 });
