@@ -20,9 +20,11 @@ class RequestOtp
         }
         RateLimiter::hit('otp:phone:'.$phone, 600);
         RateLimiter::hit('otp:ip:'.$ip, 600);
-        $code = (string) random_int(1000, 9999);
+        $code = config('shsms.sandbox') ? '1234' : (string) random_int(1000, 9999);
         OtpCode::create(['phone' => $phone, 'code_hash' => Hash::make($code), 'expires_at' => now()->addSeconds(120), 'ip' => $ip]);
-        Notification::route('sms', $phone)->notify(new OtpCodeNotification($code, $phone));
+        if (! config('shsms.sandbox')) {
+            Notification::route('sms', $phone)->notify(new OtpCodeNotification($code, $phone));
+        }
 
         return $phone;
     }

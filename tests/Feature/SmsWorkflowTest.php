@@ -7,7 +7,11 @@ use App\Models\Registration;
 use App\Models\SmsMessage;
 use App\Models\SmsTemplate;
 use App\Models\User;
+use App\Notifications\OtpCodeNotification;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 
 uses(LazilyRefreshDatabase::class);
@@ -41,4 +45,61 @@ it('marks a sandbox sms as sent and records an activity log', function () {
 
     expect($message->refresh()->status)->toBe(SmsStatus::Sent);
     expect($registration->activityLogs()->where('type', ActivityType::Sms->value)->exists())->toBeTrue();
+});
+
+it('sends a SHSMS template with generated registration parameters', function () {
+    config()->set('shsms.sandbox', false);
+    config()->set('shsms.api_token', 'test-token');
+    Http::preventStrayRequests();
+    Http::fake(['shsms.ir/api/v1/sendms*' => Http::response(['id' => 'shsms-1'])]);
+
+    $manager = User::factory()->create();
+    $registration = Registration::factory()->create(['full_name' => 'زهرا محمدی']);
+    $template = SmsTemplate::factory()->create(['name' => 'legacy-template']);
+    $message = SmsMessage::factory()->for($registration)->for($template)->create(['status' => SmsStatus::Queued]);
+    DB::table('settings')->insert([
+        'key' => 'shsms_template',
+        'value' => 'reminder',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    (new SendSmsMessage($message->id, $manager->getMorphClass(), $manager->id))->handle();
+
+    Http::assertSent(function (Request $request) use ($registration): bool {
+        return $request->url() === 'https://shsms.ir/api/v1/sendms?receptor='.$registration->phone.'&template=reminder&param%5B0%5D=%D8%B2%D9%87%D8%B1%D8%A7%20%D9%85%D8%AD%D9%85%D8%AF%DB%8C'
+            || ($request['template'] === 'reminder' && $request['param'][0] === 'زهرا محمدی');
+    });
+
+    expect($message->refresh()->status)->toBe(SmsStatus::Sent);
+});
+
+it('queues a template message without requiring a legacy local template', function () {
+    Queue::fake();
+    $manager = User::factory()->create();
+    $registration = Registration::factory()->create();
+
+    $this->actingAs($manager)
+        ->postJson(route('panel.registration.sms', $registration), ['recipient' => 'student'])
+        ->assertAccepted();
+
+    expect(SmsMessage::query()->sole()->sms_template_id)->toBeNull();
+    Queue::assertPushed(SendSmsMessage::class);
+});
+
+it('uses the configured OTP template with only the login code parameter', function () {
+    DB::table('settings')->insert([
+        'key' => 'shsms_otp_template',
+        'value' => 'login_code',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    $payload = (new OtpCodeNotification('4821', '09121234567'))->toArray(new stdClass);
+
+    expect($payload)->toBe([
+        'template' => 'login_code',
+        'receptor' => '09121234567',
+        'params' => ['4821'],
+    ]);
 });

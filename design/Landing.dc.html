@@ -9,8 +9,12 @@
 <x-dc>
 <helmet>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" />
+<link rel="icon" href="/favicon/favicon.ico" sizes="any" />
+<link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+<link rel="manifest" href="/favicon/site.webmanifest" />
+<link rel="stylesheet" href="/vendor/vazirmatn.css" />
 <style>
   html, body { margin:0; padding:0; background:#0a1531; }
   body { font-family:'Vazirmatn', system-ui, sans-serif; direction:rtl; -webkit-font-smoothing:antialiased; }
@@ -25,8 +29,8 @@
   summary { list-style:none; }
   @keyframes stampIn { from { opacity:0; transform:scale(.94) rotate(-1.5deg); } to { opacity:1; transform:none; } }
   @keyframes riseIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+  @keyframes buttonSpin { to { transform:rotate(360deg); } }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </helmet>
 
 <div style="min-height:100vh; background:radial-gradient(900px 520px at 78% -8%, rgba(216,31,42,.38), transparent 60%), radial-gradient(700px 500px at 8% 12%, rgba(30,64,140,.55), transparent 65%), #0a1531; color:#eaf0ff; overflow-x:hidden">
@@ -39,51 +43,56 @@
     <div style="display:flex; align-items:center; gap:12px">
       <img src="assets/logo-genavehei.png" alt="گروه آموزشی استاد محسن گناوه‌ای" style="width:clamp(40px,11cqw,52px); height:clamp(40px,11cqw,52px); flex:none; object-fit:contain; background:#fff; border-radius:14px; padding:3px" />
       <div style="display:flex; flex-direction:column; line-height:1.35">
-        <span style="font-weight:800; font-size:clamp(12.5px,3.6cqw,15px); color:#fff; white-space:nowrap">گروه آموزشی استاد محسن گناوه‌ای</span>
-        <span style="font-size:clamp(9px,2.7cqw,12px); color:#93a2c6; letter-spacing:.05em; white-space:nowrap">GENAVEHEI EDUCATIONAL GROUP</span>
+        <span style="font-weight:800; font-size:clamp(12.5px,3.6cqw,15px); color:#fff; white-space:nowrap">{{ landing.hero.brand_title }}</span>
+        <span style="font-size:clamp(9px,2.7cqw,12px); color:#93a2c6; letter-spacing:.05em; white-space:nowrap">{{ landing.hero.brand_subtitle }}</span>
       </div>
     </div>
-    <a href="#ثبت-نام" style="display:inline-flex; align-items:center; gap:8px; background:#d81f2a; color:#fff; font-weight:700; font-size:clamp(11.5px,3cqw,14px); padding:9px clamp(12px,3.4cqw,20px); border-radius:999px; white-space:nowrap; box-shadow:0 12px 30px -12px rgba(216,31,42,.9)" style-hover="background:#ef2f3b; color:#fff">ثبت‌نام رایگان</a>
+    <div style="display:flex; align-items:center; gap:8px">
+      <button onClick="{{ primaryAction }}" style="display:inline-flex; align-items:center; gap:8px; background:#d81f2a; color:#fff; font-family:inherit; font-weight:700; font-size:clamp(11.5px,3cqw,14px); padding:9px clamp(12px,3.4cqw,20px); border:0; border-radius:999px; white-space:nowrap; box-shadow:0 12px 30px -12px rgba(216,31,42,.9); cursor:pointer" style-hover="background:#ef2f3b; color:#fff">{{ primaryCta }}</button>
+      <sc-if value="{{ isLoggedIn }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ logout }}" aria-label="خروج" title="خروج" style="width:34px; height:34px; border:1px solid rgba(255,255,255,.2); border-radius:50%; background:rgba(255,255,255,.08); color:#cdd7f0; font-size:16px; cursor:pointer">↪</button>
+      </sc-if>
+    </div>
   </header>
 
   <section style="max-width:1240px; margin:0 auto; padding:20px clamp(16px,4cqw,32px) 8px; display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr)); gap:clamp(24px,4cqw,44px); align-items:center">
     <div style="animation:riseIn .6s ease both; display:flex; flex-direction:column">
       <div style="display:inline-flex; align-items:center; gap:10px; border:1px solid rgba(216,31,42,.55); background:rgba(216,31,42,.14); color:#ffb3b9; font-weight:700; font-size:13px; padding:7px 14px; border-radius:999px; margin-bottom:16px; order:1; align-self:flex-start">
         <span style="width:8px; height:8px; border-radius:50%; background:#ff3b47; box-shadow:0 0 0 4px rgba(255,59,71,.22)"></span>
-        سمینار موفقیت در کنکور و امتحانات نهایی
+        {{ landing.hero.eyebrow }}
       </div>
 
       <h1 style="order:2; margin:0 0 16px; font-size:clamp(19.5px,4.9cqw,38px); line-height:1.55; font-weight:900; letter-spacing:0; text-wrap:pretty; color:#fff">
-        بزرگ‌ترین گردهمایی داوطلبین کنکور رشته‌های <span style="color:#ff4b57">ریاضی</span> و <span style="color:#ff4b57">تجربی</span>؛ پایه‌های دهم، یازدهم، دوازدهم و فارغ‌التحصیلان سال‌های گذشته در کشور
+        {{ landing.hero.title }}
       </h1>
 
       <p style="order:4; margin:0 0 22px; font-size:clamp(13.5px,3.5cqw,17px); line-height:1.85; color:#b6c4e4; max-width:56ch; text-wrap:pretty">
-        یک روز کامل، روی صحنه‌ای که مسیر کنکور و امتحانات نهایی‌ات را عوض می‌کند: برنامه‌ریزی واقعی، تکنیک‌های تست‌زنی، مدیریت استرس و نقشه راه رشته‌های ریاضی و تجربی.
+        {{ landing.hero.description }}
       </p>
 
       <div style="order:5; display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(6px,2cqw,10px); margin-bottom:26px">
         <div style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); padding:10px clamp(8px,2.4cqw,14px); border-radius:12px; flex-direction:column; align-items:flex-start; gap:2px; min-width:0">
-          <span style="font-size:clamp(9.5px,2.6cqw,11.5px); color:#93a2c6">تاریخ برگزاری</span>
+          <span style="font-size:clamp(9.5px,2.6cqw,11.5px); color:#93a2c6">{{ landing.hero.date_label }}</span>
           <span style="font-weight:800; font-size:clamp(11.5px,3.1cqw,15px); color:#fff; white-space:nowrap">۲۵ شهریور ۱۴۰۷</span>
         </div>
         <div style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); padding:10px clamp(8px,2.4cqw,14px); border-radius:12px; flex-direction:column; align-items:flex-start; gap:2px; min-width:0">
-          <span style="font-size:clamp(9.5px,2.6cqw,11.5px); color:#93a2c6">ظرفیت سالن</span>
-          <span style="font-weight:800; font-size:clamp(11.5px,3.1cqw,15px); color:#fff; white-space:nowrap">محدود</span>
+          <span style="font-size:clamp(9.5px,2.6cqw,11.5px); color:#93a2c6">{{ landing.hero.capacity_label }}</span>
+          <span style="font-weight:800; font-size:clamp(11.5px,3.1cqw,15px); color:#fff; white-space:nowrap">{{ landing.hero.capacity_value }}</span>
         </div>
         <div style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); padding:10px clamp(8px,2.4cqw,14px); border-radius:12px; flex-direction:column; align-items:flex-start; gap:2px; min-width:0">
-          <span style="font-size:clamp(9.5px,2.6cqw,11.5px); color:#93a2c6">هزینه</span>
-          <span style="font-weight:800; font-size:clamp(11.5px,3.1cqw,15px); color:#7ef0b0; white-space:nowrap">حضور رایگان</span>
+          <span style="font-size:clamp(9.5px,2.6cqw,11.5px); color:#93a2c6">{{ landing.hero.cost_label }}</span>
+          <span style="font-weight:800; font-size:clamp(11.5px,3.1cqw,15px); color:#7ef0b0; white-space:nowrap">{{ landing.hero.cost_value }}</span>
         </div>
       </div>
 
-      <div id="ثبت-نام" style="order:{{ cardOrder }}; margin-bottom:26px; background:linear-gradient(180deg, rgba(255,255,255,.1), rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.16); border-radius:22px; padding:clamp(18px,5cqw,26px); box-shadow:0 40px 80px -50px rgba(0,0,0,.9); max-width:520px">
+      <div id="ثبت-نام" style="order:{{ cardOrder }}; margin-bottom:26px; background:linear-gradient(180deg, rgba(255,255,255,.1), rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.16); border-radius:20px; padding:clamp(16px,4cqw,21px); box-shadow:0 30px 60px -46px rgba(0,0,0,.9); max-width:520px">
         <sc-if value="{{ isPhoneStep }}" hint-placeholder-val="{{ true }}">
           <div>
             <div style="font-weight:800; font-size:clamp(16px,4.4cqw,19px); color:#fff; margin-bottom:6px">برای ثبت‌نام شماره موبایل خود را وارد کنید</div>
             <div style="font-size:13px; color:#9dabcd; margin-bottom:18px">کد تأیید چهاررقمی به همین شماره پیامک می‌شود.</div>
             <div style="display:flex; gap:10px; align-items:stretch">
-              <input value="{{ phone }}" onChange="{{ onPhone }}" onKeyDown="{{ onPhoneKey }}" inputMode="numeric" placeholder="۰۹۱۲۳۴۵۶۷۸۹" style="flex:1; direction:ltr; text-align:center; letter-spacing:.1em; font-size:clamp(15px,4cqw,18px); font-weight:700; color:#fff; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.18); border-radius:14px; padding:14px 12px; outline:none" style-focus="border-color:#ff4b57" />
-              <button onClick="{{ sendOtp }}" style="background:#d81f2a; color:#fff; font-weight:800; font-size:clamp(13.5px,3.6cqw,16px); border:none; border-radius:14px; padding:0 clamp(14px,4.5cqw,26px); cursor:pointer; white-space:nowrap; flex:none; box-shadow:0 14px 32px -14px rgba(216,31,42,.9)" style-hover="background:#ef2f3b">دریافت کد</button>
+              <input value="{{ phone }}" onChange="{{ onPhone }}" onKeyDown="{{ onPhoneKey }}" type="tel" inputMode="numeric" autoComplete="tel" lang="en" dir="ltr" data-phone-input placeholder="09123456789" style="flex:1; direction:ltr; text-align:center; letter-spacing:.1em; font-size:clamp(15px,4cqw,18px); font-weight:700; color:#fff; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.18); border-radius:14px; padding:14px 12px; outline:none" style-focus="border-color:#ff4b57" />
+              <button onClick="{{ sendOtp }}" disabled="{{ isSendingOtp }}" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; background:#d81f2a; color:#fff; font-weight:800; font-size:clamp(13.5px,3.6cqw,16px); border:none; border-radius:14px; padding:0 clamp(14px,4.5cqw,26px); cursor:pointer; white-space:nowrap; flex:none; box-shadow:0 14px 32px -14px rgba(216,31,42,.9); opacity:{{ sendButtonOpacity }}" style-hover="background:#ef2f3b"><sc-if value="{{ isSendingOtp }}" hint-placeholder-val="{{ false }}"><span style="width:15px; height:15px; border:2px solid rgba(255,255,255,.42); border-top-color:#fff; border-radius:50%; animation:buttonSpin .7s linear infinite"></span></sc-if>{{ sendOtpLabel }}</button>
             </div>
             <sc-if value="{{ error }}" hint-placeholder-val="{{ false }}">
               <div style="margin-top:12px; font-size:13px; color:#ff8d96; font-weight:600">{{ error }}</div>
@@ -92,17 +101,21 @@
         </sc-if>
 
         <sc-if value="{{ isDoneStep }}" hint-placeholder-val="{{ false }}">
-          <div>
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px">
-              <span style="width:34px; height:34px; border-radius:50%; background:rgba(126,240,176,.16); color:#7ef0b0; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900">✓</span>
-              <div style="font-weight:800; font-size:19px; color:#fff">شماره شما تأیید شد</div>
+          <div style="display:flex; flex-direction:column; gap:14px">
+            <div style="display:flex; align-items:center; gap:10px">
+              <span style="width:30px; height:30px; flex:none; border-radius:50%; background:rgba(126,240,176,.14); color:#7ef0b0; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:900">✓</span>
+              <div>
+                <div style="font-weight:800; font-size:16px; color:#fff; line-height:1.5">{{ accountTitle }}</div>
+                <div style="font-size:12.5px; color:#9dabcd; line-height:1.8">{{ accountDescription }}</div>
+              </div>
             </div>
-            <div style="font-size:14px; color:#b6c4e4; line-height:2; margin-bottom:18px">کد اختصاصی شما ساخته شد. برای تکمیل اطلاعات و صدور بلیط، فرم ثبت‌نام را پر کنید.</div>
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:14px; background:rgba(6,14,36,.7); border:1px dashed rgba(255,255,255,.28); border-radius:16px; padding:16px 18px; margin-bottom:18px">
-              <span style="font-size:13px; color:#9dabcd">کد ورود شما</span>
-              <span style="direction:ltr; font-weight:900; font-size:24px; color:#fff; letter-spacing:.08em">{{ userCode }}</span>
-            </div>
-            <button onClick="{{ goRegister }}" style="width:100%; background:#d81f2a; color:#fff; font-weight:800; font-size:16px; border:none; border-radius:14px; padding:15px; cursor:pointer; box-shadow:0 14px 32px -14px rgba(216,31,42,.9)" style-hover="background:#ef2f3b">تکمیل فرم ثبت‌نام</button>
+            <sc-if value="{{ isRegistered }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; border-top:1px solid rgba(255,255,255,.1); padding-top:12px">
+                <span style="font-size:12px; color:#8e9abd">{{ accountCodeLabel }}</span>
+                <span style="direction:ltr; font-weight:800; font-size:15px; color:#fff; letter-spacing:.08em">{{ userCode }}</span>
+              </div>
+            </sc-if>
+            <button onClick="{{ primaryAction }}" style="width:100%; background:#d81f2a; color:#fff; font-weight:800; font-size:14px; border:none; border-radius:12px; padding:12px 16px; cursor:pointer; box-shadow:0 12px 26px -16px rgba(216,31,42,.85)" style-hover="background:#ef2f3b">{{ primaryCta }}</button>
           </div>
         </sc-if>
       </div>
@@ -146,53 +159,43 @@
   </section>
 
   <section style="max-width:1240px; margin:clamp(40px,6cqw,64px) auto 0; padding:0 clamp(16px,4cqw,32px)">
-    <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">چرا باید در این گردهمایی باشی؟</div>
-    <h2 style="margin:0 0 24px; font-size:clamp(20px,5.2cqw,30px); font-weight:900; color:#fff; line-height:1.5">چهار چیزی که با خودت از سالن بیرون می‌بری</h2>
+    <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">{{ landingBenefitsEyebrow }}</div>
+    <h2 style="margin:0 0 24px; font-size:clamp(20px,5.2cqw,30px); font-weight:900; color:#fff; line-height:1.5">{{ landingBenefitsTitle }}</h2>
     <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,262px),1fr)); gap:18px">
       <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:20px; padding:22px" style-hover="border-color:rgba(216,31,42,.6)">
         <div style="width:44px; height:44px; border-radius:14px; background:rgba(216,31,42,.18); color:#ff6b75; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; margin-bottom:14px">۱</div>
-        <div style="font-weight:800; font-size:17px; color:#fff; margin-bottom:8px">برنامه‌ریزی واقعی</div>
-        <div style="font-size:14px; line-height:1.95; color:#aebbdb">یک برنامه هفتگی که با مدرسه، آزمون و زندگی واقعی‌ات جور دربیاید — نه جدول‌های آرمانی.</div>
+        <div style="font-weight:800; font-size:17px; color:#fff; margin-bottom:8px">{{ landingBenefit0Title }}</div>
+        <div style="font-size:14px; line-height:1.95; color:#aebbdb">{{ landingBenefit0Description }}</div>
       </div>
       <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:20px; padding:22px" style-hover="border-color:rgba(216,31,42,.6)">
         <div style="width:44px; height:44px; border-radius:14px; background:rgba(216,31,42,.18); color:#ff6b75; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; margin-bottom:14px">۲</div>
-        <div style="font-weight:800; font-size:17px; color:#fff; margin-bottom:8px">تکنیک تست‌زنی</div>
-        <div style="font-size:14px; line-height:1.95; color:#aebbdb">روش‌های مدیریت زمان و انتخاب تست در کنکور ریاضی و تجربی، با حل زنده روی صحنه.</div>
+        <div style="font-weight:800; font-size:17px; color:#fff; margin-bottom:8px">{{ landingBenefit1Title }}</div>
+        <div style="font-size:14px; line-height:1.95; color:#aebbdb">{{ landingBenefit1Description }}</div>
       </div>
       <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:20px; padding:22px" style-hover="border-color:rgba(216,31,42,.6)">
         <div style="width:44px; height:44px; border-radius:14px; background:rgba(216,31,42,.18); color:#ff6b75; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; margin-bottom:14px">۳</div>
-        <div style="font-weight:800; font-size:17px; color:#fff; margin-bottom:8px">امتحانات نهایی</div>
-        <div style="font-size:14px; line-height:1.95; color:#aebbdb">تأثیر معدل، نقشه مطالعه نهایی‌ها و اینکه کجا باید بین نهایی و کنکور تعادل بسازی.</div>
+        <div style="font-weight:800; font-size:17px; color:#fff; margin-bottom:8px">{{ landingBenefit2Title }}</div>
+        <div style="font-size:14px; line-height:1.95; color:#aebbdb">{{ landingBenefit2Description }}</div>
       </div>
       <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:20px; padding:22px" style-hover="border-color:rgba(216,31,42,.6)">
         <div style="width:44px; height:44px; border-radius:14px; background:rgba(216,31,42,.18); color:#ff6b75; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; margin-bottom:14px">۴</div>
-        <div style="font-weight:800; font-size:17px; color:#fff; margin-bottom:8px">انگیزه‌ی ماندگار</div>
-        <div style="font-size:14px; line-height:1.95; color:#aebbdb">هم‌مسیر شدن با هزاران داوطلب دیگر؛ همان چیزی که تنهایی مطالعه‌کردن از تو گرفته است.</div>
+        <div style="font-weight:800; font-size:17px; color:#fff; margin-bottom:8px">{{ landingBenefit3Title }}</div>
+        <div style="font-size:14px; line-height:1.95; color:#aebbdb">{{ landingBenefit3Description }}</div>
       </div>
     </div>
   </section>
 
   <section style="max-width:1240px; margin:clamp(40px,6cqw,64px) auto 0; padding:0 clamp(16px,4cqw,32px); display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:clamp(24px,4cqw,44px); align-items:center">
     <div>
-      <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">سرفصل‌های روز سمینار</div>
-      <h2 style="margin:0 0 20px; font-size:clamp(20px,5.2cqw,30px); font-weight:900; color:#fff; line-height:1.5">از صبح تا عصر، بدون حرف تکراری</h2>
+      <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">{{ landingAgendaEyebrow }}</div>
+      <h2 style="margin:0 0 20px; font-size:clamp(20px,5.2cqw,30px); font-weight:900; color:#fff; line-height:1.5">{{ landingAgendaTitle }}</h2>
       <div style="display:flex; flex-direction:column; gap:12px">
-        <div style="display:flex; gap:16px; align-items:center; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:16px 18px">
-          <span style="direction:ltr; font-weight:800; font-size:15px; color:#ff8d96; min-width:58px">۰۹:۰۰</span>
-          <span style="font-size:15px; color:#e3eaff; font-weight:600">افتتاحیه و نقشه راه سال تحصیلی</span>
-        </div>
-        <div style="display:flex; gap:16px; align-items:center; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:16px 18px">
-          <span style="direction:ltr; font-weight:800; font-size:15px; color:#ff8d96; min-width:58px">۱۰:۳۰</span>
-          <span style="font-size:15px; color:#e3eaff; font-weight:600">تکنیک‌های مطالعه و تست‌زنی — ریاضی و تجربی</span>
-        </div>
-        <div style="display:flex; gap:16px; align-items:center; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:16px 18px">
-          <span style="direction:ltr; font-weight:800; font-size:15px; color:#ff8d96; min-width:58px">۱۳:۰۰</span>
-          <span style="font-size:15px; color:#e3eaff; font-weight:600">مدیریت استرس، خواب و تمرکز</span>
-        </div>
-        <div style="display:flex; gap:16px; align-items:center; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:16px 18px">
-          <span style="direction:ltr; font-weight:800; font-size:15px; color:#ff8d96; min-width:58px">۱۵:۰۰</span>
-          <span style="font-size:15px; color:#e3eaff; font-weight:600">پرسش و پاسخ زنده با استاد گناوه‌ای</span>
-        </div>
+        <sc-for list="{{ agendaItems }}" as="item" hint-placeholder-count="4">
+          <div style="display:flex; gap:16px; align-items:center; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:16px 18px">
+            <span style="direction:ltr; font-weight:800; font-size:15px; color:#ff8d96; min-width:58px">{{ item.time }}</span>
+            <span style="font-size:15px; color:#e3eaff; font-weight:600">{{ item.title }}</span>
+          </div>
+        </sc-for>
       </div>
     </div>
     <div style="background:linear-gradient(160deg, rgba(216,31,42,.2), rgba(255,255,255,.05)); border:1px solid rgba(255,255,255,.14); border-radius:24px; padding:30px">
@@ -211,74 +214,55 @@
   </section>
 
   <section style="max-width:1240px; margin:clamp(40px,6cqw,64px) auto 0; padding:0 clamp(16px,4cqw,32px)">
-    <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">این سمینار به درد چه کسانی می‌خورد؟</div>
-    <h2 style="margin:0 0 22px; font-size:clamp(20px,5.2cqw,30px); font-weight:900; color:#fff; line-height:1.5">اگر یکی از این‌ها هستی، جای تو همین سالن است</h2>
+    <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">{{ landing.audience.eyebrow }}</div>
+    <h2 style="margin:0 0 22px; font-size:clamp(20px,5.2cqw,30px); font-weight:900; color:#fff; line-height:1.5">{{ landing.audience.title }}</h2>
     <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,262px),1fr)); gap:14px">
-      <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:18px; padding:20px">
-        <div style="font-weight:800; font-size:16px; color:#fff; margin-bottom:8px">دهمی‌ها و یازدهمی‌ها</div>
-        <div style="font-size:14px; line-height:1.95; color:#aebbdb">می‌خواهی از همین حالا پایه را محکم ببندی و سال کنکور را از صفر شروع نکنی.</div>
-      </div>
-      <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:18px; padding:20px">
-        <div style="font-weight:800; font-size:16px; color:#fff; margin-bottom:8px">دوازدهمی‌ها</div>
-        <div style="font-size:14px; line-height:1.95; color:#aebbdb">هم‌زمان امتحان نهایی و کنکور داری و به یک برنامه دقیق و واقع‌بینانه نیاز داری.</div>
-      </div>
-      <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:18px; padding:20px">
-        <div style="font-weight:800; font-size:16px; color:#fff; margin-bottom:8px">فارغ‌التحصیل‌ها</div>
-        <div style="font-size:14px; line-height:1.95; color:#aebbdb">یک سال پشت کنکور بوده‌ای و این بار می‌خواهی روش مطالعه‌ات را عوض کنی، نه فقط ساعت مطالعه را.</div>
-      </div>
-      <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:18px; padding:20px">
-        <div style="font-weight:800; font-size:16px; color:#fff; margin-bottom:8px">داوطلبان ریاضی و تجربی</div>
-        <div style="font-size:14px; line-height:1.95; color:#aebbdb">به تکنیک‌های تست‌زنی و تحلیل آزمون مخصوص همین دو رشته احتیاج داری.</div>
-      </div>
-      <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:18px; padding:20px">
-        <div style="font-weight:800; font-size:16px; color:#fff; margin-bottom:8px">کسانی که انگیزه‌شان افت کرده</div>
-        <div style="font-size:14px; line-height:1.95; color:#aebbdb">می‌دانی چه باید بکنی، اما مدت‌هاست شروع نکرده‌ای؛ این روز برای همین ساخته شده.</div>
-      </div>
-      <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:18px; padding:20px">
-        <div style="font-weight:800; font-size:16px; color:#fff; margin-bottom:8px">والدین داوطلبان</div>
-        <div style="font-size:14px; line-height:1.95; color:#aebbdb">می‌خواهی بدانی نقش خانواده در سال کنکور کجاست و چه کاری کمک است و چه کاری فشار.</div>
-      </div>
+      <sc-for list="{{ landing.audience.items }}" as="item" hint-placeholder-count="3">
+        <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:18px; padding:20px">
+          <div style="font-weight:800; font-size:16px; color:#fff; margin-bottom:8px">{{ item.title }}</div>
+          <div style="font-size:14px; line-height:1.95; color:#aebbdb">{{ item.description }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="max-width:1240px; margin:clamp(56px,8cqw,88px) auto 0; padding:0 clamp(16px,4cqw,32px); text-align:center">
+    <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">{{ teachers.eyebrow }}</div>
+    <h2 style="margin:0; font-size:clamp(22px,5.8cqw,34px); font-weight:900; color:#fff; line-height:1.5">{{ teachers.title }}</h2>
+    <p style="max-width:720px; margin:14px auto 28px; font-size:clamp(13px,3.5cqw,16px); line-height:2; color:#aebbdb">{{ teachers.description }}</p>
+    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:clamp(12px,2.2cqw,18px)">
+      <sc-for list="{{ teachers.items }}" as="teacher" hint-placeholder-count="10">
+        <article style="width:min(100%, 184px); min-height:240px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.13); border-radius:21px; padding:18px 14px" style-hover="border-color:rgba(216,31,42,.56); transform:translateY(-3px)">
+          <div style="width:116px; height:116px; overflow:hidden; border-radius:50%; padding:4px; background:linear-gradient(145deg, #ff8d96, #2d3d78 45%, #ffb36d); box-shadow:0 12px 26px -18px rgba(0,0,0,.95); margin-bottom:14px">
+            <img src="{{ teacher.photo }}" alt="{{ teacher.name }}" style="width:100%; height:100%; display:block; object-fit:cover; object-position:top center; border-radius:50%; background:#fff" />
+          </div>
+          <div style="font-size:12px; font-weight:800; color:#ff8d96; margin-bottom:9px"><span style="font-size:15px; line-height:0">•</span> {{ teacher.subject }}</div>
+          <div style="font-size:14px; font-weight:900; color:#fff; line-height:1.7">{{ teacher.name }}</div>
+        </article>
+      </sc-for>
     </div>
   </section>
 
   <section style="max-width:1240px; margin:clamp(40px,6cqw,64px) auto 0; padding:0 clamp(16px,4cqw,32px)">
-    <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">سوالات متداول</div>
-    <h2 style="margin:0 0 22px; font-size:clamp(20px,5.2cqw,30px); font-weight:900; color:#fff; line-height:1.5">هر چیزی که قبل از ثبت‌نام می‌پرسند</h2>
+    <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">{{ landing.faq.eyebrow }}</div>
+    <h2 style="margin:0 0 22px; font-size:clamp(20px,5.2cqw,30px); font-weight:900; color:#fff; line-height:1.5">{{ landing.faq.title }}</h2>
     <div style="display:flex; flex-direction:column; gap:10px; max-width:860px">
-      <details style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:16px 18px">
-        <summary style="cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:12px; font-weight:700; font-size:clamp(14px,3.8cqw,16px); color:#fff">شرکت در این گردهمایی هزینه دارد؟<span style="color:#ff6b75; font-weight:900">+</span></summary>
-        <div style="margin-top:12px; font-size:14px; line-height:2; color:#aebbdb">نه؛ حضور رایگان است، اما ظرفیت سالن محدود است و ورود فقط با بلیط و کد اختصاصی که پس از ثبت‌نام صادر می‌شود انجام می‌شود.</div>
-      </details>
-      <details style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:16px 18px">
-        <summary style="cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:12px; font-weight:700; font-size:clamp(14px,3.8cqw,16px); color:#fff">بلیط و کد ورودم را از کجا می‌گیرم؟<span style="color:#ff6b75; font-weight:900">+</span></summary>
-        <div style="margin-top:12px; font-size:14px; line-height:2; color:#aebbdb">بعد از تأیید شماره موبایل و تکمیل فرم، بلیط با نام خودت و یک کد اختصاصی صادر می‌شود؛ قابل دانلود است و به همان شماره هم پیامک می‌شود. این کد را تا پایان مراسم نگه دار.</div>
-      </details>
-      <details style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:16px 18px">
-        <summary style="cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:12px; font-weight:700; font-size:clamp(14px,3.8cqw,16px); color:#fff">دهمی هستم؛ برای من زود نیست؟<span style="color:#ff6b75; font-weight:900">+</span></summary>
-        <div style="margin-top:12px; font-size:14px; line-height:2; color:#aebbdb">دقیقاً برعکس؛ بخش زیادی از برنامه درباره‌ی ساختن پایه و عادت مطالعه است، چیزی که هرچه زودتر شروع شود کار سال دوازدهم را سبک‌تر می‌کند.</div>
-      </details>
-      <details style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:16px 18px">
-        <summary style="cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:12px; font-weight:700; font-size:clamp(14px,3.8cqw,16px); color:#fff">می‌توانم با پدر یا مادرم بیایم؟<span style="color:#ff6b75; font-weight:900">+</span></summary>
-        <div style="margin-top:12px; font-size:14px; line-height:2; color:#aebbdb">بله. در فرم ثبت‌نام نام و شماره یک همراه (پدر، مادر یا یکی از نزدیکان) را وارد می‌کنی و همراهت روی بلیط ثبت می‌شود.</div>
-      </details>
-      <details style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:16px 18px">
-        <summary style="cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:12px; font-weight:700; font-size:clamp(14px,3.8cqw,16px); color:#fff">اگر شهر دیگری زندگی می‌کنم چه؟<span style="color:#ff6b75; font-weight:900">+</span></summary>
-        <div style="margin-top:12px; font-size:14px; line-height:2; color:#aebbdb">ثبت‌نام برای همه شهرها باز است؛ شهر و استان محل زندگی را در فرم وارد می‌کنی و جزئیات محل برگزاری و ساعت‌ها پیش از مراسم پیامک می‌شود.</div>
-      </details>
-      <details style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:16px 18px">
-        <summary style="cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:12px; font-weight:700; font-size:clamp(14px,3.8cqw,16px); color:#fff">ثبت‌نامم چه زمانی نهایی می‌شود؟<span style="color:#ff6b75; font-weight:900">+</span></summary>
-        <div style="margin-top:12px; font-size:14px; line-height:2; color:#aebbdb">پس از ارسال فرم، بلیط شما «در حال صدور نهایی» است و همکاران ما برای تأیید نهایی با شما تماس می‌گیرند.</div>
-      </details>
+      <sc-for list="{{ landing.faq.items }}" as="item" hint-placeholder-count="3">
+        <details style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:16px 18px">
+          <summary style="cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:12px; font-weight:700; font-size:clamp(14px,3.8cqw,16px); color:#fff">{{ item.question }}<span style="color:#ff6b75; font-weight:900">+</span></summary>
+          <div style="margin-top:12px; font-size:14px; line-height:2; color:#aebbdb">{{ item.answer }}</div>
+        </details>
+      </sc-for>
     </div>
   </section>
 
   <section style="max-width:1240px; margin:clamp(40px,6cqw,64px) auto 0; padding:0 clamp(16px,4cqw,32px) 72px">
     <div style="display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:24px; padding:28px 30px">
       <div>
-        <div style="font-weight:900; font-size:24px; color:#fff; margin-bottom:8px">جای خودت را رزرو کن</div>
-        <div style="font-size:14px; color:#aebbdb">ثبت‌نام با شماره موبایل، کمتر از یک دقیقه.</div>
+        <div style="font-weight:900; font-size:24px; color:#fff; margin-bottom:8px">{{ landing.reservation.title }}</div>
+        <div style="font-size:14px; color:#aebbdb">{{ landing.reservation.description }}</div>
       </div>
-      <a href="#ثبت-نام" style="background:#d81f2a; color:#fff; font-weight:800; font-size:16px; padding:15px 32px; border-radius:14px; box-shadow:0 14px 32px -14px rgba(216,31,42,.9)" style-hover="background:#ef2f3b; color:#fff">شروع ثبت‌نام</a>
+      <button onClick="{{ primaryAction }}" style="background:#d81f2a; color:#fff; font-family:inherit; font-weight:800; font-size:16px; padding:15px 32px; border:0; border-radius:14px; cursor:pointer; box-shadow:0 14px 32px -14px rgba(216,31,42,.9)" style-hover="background:#ef2f3b; color:#fff">{{ primaryCta }}</button>
     </div>
   </section>
 
@@ -299,7 +283,10 @@
           <span style="font-size:clamp(10px,2.8cqw,12px); color:#93a2c6">تکمیل اطلاعات ثبت‌نام</span>
         </div>
       </div>
-      <span style="flex:none; direction:ltr; background:rgba(216,31,42,.2); border:1px solid rgba(216,31,42,.5); color:#ffb3b9; padding:6px 12px; border-radius:10px; font-weight:800; font-size:clamp(12px,3.2cqw,14px)">{{ userCode }}</span>
+      <div style="display:flex; align-items:center; gap:7px">
+        <span style="flex:none; direction:ltr; background:rgba(216,31,42,.2); border:1px solid rgba(216,31,42,.5); color:#ffb3b9; padding:6px 12px; border-radius:10px; font-weight:800; font-size:clamp(12px,3.2cqw,14px)">{{ userCode }}</span>
+        <button onClick="{{ logout }}" aria-label="خروج" title="خروج" style="width:32px; height:32px; border:1px solid rgba(255,255,255,.2); border-radius:50%; background:rgba(255,255,255,.08); color:#cdd7f0; font-size:15px; cursor:pointer">↪</button>
+      </div>
     </header>
 
     <section style="max-width:900px; margin:0 auto; padding:clamp(20px,5cqw,40px) clamp(14px,4cqw,32px) 72px">
@@ -310,13 +297,13 @@
       <sc-if value="{{ notSubmitted }}" hint-placeholder-val="{{ true }}">
       <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:14px">
         <label style="display:flex; flex-direction:column; gap:7px; grid-column:1/-1">
-          <span style="font-size:13px; font-weight:700; color:#cdd7f0">نام و نام خانوادگی</span>
+          <span style="font-size:13px; font-weight:700; color:#cdd7f0">نام و نام خانوادگی <b style="color:#ff4b57; font-size:11px" aria-hidden="true">*</b></span>
           <input value="{{ v_name }}" onChange="{{ s_name }}" placeholder="مثال: زهرا محمدی" style="background:rgba(6,14,36,.7); border:1.5px solid rgba(255,255,255,.16); border-radius:13px; padding:13px 14px; color:#fff; font-size:15px; outline:none" style-focus="border-color:#ff4b57" />
         </label>
 
         <div style="grid-column:1/-1; background:linear-gradient(120deg, rgba(216,31,42,.16), rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.14); border-radius:18px; padding:clamp(16px,4cqw,22px)">
           <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px; font-size:clamp(15px,4cqw,19px); font-weight:800; color:#fff; line-height:1.6">
-            <span>اول مهر ۱۴۰۵ به پایه</span>
+            <span>اول مهر ۱۴۰۵ به پایه <b style="color:#ff6b75; font-size:12px" aria-hidden="true">*</b></span>
             <span style="display:inline-flex; background:rgba(6,14,36,.72); border:1px solid rgba(255,255,255,.16); border-radius:999px; padding:4px; gap:4px">
               <button onClick="{{ pickGrade10 }}" style="{{ grade10Style }}">دهم</button>
               <button onClick="{{ pickGrade11 }}" style="{{ grade11Style }}">یازدهم</button>
@@ -327,7 +314,7 @@
         </div>
 
         <div style="grid-column:1/-1; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:16px">
-          <div style="font-size:14px; font-weight:700; color:#fff; margin-bottom:12px">رشته تحصیلی</div>
+          <div style="font-size:14px; font-weight:700; color:#fff; margin-bottom:12px">رشته تحصیلی <b style="color:#ff6b75; font-size:11px" aria-hidden="true">*</b></div>
           <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:8px">
             <button onClick="{{ pickMath }}" style="{{ mathStyle }}">ریاضی</button>
             <button onClick="{{ pickBio }}" style="{{ bioStyle }}">تجربی</button>
@@ -335,52 +322,52 @@
         </div>
 
         <label style="display:flex; flex-direction:column; gap:7px">
-          <span style="font-size:13px; font-weight:700; color:#cdd7f0">مدرسه محل تحصیل</span>
+          <span style="font-size:13px; font-weight:700; color:#cdd7f0">مدرسه محل تحصیل <b style="color:#ff4b57; font-size:11px" aria-hidden="true">*</b></span>
           <input value="{{ v_school }}" onChange="{{ s_school }}" placeholder="نام مدرسه" style="background:rgba(6,14,36,.7); border:1.5px solid rgba(255,255,255,.16); border-radius:13px; padding:13px 14px; color:#fff; font-size:15px; outline:none" style-focus="border-color:#ff4b57" />
         </label>
         <label style="display:flex; flex-direction:column; gap:7px">
-          <span style="font-size:13px; font-weight:700; color:#cdd7f0">آخرین معدل پایه</span>
+          <span style="font-size:13px; font-weight:700; color:#cdd7f0">آخرین معدل پایه <b style="color:#ff4b57; font-size:11px" aria-hidden="true">*</b></span>
           <input value="{{ v_gpa }}" onChange="{{ s_gpa }}" inputMode="decimal" placeholder="مثال: ۱۸.۵۰" style="background:rgba(6,14,36,.7); border:1.5px solid rgba(255,255,255,.16); border-radius:13px; padding:13px 14px; color:#fff; font-size:15px; outline:none" style-focus="border-color:#ff4b57" />
         </label>
         <label style="display:flex; flex-direction:column; gap:7px">
-          <span style="font-size:13px; font-weight:700; color:#cdd7f0">شهر محل تحصیل</span>
-          <input value="{{ v_studyCity }}" onChange="{{ s_studyCity }}" placeholder="مثال: تهران" style="background:rgba(6,14,36,.7); border:1.5px solid rgba(255,255,255,.16); border-radius:13px; padding:13px 14px; color:#fff; font-size:15px; outline:none" style-focus="border-color:#ff4b57" />
+          <span style="font-size:13px; font-weight:700; color:#cdd7f0">شهر محل تحصیل <b style="color:#ff4b57; font-size:11px" aria-hidden="true">*</b></span>
+          <select value="{{ v_studyCity }}" onChange="{{ s_studyCity }}" style="background:#060e24; border:1.5px solid rgba(255,255,255,.16); border-radius:13px; padding:13px 14px; color:#fff; font:inherit; font-size:15px; outline:none" style-focus="border-color:#ff4b57"><option value="">انتخاب شهر</option><sc-for list="{{ allCities }}" as="cityOption" hint-placeholder-count="20"><option value="{{ cityOption }}">{{ cityOption }}</option></sc-for></select>
         </label>
         <label style="display:flex; flex-direction:column; gap:7px">
-          <span style="font-size:13px; font-weight:700; color:#cdd7f0">شغل پدر</span>
+          <span style="font-size:13px; font-weight:700; color:#cdd7f0">شغل پدر <b style="color:#ff4b57; font-size:11px" aria-hidden="true">*</b></span>
           <input value="{{ v_fatherJob }}" onChange="{{ s_fatherJob }}" placeholder="مثال: کارمند" style="background:rgba(6,14,36,.7); border:1.5px solid rgba(255,255,255,.16); border-radius:13px; padding:13px 14px; color:#fff; font-size:15px; outline:none" style-focus="border-color:#ff4b57" />
         </label>
 
         <div style="grid-column:1/-1; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:16px; display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr)); gap:12px">
           <div style="grid-column:1/-1; font-size:14px; font-weight:700; color:#fff">محل زندگی</div>
           <label style="display:flex; flex-direction:column; gap:7px">
-            <span style="font-size:13px; color:#9dabcd">استان</span>
-            <input value="{{ v_province }}" onChange="{{ s_province }}" placeholder="مثال: تهران" style="background:rgba(6,14,36,.7); border:1.5px solid rgba(255,255,255,.16); border-radius:13px; padding:12px 14px; color:#fff; font-size:15px; outline:none" style-focus="border-color:#ff4b57" />
+            <span style="font-size:13px; color:#9dabcd">استان <b style="color:#ff4b57; font-size:11px" aria-hidden="true">*</b></span>
+            <select value="{{ v_province }}" onChange="{{ s_province }}" style="background:#060e24; border:1.5px solid rgba(255,255,255,.16); border-radius:13px; padding:12px 14px; color:#fff; font:inherit; font-size:15px; outline:none" style-focus="border-color:#ff4b57"><option value="">انتخاب استان</option><sc-for list="{{ provinces }}" as="provinceOption" hint-placeholder-count="31"><option value="{{ provinceOption }}">{{ provinceOption }}</option></sc-for></select>
           </label>
           <label style="display:flex; flex-direction:column; gap:7px">
-            <span style="font-size:13px; color:#9dabcd">شهر</span>
-            <input value="{{ v_city }}" onChange="{{ s_city }}" placeholder="مثال: تهران" style="background:rgba(6,14,36,.7); border:1.5px solid rgba(255,255,255,.16); border-radius:13px; padding:12px 14px; color:#fff; font-size:15px; outline:none" style-focus="border-color:#ff4b57" />
+            <span style="font-size:13px; color:#9dabcd">شهر <b style="color:#ff4b57; font-size:11px" aria-hidden="true">*</b></span>
+            <select value="{{ v_city }}" onChange="{{ s_city }}" disabled="{{ cityDisabled }}" style="background:#060e24; border:1.5px solid rgba(255,255,255,.16); border-radius:13px; padding:12px 14px; color:#fff; font:inherit; font-size:15px; outline:none" style-focus="border-color:#ff4b57"><option value="">{{ cityPlaceholder }}</option><sc-for list="{{ cities }}" as="cityOption" hint-placeholder-count="20"><option value="{{ cityOption }}">{{ cityOption }}</option></sc-for></select>
           </label>
           <label style="display:flex; flex-direction:column; gap:7px">
-            <span style="font-size:13px; color:#9dabcd">محله</span>
+            <span style="font-size:13px; color:#9dabcd">محله <b style="color:#ff4b57; font-size:11px" aria-hidden="true">*</b></span>
             <input value="{{ v_area }}" onChange="{{ s_area }}" placeholder="مثال: سعادت‌آباد" style="background:rgba(6,14,36,.7); border:1.5px solid rgba(255,255,255,.16); border-radius:13px; padding:12px 14px; color:#fff; font-size:15px; outline:none" style-focus="border-color:#ff4b57" />
           </label>
         </div>
 
         <label style="display:flex; flex-direction:column; gap:7px">
-          <span style="font-size:13px; font-weight:700; color:#cdd7f0">نام و نام خانوادگی همراه (پدر، مادر یا نزدیکان)</span>
+          <span style="font-size:13px; font-weight:700; color:#cdd7f0">نام و نام خانوادگی همراه (پدر، مادر یا نزدیکان) <b style="color:#ff4b57; font-size:11px" aria-hidden="true">*</b></span>
           <input value="{{ v_guardian }}" onChange="{{ s_guardian }}" placeholder="مثال: رضا محمدی" style="background:rgba(6,14,36,.7); border:1.5px solid rgba(255,255,255,.16); border-radius:13px; padding:13px 14px; color:#fff; font-size:15px; outline:none" style-focus="border-color:#ff4b57" />
         </label>
         <label style="display:flex; flex-direction:column; gap:7px">
-          <span style="font-size:13px; font-weight:700; color:#cdd7f0">شماره همراه یکی از والدین</span>
-          <input value="{{ v_guardianPhone }}" onChange="{{ s_guardianPhone }}" inputMode="numeric" placeholder="۰۹۱۲۳۴۵۶۷۸۹" style="direction:ltr; text-align:center; background:rgba(6,14,36,.7); border:1.5px solid rgba(255,255,255,.16); border-radius:13px; padding:13px 14px; color:#fff; font-size:15px; outline:none" style-focus="border-color:#ff4b57" />
+          <span style="font-size:13px; font-weight:700; color:#cdd7f0">شماره همراه یکی از والدین <b style="color:#ff4b57; font-size:11px" aria-hidden="true">*</b></span>
+          <input value="{{ v_guardianPhone }}" onChange="{{ s_guardianPhone }}" type="tel" inputMode="numeric" autoComplete="tel" lang="en" dir="ltr" data-phone-input placeholder="09123456789" style="direction:ltr; text-align:center; background:rgba(6,14,36,.7); border:1.5px solid rgba(255,255,255,.16); border-radius:13px; padding:13px 14px; color:#fff; font-size:15px; outline:none" style-focus="border-color:#ff4b57" />
         </label>
 
         <sc-if value="{{ formError }}" hint-placeholder-val="{{ false }}">
           <div style="grid-column:1/-1; background:rgba(216,31,42,.14); border:1px solid rgba(216,31,42,.5); border-radius:13px; padding:12px 14px; font-size:13.5px; font-weight:600; color:#ffb3b9">{{ formError }}</div>
         </sc-if>
 
-        <button onClick="{{ submitForm }}" style="grid-column:1/-1; background:#d81f2a; color:#fff; font-weight:800; font-size:16px; border:none; border-radius:14px; padding:16px; cursor:pointer; box-shadow:0 16px 34px -16px rgba(216,31,42,.9)" style-hover="background:#ef2f3b">ثبت‌نام نهایی و صدور بلیط</button>
+        <button onClick="{{ submitForm }}" disabled="{{ isSubmitting }}" style="grid-column:1/-1; background:#d81f2a; color:#fff; font-weight:800; font-size:16px; border:none; border-radius:14px; padding:16px; cursor:pointer; box-shadow:0 16px 34px -16px rgba(216,31,42,.9)" style-hover="background:#ef2f3b">{{ submitLabel }}</button>
         <div style="grid-column:1/-1; text-align:center">
           <button onClick="{{ backToLanding }}" style="background:none; border:none; color:#9dabcd; font-size:13px; cursor:pointer; padding:6px" style-hover="color:#fff">بازگشت به صفحه اصلی</button>
         </div>
@@ -497,11 +484,11 @@
           </div>
           <button onClick="{{ editPhone }}" style="flex:none; width:32px; height:32px; border-radius:10px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.16); color:#cdd7f0; font-size:16px; cursor:pointer; line-height:1" style-hover="background:rgba(255,255,255,.16); color:#fff">×</button>
         </div>
-        <input value="{{ otp }}" onChange="{{ onOtp }}" onKeyDown="{{ onOtpKey }}" inputMode="numeric" placeholder="- - - -" style="width:100%; direction:ltr; text-align:center; letter-spacing:.5em; font-size:24px; font-weight:900; color:#fff; background:rgba(6,14,36,.85); border:1.5px solid rgba(255,255,255,.2); border-radius:14px; padding:16px 12px; outline:none; margin-bottom:14px" style-focus="border-color:#ff4b57" />
+        <input ref="{{ otpInputRef }}" value="{{ otp }}" onChange="{{ onOtp }}" onKeyDown="{{ onOtpKey }}" inputMode="numeric" lang="en" dir="ltr" data-otp-input autoComplete="one-time-code" maxLength="4" placeholder="- - - -" style="width:100%; direction:ltr; text-align:center; letter-spacing:.5em; font-size:24px; font-weight:900; color:#fff; background:rgba(6,14,36,.85); border:1.5px solid rgba(255,255,255,.2); border-radius:14px; padding:16px 12px; outline:none; margin-bottom:14px" style-focus="border-color:#ff4b57" />
         <sc-if value="{{ error }}" hint-placeholder-val="{{ false }}">
           <div style="margin:-6px 0 12px; font-size:13px; color:#ff8d96; font-weight:600">{{ error }}</div>
         </sc-if>
-        <button onClick="{{ verifyOtp }}" style="width:100%; background:#d81f2a; color:#fff; font-weight:800; font-size:16px; border:none; border-radius:14px; padding:15px; cursor:pointer; box-shadow:0 14px 32px -14px rgba(216,31,42,.9)" style-hover="background:#ef2f3b">تأیید و ادامه</button>
+        <button onClick="{{ verifyOtp }}" disabled="{{ isVerifyingOtp }}" style="width:100%; display:inline-flex; align-items:center; justify-content:center; gap:8px; background:#d81f2a; color:#fff; font-weight:800; font-size:16px; border:none; border-radius:14px; padding:15px; cursor:pointer; box-shadow:0 14px 32px -14px rgba(216,31,42,.9); opacity:{{ verifyButtonOpacity }}" style-hover="background:#ef2f3b"><sc-if value="{{ isVerifyingOtp }}" hint-placeholder-val="{{ false }}"><span style="width:17px; height:17px; border:2px solid rgba(255,255,255,.42); border-top-color:#fff; border-radius:50%; animation:buttonSpin .7s linear infinite"></span></sc-if>{{ verifyOtpLabel }}</button>
         <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:16px; padding-top:14px; border-top:1px solid rgba(255,255,255,.1); font-size:13px">
           <button onClick="{{ resendOtp }}" disabled="{{ resendDisabled }}" style="{{ resendStyle }}">ارسال مجدد کد</button>
           <span style="color:#7c89ab">{{ resendHint }}</span>
@@ -520,9 +507,23 @@
 const FA = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
 const fa = (n, pad) => String(pad ? String(n).padStart(2, '0') : n).replace(/\d/g, d => FA[+d]);
 const toEn = s => String(s).replace(/[۰-۹]/g, d => FA.indexOf(d)).replace(/[^\d]/g, '');
+const toDecimal = s => String(s).replace(/[۰-۹]/g, d => FA.indexOf(d)).replace('٫', '.').replace(/[^\d.]/g, '');
+const landingContent = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob('{{ landingContent }}'), character => character.charCodeAt(0))));
+const landingAgendaItems = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob('{{ landingAgendaItems }}'), character => character.charCodeAt(0))));
+const teachers = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob('{{ landingTeachersContent }}'), character => character.charCodeAt(0))));
+const provinceCities = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob('{{ provinceCities }}'), character => character.charCodeAt(0))));
+const allCities = [...new Set(Object.values(provinceCities).flat())];
+const otpRequestUrl = '{{ otpRequestUrl }}';
+const otpVerifyUrl = '{{ otpVerifyUrl }}';
+const otpLogoutUrl = '{{ otpLogoutUrl }}';
+const registrationStateUrl = '{{ registrationStateUrl }}';
+const registrationStoreUrl = '{{ registrationStoreUrl }}';
+const myTicketUrl = '{{ myTicketUrl }}';
+const csrfToken = '{{ csrfToken }}';
 
 class Component extends DCLogic {
-  state = { step: 'phone', phone: '', otp: '', error: '', now: Date.now(), code: '', blogger: null, page: 'landing', form: {}, formError: '', submitted: false };
+  state = { step: 'phone', phone: '', otp: '', error: '', now: Date.now(), code: '', blogger: null, page: 'landing', form: { province: 'تهران', city: 'تهران' }, formError: '', submitted: false, registered: false, ticketUrl: '', sendingOtp: false, verifyingOtp: false, submitting: false };
+  otpInput = React.createRef();
 
   componentDidMount() {
     this.timer = setInterval(() => this.setState({ now: Date.now() }), 1000);
@@ -532,8 +533,13 @@ class Component extends DCLogic {
       const name = p.get('name');
       if (ref || name) this.setState({ blogger: { code: ref || 'a10', name: name || 'بلاگر همکار' } });
     } catch (e) {}
+    this.loadRegistrationState();
   }
   componentWillUnmount() { clearInterval(this.timer); }
+
+  focusOtp = () => {
+    window.setTimeout(() => this.otpInput.current?.focus(), 80);
+  };
 
   blogger() {
     return this.state.blogger || {
@@ -542,35 +548,74 @@ class Component extends DCLogic {
     };
   }
 
-  issueCode() {
-    const b = this.blogger();
-    let n = 1;
+  loadRegistrationState = async () => {
     try {
-      const key = 'genavehei.seq.' + b.code;
-      n = (parseInt(localStorage.getItem(key) || '0', 10) || 0) + 1;
-      localStorage.setItem(key, String(n));
+      const response = await fetch(registrationStateUrl, { headers: { 'Accept': 'application/json' } });
+      const data = await response.json();
+      if (!data.phone) return;
+      this.setState({
+        step: 'done',
+        phone: data.phone,
+        code: data.ticket_code || '',
+        registered: !!data.registered,
+        ticketUrl: data.ticket_url || myTicketUrl,
+        page: data.registered ? 'landing' : 'register',
+      });
     } catch (e) {}
-    return b.code + '-' + n;
-  }
+  };
 
-  send = () => {
+  send = async () => {
+    if (this.state.sendingOtp) return;
     const d = toEn(this.state.phone);
     if (!/^09\d{9}$/.test(d)) return this.setState({ error: 'شماره موبایل را کامل و درست وارد کنید (۱۱ رقم، با ۰۹).' });
-    this.setState({ step: 'otp', phone: d, error: '', resendAt: Date.now() + 120000 });
+    this.setState({ sendingOtp: true, error: '' });
+    try {
+      const response = await fetch(otpRequestUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken }, body: JSON.stringify({ phone: d }) });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) return this.setState({ error: Object.values(data.errors || {}).flat().join(' ') || 'ارسال کد ممکن نشد.', sendingOtp: false });
+      this.setState({ step: 'otp', phone: d, error: '', sendingOtp: false, resendAt: Date.now() + 120000 }, () => {
+        this.focusOtp();
+        this.readOtpFromSms();
+      });
+    } catch (error) {
+      this.setState({ error: 'ارسال کد ممکن نشد. دوباره تلاش کنید.', sendingOtp: false });
+    }
   };
 
   resend = () => {
     if (Date.now() < (this.state.resendAt || 0)) return;
-    this.setState({ resendAt: Date.now() + 120000, otp: '', error: '' });
+    this.setState({ otp: '', error: '' }, this.send);
   };
 
-  verify = () => {
-    if (toEn(this.state.otp) !== this.demoOtp()) return this.setState({ error: 'کد وارد شده درست نیست.' });
-    this.setState({ step: 'done', error: '', code: this.state.code || this.issueCode(), page: 'register' });
+  verify = async (otp = this.state.otp) => {
+    if (this.state.verifyingOtp) return;
+    const code = toEn(otp);
+    if (!/^\d{4}$/.test(code)) return this.setState({ error: 'کد چهاررقمی را وارد کنید.' });
+    this.setState({ verifyingOtp: true, error: '' });
+    try {
+      const response = await fetch(otpVerifyUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken }, body: JSON.stringify({ phone: this.state.phone, code }) });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) return this.setState({ otp: '', error: Object.values(data.errors || {}).flat().join(' ') || 'کد وارد شده درست نیست.', verifyingOtp: false }, this.focusOtp);
+      this.setState({ error: '', verifyingOtp: false }, this.loadRegistrationState);
+    } catch (error) {
+      this.setState({ otp: '', error: 'تأیید کد ممکن نشد. دوباره تلاش کنید.', verifyingOtp: false }, this.focusOtp);
+    }
     try { window.scrollTo(0, 0); } catch (e) {}
   };
 
+  readOtpFromSms = async () => {
+    if (!('OTPCredential' in window) || !navigator.credentials) return;
+    try {
+      const credential = await navigator.credentials.get({ otp: { transport: ['sms'] } });
+      if (credential && credential.code) {
+        this.setState({ otp: credential.code, error: '' }, () => this.verify(credential.code));
+      }
+    } catch (e) {}
+  };
+
   set = k => e => this.setState({ form: Object.assign({}, this.state.form, { [k]: e.target.value }), formError: '' });
+  setPhone = k => e => this.setState({ form: Object.assign({}, this.state.form, { [k]: toEn(e.target.value) }), formError: '' });
+  setProvince = e => this.setState({ form: Object.assign({}, this.state.form, { province: e.target.value, city: '' }), formError: '' });
   pick = (k, v) => () => this.setState({ form: Object.assign({}, this.state.form, { [k]: v }), formError: '' });
 
   chipStyle(on) {
@@ -581,11 +626,34 @@ class Component extends DCLogic {
 
   ticket = React.createRef();
 
+  loadHtml2Canvas = () => new Promise((resolve, reject) => {
+    if (window.html2canvas) {
+      resolve(window.html2canvas);
+      return;
+    }
+    const existing = document.querySelector('script[data-html2canvas]');
+    if (existing) {
+      existing.addEventListener('load', () => resolve(window.html2canvas), { once: true });
+      existing.addEventListener('error', reject, { once: true });
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = '/vendor/html2canvas.min.js';
+    script.async = true;
+    script.dataset.html2canvas = 'true';
+    script.onload = () => resolve(window.html2canvas);
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+
   download = async () => {
     const el = this.ticket.current;
-    if (!el || !window.html2canvas) return;
+    if (!el) return;
     try {
-      const canvas = await window.html2canvas(el, { backgroundColor: '#0a1531', scale: 2, useCORS: true });
+      const html2canvas = await this.loadHtml2Canvas();
+      if (document.fonts && document.fonts.ready) await document.fonts.ready;
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const canvas = await html2canvas(el, { backgroundColor: '#0a1531', scale: 3, useCORS: true, logging: false });
       const a = document.createElement('a');
       a.download = 'ticket-' + (this.state.code || 'genavehei') + '.png';
       a.href = canvas.toDataURL('image/png');
@@ -609,32 +677,56 @@ class Component extends DCLogic {
     };
   }
 
-  submit = () => {
+  submit = async () => {
+    if (this.state.submitting) return;
     const f = this.state.form;
     const need = [['name','نام و نام خانوادگی'],['grade','پایه سال آینده'],['field','رشته تحصیلی'],['school','مدرسه محل تحصیل'],['gpa','آخرین معدل'],['studyCity','شهر محل تحصیل'],['fatherJob','شغل پدر'],['province','استان'],['city','شهر'],['area','محله'],['guardian','نام همراه'],['guardianPhone','شماره همراه والدین']];
     for (const [k, label] of need) if (!String(f[k] || '').trim()) return this.setState({ formError: 'تکمیل «' + label + '» الزامی است.' });
     if (!/^09\d{9}$/.test(toEn(f.guardianPhone))) return this.setState({ formError: 'شماره همراه والدین را کامل و درست وارد کنید.' });
+    const grade = { 'دهم': '10', 'یازدهم': '11', 'دوازدهم': '12' }[f.grade];
+    const field = { 'ریاضی': 'math', 'تجربی': 'science' }[f.field];
+    this.setState({ submitting: true, formError: '' });
     try {
-      const key = 'genavehei.registrations';
-      const list = JSON.parse(localStorage.getItem(key) || '[]');
-      list.push({
-        code: this.state.code, blogger: this.blogger().code, name: f.name, grade: f.grade, field: f.field,
-        school: f.school, city: f.city, province: f.province, area: f.area, gpa: f.gpa,
-        fatherJob: f.fatherJob, guardian: f.guardian, guardianPhone: toEn(f.guardianPhone),
-        phone: this.state.phone, at: Date.now()
+      const response = await fetch(registrationStoreUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+        body: JSON.stringify({ full_name: f.name, grade, field, school: f.school, gpa: toDecimal(f.gpa), study_city: f.studyCity, father_job: f.fatherJob, province: f.province, city: f.city, area: f.area, guardian_name: f.guardian, guardian_phone: toEn(f.guardianPhone) }),
       });
-      localStorage.setItem(key, JSON.stringify(list));
-    } catch (e) {}
-    this.setState({ submitted: true, formError: '' });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok && response.status !== 409) throw new Error(Object.values(data.errors || {}).flat().join(' ') || data.message || 'ثبت‌نام انجام نشد.');
+      location.assign(data.ticket_url || myTicketUrl);
+      return;
+    } catch (error) {
+      this.setState({ formError: error.message || 'ثبت‌نام انجام نشد.', submitting: false });
+      return;
+    }
     try { window.scrollTo(0, 0); } catch (e) {}
   };
 
-  demoOtp() { return '1234'; }
+  primaryAction = () => {
+    if (this.state.registered && this.state.ticketUrl) {
+      location.assign(this.state.ticketUrl);
+      return;
+    }
+    if (this.state.phone) {
+      this.setState({ page: 'register', formError: '' });
+      try { window.scrollTo(0, 0); } catch (e) {}
+      return;
+    }
+    document.getElementById('ثبت-نام')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  logout = async () => {
+    try {
+      await fetch(otpLogoutUrl, { method: 'POST', headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken } });
+    } catch (e) {}
+    this.setState({ step: 'phone', phone: '', otp: '', code: '', page: 'landing', registered: false, ticketUrl: '', submitted: false, form: { province: 'تهران', city: 'تهران' }, error: '' });
+  };
 
   renderVals() {
     const F = this.state.form || {};
     const b = this.blogger();
-    const target = new Date('2028-09-15T09:00:00+03:30').getTime();
+    const target = {{ eventStartsAt }};
     const diff = Math.max(0, target - this.state.now);
     const s = Math.floor(diff / 1000);
     const left = Math.max(0, Math.ceil(((this.state.resendAt || 0) - this.state.now) / 1000));
@@ -646,29 +738,48 @@ class Component extends DCLogic {
       phone: this.state.phone,
       otp: this.state.otp,
       error: this.state.error,
-      demoOtp: fa(this.demoOtp()),
-      userCode: this.state.code,
+      userCode: this.state.code || 'تأیید شد',
+      isLoggedIn: !!this.state.phone,
+      primaryCta: this.state.registered ? 'مشاهده بلیط' : (this.state.phone ? 'تکمیل فرم ثبت‌نام' : landingContent.hero.cta_label),
+      accountTitle: this.state.registered ? 'ثبت‌نام شما تکمیل شده است' : 'شماره شما تأیید شد',
+      accountDescription: this.state.registered ? 'ثبت‌نام شما با موفقیت انجام شده است. برای دیدن بلیط ورود روی دکمه زیر بزنید.' : 'برای تکمیل اطلاعات و صدور بلیط، فرم ثبت‌نام را پر کنید.',
+      accountCodeLabel: this.state.registered ? 'کد بلیط شما' : 'وضعیت ورود',
       bloggerLabel: b.name,
       bloggerCodeLabel: b.code,
       refLink: origin + '?ref=' + b.code,
       frameStyle: { containerType: 'inline-size', width: '100%' },
+      landing: landingContent,
+      agendaItems: landingAgendaItems,
+      teachers,
       isLanding: this.state.page !== 'register',
       isRegister: this.state.page === 'register',
       isSubmitted: !!this.state.submitted,
       notSubmitted: !this.state.submitted,
+      isRegistered: !!this.state.registered,
+      isSendingOtp: !!this.state.sendingOtp,
+      isVerifyingOtp: !!this.state.verifyingOtp,
+      isSubmitting: !!this.state.submitting,
+      sendButtonOpacity: this.state.sendingOtp ? '.72' : '1',
+      verifyButtonOpacity: this.state.verifyingOtp ? '.72' : '1',
+      sendOtpLabel: this.state.sendingOtp ? 'در حال ارسال…' : 'دریافت کد',
+      verifyOtpLabel: this.state.verifyingOtp ? 'در حال بررسی…' : 'تأیید و ادامه',
+      submitLabel: this.state.submitting ? 'در حال ثبت‌نام…' : 'ثبت‌نام نهایی و صدور بلیط',
       formError: this.state.formError || '',
       v_name: F.name || '', v_school: F.school || '', v_gpa: F.gpa || '', v_studyCity: F.studyCity || '',
       v_fatherJob: F.fatherJob || '', v_province: F.province || '', v_city: F.city || '', v_area: F.area || '',
       v_guardian: F.guardian || '', v_guardianPhone: F.guardianPhone || '',
       s_name: this.set('name'), s_school: this.set('school'), s_gpa: this.set('gpa'), s_studyCity: this.set('studyCity'),
-      s_fatherJob: this.set('fatherJob'), s_province: this.set('province'), s_city: this.set('city'), s_area: this.set('area'),
-      s_guardian: this.set('guardian'), s_guardianPhone: this.set('guardianPhone'),
+      s_fatherJob: this.set('fatherJob'), s_province: this.setProvince, s_city: this.set('city'), s_area: this.set('area'),
+      s_guardian: this.set('guardian'), s_guardianPhone: this.setPhone('guardianPhone'),
+      provinces: Object.keys(provinceCities), cities: provinceCities[F.province] || [], allCities,
+      cityDisabled: !F.province, cityPlaceholder: F.province ? 'انتخاب شهر' : 'ابتدا استان را انتخاب کنید',
       pickGrade10: this.pick('grade', 'دهم'), pickGrade11: this.pick('grade', 'یازدهم'), pickGrade12: this.pick('grade', 'دوازدهم'),
       grade10Style: this.pillStyle(F.grade === 'دهم'), grade11Style: this.pillStyle(F.grade === 'یازدهم'), grade12Style: this.pillStyle(F.grade === 'دوازدهم'),
       pickMath: this.pick('field', 'ریاضی'), pickBio: this.pick('field', 'تجربی'),
       mathStyle: this.chipStyle(F.field === 'ریاضی'), bioStyle: this.chipStyle(F.field === 'تجربی'),
       submitForm: this.submit,
       ticketRef: this.ticket,
+      otpInputRef: this.otpInput,
       t_name: F.name || '—', t_guardian: F.guardian || '—', t_grade: F.grade || '—', t_field: F.field || '—',
       t_city: F.city || F.studyCity || '—', t_gpa: F.gpa || '—', t_school: F.school || '—',
       t_guardianPhone: F.guardianPhone || '—',
@@ -676,8 +787,8 @@ class Component extends DCLogic {
       downloadTicket: this.download,
       backToLanding: () => this.setState({ page: 'landing' }),
       cardOrder: 3,
-      resendDisabled: left > 0,
-      resendHint: left > 0 ? 'ارسال مجدد تا ' + fa(Math.floor(left / 60), true) + ':' + fa(left % 60, true) : 'کد آزمایشی: ' + fa(this.demoOtp()),
+      resendDisabled: left > 0 || this.state.sendingOtp,
+      resendHint: left > 0 ? 'ارسال مجدد تا ' + fa(Math.floor(left / 60), true) + ':' + fa(left % 60, true) : (this.state.sendingOtp ? 'در حال ارسال…' : 'امکان ارسال مجدد کد'),
       resendStyle: left > 0
         ? { background: 'none', border: 'none', padding: 0, fontSize: '13px', fontWeight: 700, color: '#5f6b8c', cursor: 'not-allowed' }
         : { background: 'none', border: 'none', padding: 0, fontSize: '13px', fontWeight: 700, color: '#ff6b75', cursor: 'pointer' },
@@ -686,14 +797,25 @@ class Component extends DCLogic {
       cdHours: fa(Math.floor(s / 3600) % 24, true),
       cdMinutes: fa(Math.floor(s / 60) % 60, true),
       cdSeconds: fa(s % 60, true),
-      onPhone: e => this.setState({ phone: e.target.value, error: '' }),
-      onOtp: e => this.setState({ otp: e.target.value, error: '' }),
+      onPhone: e => {
+        const phone = toEn(e.target.value);
+        this.setState({ phone, error: '' }, () => {
+          if (phone.length === 11) this.send();
+        });
+      },
+      onOtp: e => {
+        const otp = toEn(e.target.value).slice(0, 4);
+        this.setState({ otp, error: '' }, () => {
+          if (otp.length === 4) this.verify(otp);
+        });
+      },
       onPhoneKey: e => { if (e.key === 'Enter') this.send(); },
       onOtpKey: e => { if (e.key === 'Enter') this.verify(); },
       sendOtp: this.send,
       verifyOtp: this.verify,
       editPhone: () => this.setState({ step: 'phone', otp: '', error: '' }),
-      goRegister: () => { this.setState({ error: 'فرم ثبت‌نام در مرحله بعد ساخته می‌شود.' }); }
+      primaryAction: this.primaryAction,
+      logout: this.logout
     };
   }
 }

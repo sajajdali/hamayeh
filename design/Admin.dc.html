@@ -9,10 +9,14 @@
 <x-dc>
 <helmet>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" />
+<link rel="icon" href="/favicon/favicon.ico" sizes="any" />
+<link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+<link rel="manifest" href="/favicon/site.webmanifest" />
+<link rel="stylesheet" href="/vendor/vazirmatn.css" />
 <style>
-  html, body { margin:0; padding:0; background:#060d20; }
+  html, body { margin:0; padding:0; background:#060d20; overflow-x:hidden; }
   body { font-family:'Vazirmatn', system-ui, sans-serif; direction:rtl; -webkit-font-smoothing:antialiased; }
   * { box-sizing:border-box; }
   a { color:#ff5c66; text-decoration:none; }
@@ -27,6 +31,44 @@
   @media (max-width: 900px) {
     [data-nav="desktop"] { display:none; }
     [data-nav="mobile"] { display:flex; }
+  }
+  @media (max-width: 700px) {
+    [data-panel-content] { padding:16px 12px 48px !important; gap:14px !important; }
+    [data-panel-card] { border-radius:18px !important; padding:14px !important; }
+    [data-registration-table] { overflow:visible !important; }
+    [data-registration-table] > div { min-width:0 !important; }
+    [data-registration-header] { display:none !important; }
+    [data-registration-row] {
+      display:grid !important;
+      grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+      gap:11px 14px !important;
+      padding:14px !important;
+    }
+    [data-registration-cell] {
+      display:flex !important;
+      min-width:0;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:3px;
+      overflow-wrap:anywhere;
+    }
+    [data-registration-cell]::before {
+      content:attr(data-label);
+      color:#8b98ba;
+      font-size:10.5px;
+      font-weight:700;
+    }
+    [data-registration-cell="name"] { grid-column:1 / -1; font-size:14px !important; }
+    [data-registration-cell="status"] { align-items:flex-start !important; }
+    [data-mobile-pager] { justify-content:center !important; text-align:center; }
+    [data-mobile-pager] > div { width:100%; justify-content:center; }
+    [data-activity-row] { gap:8px !important; padding:12px !important; }
+    [data-activity-message] { flex:1 0 100% !important; min-width:0 !important; order:5; }
+    [data-blogger-registration] { gap:8px !important; padding:12px !important; }
+    [data-blogger-registration-name] { flex:1 0 100% !important; min-width:0 !important; }
+    [data-blogger-stats] { grid-template-columns:repeat(2, minmax(0, 1fr)) !important; }
+    [data-mobile-list-row] { align-items:flex-start !important; flex-wrap:wrap !important; }
+    [data-mobile-list-actions] { width:100%; justify-content:flex-start !important; }
   }
 </style>
 </helmet>
@@ -82,6 +124,9 @@
             <sc-if value="{{ isSuper }}" hint-placeholder-val="{{ true }}">
               <button onClick="{{ goAdmins }}" style="{{ tabAdminsStyle }}">مدیران</button>
             </sc-if>
+            <sc-if value="{{ isSuper }}" hint-placeholder-val="{{ true }}">
+              <a href="/panel/settings" style="display:inline-flex; align-items:center; border-radius:999px; padding:8px 14px; font-size:12.5px; font-weight:800; white-space:nowrap; color:#9dabcd">تنظیمات</a>
+            </sc-if>
             <sc-if value="{{ isStaff }}" hint-placeholder-val="{{ true }}">
               <button onClick="{{ goLogs }}" style="{{ tabLogsStyle }}">گزارش فعالیت</button>
             </sc-if>
@@ -127,6 +172,9 @@
               <sc-if value="{{ isSuper }}" hint-placeholder-val="{{ true }}">
                 <button onClick="{{ goAdmins }}" style="{{ navAdminsStyle }}">مدیران</button>
               </sc-if>
+              <sc-if value="{{ isSuper }}" hint-placeholder-val="{{ true }}">
+                <a href="/panel/settings" style="text-align:right; color:#cdd7f0; border-radius:12px; padding:12px 14px; font-size:13.5px; font-weight:800">تنظیمات رویداد</a>
+              </sc-if>
               <sc-if value="{{ isStaff }}" hint-placeholder-val="{{ true }}">
                 <button onClick="{{ goLogs }}" style="{{ navLogsStyle }}">گزارش فعالیت</button>
               </sc-if>
@@ -136,7 +184,7 @@
         </div>
       </sc-if>
 
-      <div style="max-width:1320px; margin:0 auto; padding:clamp(18px,3vw,28px) clamp(14px,3vw,28px) 80px; display:flex; flex-direction:column; gap:20px">
+      <div data-panel-content style="max-width:1320px; margin:0 auto; padding:clamp(18px,3vw,28px) clamp(14px,3vw,28px) 80px; display:flex; flex-direction:column; gap:20px">
 
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,175px),1fr)); gap:12px">
           <div style="background:linear-gradient(150deg, rgba(216,31,42,.26), rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.13); border-radius:18px; padding:16px 18px">
@@ -204,23 +252,23 @@
               </select>
             </div>
 
-            <div style="overflow-x:auto">
+            <div data-registration-table style="overflow-x:auto">
               <div style="min-width:900px">
-                <div style="display:grid; grid-template-columns:1.2fr .7fr .8fr .55fr .7fr .85fr 1fr .55fr .75fr; gap:8px; padding:0 13px 10px; font-size:11.5px; color:#8b98ba; font-weight:700">
+                <div data-registration-header style="display:grid; grid-template-columns:1.2fr .7fr .8fr .55fr .7fr .85fr 1fr .55fr .75fr; gap:8px; padding:0 13px 10px; font-size:11.5px; color:#8b98ba; font-weight:700">
                   <span>نام و نام خانوادگی</span><span>کد بلیط</span><span>بلاگر</span><span>پایه</span><span>رشته</span><span>شهر</span><span>وضعیت</span><span>تماس</span><span>تاریخ</span>
                 </div>
                 <div style="display:flex; flex-direction:column; gap:6px">
                   <sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
-                    <div onClick="{{ r.open }}" style="display:grid; grid-template-columns:1.2fr .7fr .8fr .55fr .7fr .85fr 1fr .55fr .75fr; gap:8px; align-items:center; background:rgba(6,14,36,.5); border:1px solid rgba(255,255,255,.08); border-radius:13px; padding:13px; font-size:12.5px; color:#dbe4fb; cursor:pointer" style-hover="border-color:rgba(216,31,42,.55); background:rgba(11,21,51,.75)">
-                      <span style="font-weight:800; color:#fff; overflow-wrap:anywhere">{{ r.name }}</span>
-                      <span style="direction:ltr; font-weight:800; color:#ffb3b9">{{ r.code }}</span>
-                      <span>{{ r.blogger }}</span>
-                      <span>{{ r.grade }}</span>
-                      <span>{{ r.field }}</span>
-                      <span>{{ r.city }}</span>
-                      <span style="{{ r.badgeStyle }}">{{ r.statusLabel }}</span>
-                      <span style="color:#8fbcff; font-weight:800">{{ r.callCount }}</span>
-                      <span style="color:#8b98ba">{{ r.date }}</span>
+                    <div data-registration-row onClick="{{ r.open }}" style="display:grid; grid-template-columns:1.2fr .7fr .8fr .55fr .7fr .85fr 1fr .55fr .75fr; gap:8px; align-items:center; background:rgba(6,14,36,.5); border:1px solid rgba(255,255,255,.08); border-radius:13px; padding:13px; font-size:12.5px; color:#dbe4fb; cursor:pointer" style-hover="border-color:rgba(216,31,42,.55); background:rgba(11,21,51,.75)">
+                      <span data-registration-cell="name" data-label="نام و نام خانوادگی" style="font-weight:800; color:#fff; overflow-wrap:anywhere">{{ r.name }}</span>
+                      <span data-registration-cell data-label="کد بلیط" style="direction:ltr; font-weight:800; color:#ffb3b9">{{ r.code }}</span>
+                      <span data-registration-cell data-label="بلاگر">{{ r.blogger }}</span>
+                      <span data-registration-cell data-label="پایه">{{ r.grade }}</span>
+                      <span data-registration-cell data-label="رشته">{{ r.field }}</span>
+                      <span data-registration-cell data-label="شهر">{{ r.city }}</span>
+                      <span data-registration-cell="status" data-label="وضعیت" style="{{ r.badgeStyle }}">{{ r.statusLabel }}</span>
+                      <span data-registration-cell data-label="تماس" style="color:#8fbcff; font-weight:800">{{ r.callCount }}</span>
+                      <span data-registration-cell data-label="تاریخ" style="color:#8b98ba">{{ r.date }}</span>
                     </div>
                   </sc-for>
                 </div>
@@ -230,7 +278,7 @@
               </div>
             </div>
             <sc-if value="{{ regsPagerMulti }}" hint-placeholder-val="{{ false }}">
-              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,.08)">
+              <div data-mobile-pager style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,.08)">
                 <span style="font-size:12px; color:#8b98ba">{{ regsPagerRange }}</span>
                 <div style="display:flex; align-items:center; gap:9px">
                   <button onClick="{{ regsPrev }}" style="{{ regsPrevStyle }}">قبلی</button>
@@ -250,7 +298,7 @@
               <div style="display:flex; flex-direction:column; gap:11px">
                 <input value="{{ newName }}" onChange="{{ onNewName }}" placeholder="نام بلاگر — مثال: علی صبوری" style="background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:12px 14px; color:#fff; font-size:14.5px; outline:none" style-focus="border-color:#ff4b57" />
                 <input value="{{ newCode }}" onChange="{{ onNewCode }}" placeholder="کد اختصاصی — مثال: a10" style="direction:ltr; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:12px 14px; color:#fff; font-size:14.5px; outline:none" style-focus="border-color:#ff4b57" />
-                <input value="{{ newPhone }}" onChange="{{ onNewPhone }}" placeholder="شماره موبایل بلاگر (اختیاری)" style="direction:ltr; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:12px 14px; color:#fff; font-size:14.5px; outline:none" style-focus="border-color:#ff4b57" />
+                <input value="{{ newPhone }}" onChange="{{ onNewPhone }}" type="tel" inputMode="numeric" lang="en" dir="ltr" data-phone-input placeholder="شماره موبایل بلاگر (اختیاری)" style="direction:ltr; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:12px 14px; color:#fff; font-size:14.5px; outline:none" style-focus="border-color:#ff4b57" />
                 <div>
                   <div style="font-size:12px; color:#8b98ba; margin-bottom:6px">آدرس کوتاه اختصاصی</div>
                   <div style="display:flex; align-items:center; gap:0; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; overflow:hidden">
@@ -280,7 +328,7 @@
                       </div>
                       <button onClick="{{ b.copy }}" style="flex:none; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.15); color:#cdd7f0; font-size:11.5px; font-weight:700; padding:6px 10px; border-radius:8px; cursor:pointer" style-hover="background:rgba(255,255,255,.16); color:#fff">{{ b.copyLabel }}</button>
                     </div>
-                    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:7px">
+                    <div data-blogger-stats style="display:grid; grid-template-columns:repeat(4,1fr); gap:7px">
                       <div style="text-align:center; background:rgba(255,255,255,.05); border-radius:10px; padding:8px 3px">
                         <div style="font-weight:900; font-size:16px; color:#fff">{{ b.total }}</div>
                         <div style="font-size:10px; color:#8b98ba">کل</div>
@@ -298,8 +346,7 @@
                         <div style="font-size:10px; color:#8b98ba">تأیید</div>
                       </div>
                     </div>
-                    <div style="direction:ltr; font-size:11.5px; color:#8fbcff; margin-top:9px; overflow-wrap:anywhere; font-weight:700">{{ b.short }}</div>
-                    <div style="direction:ltr; font-size:10.5px; color:#66739a; margin-top:3px; overflow-wrap:anywhere">{{ b.link }}</div>
+                    <a href="{{ b.link }}" target="_blank" rel="noopener" onClick="{{ b.openLink }}" style="display:block; direction:ltr; font-size:11.5px; color:#8fbcff; margin-top:9px; overflow-wrap:anywhere; font-weight:700; text-decoration:underline; text-underline-offset:3px">{{ b.link }}</a>
                   </div>
                 </sc-for>
               </div>
@@ -337,9 +384,9 @@
               <div style="display:flex; flex-direction:column; gap:10px">
                 <sc-for list="{{ templateRows }}" as="t" hint-placeholder-count="3">
                   <div style="border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:14px; background:rgba(6,14,36,.45)">
-                    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px">
+                    <div data-mobile-list-row style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px">
                       <span style="font-weight:800; font-size:14px; color:#fff">{{ t.name }}</span>
-                      <div style="display:flex; align-items:center; gap:8px">
+                      <div data-mobile-list-actions style="display:flex; align-items:center; gap:8px">
                         <span style="font-size:11px; color:#8b98ba">{{ t.sentLabel }}</span>
                         <button onClick="{{ t.remove }}" style="background:rgba(216,31,42,.14); border:1px solid rgba(216,31,42,.4); color:#ff8d96; font-size:11px; font-weight:700; padding:5px 9px; border-radius:8px; cursor:pointer" style-hover="background:rgba(216,31,42,.26)">حذف</button>
                       </div>
@@ -376,12 +423,12 @@
               <div style="font-weight:900; font-size:17px; color:#fff; margin-bottom:16px">مدیران فعال</div>
               <div style="display:flex; flex-direction:column; gap:9px">
                 <sc-for list="{{ adminRows }}" as="a" hint-placeholder-count="2">
-                  <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:13px 14px; background:rgba(6,14,36,.45)">
+                  <div data-mobile-list-row style="display:flex; align-items:center; justify-content:space-between; gap:10px; border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:13px 14px; background:rgba(6,14,36,.45)">
                     <div style="min-width:0">
                       <div style="font-weight:800; font-size:14px; color:#fff">{{ a.name }}</div>
                       <div style="direction:ltr; font-size:11.5px; color:#8b98ba; margin-top:3px">{{ a.user }}</div>
                     </div>
-                    <div style="display:flex; align-items:center; gap:8px">
+                    <div data-mobile-list-actions style="display:flex; align-items:center; gap:8px">
                       <span style="{{ a.roleStyle }}">{{ a.roleLabel }}</span>
                       <sc-if value="{{ a.removable }}" hint-placeholder-val="{{ false }}">
                         <button onClick="{{ a.remove }}" style="background:rgba(216,31,42,.14); border:1px solid rgba(216,31,42,.4); color:#ff8d96; font-size:11px; font-weight:700; padding:5px 9px; border-radius:8px; cursor:pointer" style-hover="background:rgba(216,31,42,.26)">حذف</button>
@@ -444,10 +491,10 @@
 
             <div style="display:flex; flex-direction:column; gap:7px">
               <sc-for list="{{ globalLogs }}" as="l" hint-placeholder-count="6">
-                <div onClick="{{ l.open }}" style="display:flex; align-items:flex-start; gap:12px; flex-wrap:wrap; background:rgba(6,14,36,.5); border:1px solid rgba(255,255,255,.08); border-radius:13px; padding:12px 14px; cursor:pointer" style-hover="border-color:rgba(216,31,42,.5); background:rgba(11,21,51,.75)">
+                <div data-activity-row onClick="{{ l.open }}" style="display:flex; align-items:flex-start; gap:12px; flex-wrap:wrap; background:rgba(6,14,36,.5); border:1px solid rgba(255,255,255,.08); border-radius:13px; padding:12px 14px; cursor:pointer" style-hover="border-color:rgba(216,31,42,.5); background:rgba(11,21,51,.75)">
                   <span style="{{ l.typeStyle }}">{{ l.typeLabel }}</span>
                   <span style="font-size:12.5px; color:#fff; font-weight:700; white-space:nowrap">{{ l.who }}</span>
-                  <span style="font-size:12.5px; color:#aebbdb; flex:1; min-width:200px; line-height:1.85; white-space:pre-wrap">{{ l.text }}</span>
+                  <span data-activity-message style="font-size:12.5px; color:#aebbdb; flex:1; min-width:200px; line-height:1.85; white-space:pre-wrap">{{ l.text }}</span>
                   <span style="font-size:12px; color:#dbe4fb">{{ l.regName }}</span>
                   <span style="direction:ltr; font-size:11.5px; color:#ffb3b9; font-weight:700">{{ l.regCode }}</span>
                   <span style="font-size:11.5px; color:#8b98ba; white-space:nowrap">{{ l.date }}</span>
@@ -519,12 +566,12 @@
             <div style="font-weight:900; font-size:15px; color:#fff; margin-bottom:12px">اطلاعات بلاگر</div>
             <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr)); gap:12px">
               <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">شماره موبایل</div><div style="direction:ltr; text-align:right; font-weight:800; font-size:13.5px; color:#fff">{{ bg_phone }}</div></div>
-              <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">آدرس کوتاه</div><div style="direction:ltr; text-align:right; font-weight:800; font-size:13.5px; color:#8fbcff; overflow-wrap:anywhere">{{ bg_short }}</div></div>
+              <div style="grid-column:1/-1"><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">لینک ثبت‌نام بلاگر</div><a href="{{ bg_link }}" target="_blank" rel="noopener" onClick="{{ bg_openLink }}" style="display:block; direction:ltr; text-align:right; font-weight:800; font-size:13.5px; color:#8fbcff; overflow-wrap:anywhere; text-decoration:underline; text-underline-offset:3px">{{ bg_link }}</a></div>
               <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">نام کاربری ورود</div><div style="direction:ltr; text-align:right; font-weight:800; font-size:13.5px; color:#fff">{{ bg_user }}</div></div>
               <div><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">رمز ورود</div><div style="direction:ltr; text-align:right; font-weight:800; font-size:13.5px; color:#fff">{{ bg_pass }}</div></div>
-              <div style="grid-column:1/-1"><div style="font-size:11px; color:#8b98ba; margin-bottom:3px">لینک کامل</div><div style="direction:ltr; text-align:right; font-size:12px; color:#aebbdb; overflow-wrap:anywhere">{{ bg_link }}</div></div>
             </div>
             <div style="display:flex; gap:9px; flex-wrap:wrap; margin-top:16px">
+              <button onClick="{{ bg_copy }}" style="flex:1 1 150px; background:rgba(255,255,255,.07); color:#cdd7f0; font-weight:800; font-size:13.5px; border:1px solid rgba(255,255,255,.16); border-radius:12px; padding:12px; cursor:pointer" style-hover="background:rgba(255,255,255,.16); color:#fff">{{ bg_copyLabel }}</button>
               <button onClick="{{ bg_toggle }}" style="{{ bg_toggleStyle }}">{{ bg_toggleLabel }}</button>
               <button onClick="{{ bg_askDelete }}" style="flex:1 1 150px; background:rgba(216,31,42,.14); color:#ff8d96; font-weight:800; font-size:13.5px; border:1px solid rgba(216,31,42,.45); border-radius:12px; padding:12px; cursor:pointer" style-hover="background:rgba(216,31,42,.26)">حذف بلاگر</button>
             </div>
@@ -534,8 +581,8 @@
             <div style="font-weight:900; font-size:15px; color:#fff; margin-bottom:12px">ثبت‌نام‌های این بلاگر ({{ bg_total }})</div>
             <div style="display:flex; flex-direction:column; gap:7px">
               <sc-for list="{{ bg_regs }}" as="r" hint-placeholder-count="3">
-                <div onClick="{{ r.open }}" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; background:rgba(6,14,36,.5); border:1px solid rgba(255,255,255,.08); border-radius:13px; padding:12px 14px; cursor:pointer" style-hover="border-color:rgba(216,31,42,.5)">
-                  <span style="font-weight:800; font-size:13px; color:#fff; flex:1; min-width:120px">{{ r.name }}</span>
+                <div data-blogger-registration onClick="{{ r.open }}" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; background:rgba(6,14,36,.5); border:1px solid rgba(255,255,255,.08); border-radius:13px; padding:12px 14px; cursor:pointer" style-hover="border-color:rgba(216,31,42,.5)">
+                  <span data-blogger-registration-name style="font-weight:800; font-size:13px; color:#fff; flex:1; min-width:120px">{{ r.name }}</span>
                   <span style="direction:ltr; font-size:12px; font-weight:800; color:#ffb3b9">{{ r.code }}</span>
                   <span style="{{ r.badgeStyle }}">{{ r.statusLabel }}</span>
                   <span style="font-size:11.5px; color:#8b98ba">{{ r.date }}</span>
@@ -999,7 +1046,7 @@ class Component extends DCLogic {
   shortBase() {
     try { return location.host.replace(/^www\./, '') + '/'; } catch (e) { return 'genavehei.ir/'; }
   }
-  shortFor(b) { return this.shortBase() + (b.slug || b.code); }
+  shortFor(b) { return this.linkFor(b.code); }
 
   current() { return this.state.regs.find(r => r.code === this.state.selected) || null; }
 
@@ -1103,10 +1150,7 @@ class Component extends DCLogic {
       setTimeout(() => this.setState({ copied: '' }), 1600);
     };
   }
-  linkFor(code) {
-    const base = typeof location !== 'undefined' ? location.origin + location.pathname.replace(/[^/]*$/, 'Landing.dc.html') : '';
-    return base + '?ref=' + code;
-  }
+  linkFor(code) { return typeof location !== 'undefined' ? location.origin + '/s/' + code : '/s/' + code; }
   nameOf(code) { return (this.state.bloggers.find(b => b.code === code) || {}).name || code; }
 
   renderVals() {
@@ -1196,7 +1240,7 @@ class Component extends DCLogic {
       newName: s.newName, newCode: s.newCode, newPhone: s.newPhone, formError: s.formError,
       onNewName: e => this.setState({ newName: e.target.value, formError: '' }),
       onNewCode: e => this.setState({ newCode: e.target.value, formError: '' }),
-      onNewPhone: e => this.setState({ newPhone: e.target.value, formError: '' }),
+      onNewPhone: e => this.setState({ newPhone: String(e.target.value).replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[^\d]/g, ''), formError: '' }),
       addBlogger: this.add,
 
       bloggersPagerMulti: bloggersPage.multi, bloggersPagerLabel: bloggersPage.label, bloggersPagerRange: bloggersPage.range,
@@ -1211,6 +1255,7 @@ class Component extends DCLogic {
           approved: fa(mine.filter(r => r.status === 'approved').length),
           copy: this.copyLink(b.code), copyLabel: s.copied === b.code ? 'کپی شد ✓' : 'کپی لینک',
           open: () => this.setState({ openBlogger: b.code, pageBg: 1 }),
+          openLink: event => event.stopPropagation(),
           cardStyle: {
             border: '1px solid rgba(255,255,255,.1)', borderRadius: '16px', padding: '14px',
             background: 'rgba(6,14,36,.45)', cursor: 'pointer', opacity: off ? .6 : 1
@@ -1238,6 +1283,9 @@ class Component extends DCLogic {
       bg_name: bg ? bg.name : '', bg_code: bg ? bg.code : '',
       bg_phone: bg ? (bg.phone || '—') : '',
       bg_short: bg ? this.shortFor(bg) : '', bg_link: bg ? this.linkFor(bg.code) : '',
+      bg_copy: bg ? this.copyLink(bg.code) : (() => {}),
+      bg_copyLabel: bg && s.copied === bg.code ? 'کپی شد ✓' : 'کپی لینک',
+      bg_openLink: event => event.stopPropagation(),
       bg_total: fa(bgRegs.length),
       bg_today: fa(inRange(bgRegs, t0, t0 + DAY)),
       bg_yesterday: fa(inRange(bgRegs, t0 - DAY, t0)),

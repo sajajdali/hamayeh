@@ -6,6 +6,7 @@ use App\Broadcasting\LogChannel;
 use App\Broadcasting\SmsChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\DB;
 
 class OtpCodeNotification extends Notification
 {
@@ -34,7 +35,9 @@ class OtpCodeNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'template' => config('shsms.templates.login_webapp'), 'receptor' => $this->phone, 'params' => [$this->code],
+            'template' => DB::table('settings')->where('key', 'shsms_otp_template')->value('value') ?: config('shsms.templates.login_webapp'),
+            'receptor' => $this->phone,
+            'params' => [$this->code],
         ];
     }
 }

@@ -4,7 +4,7 @@ use Livewire\Component;
 
 new class extends Component
 {
-    public array $form = []; public ?string $done = null;
+    public array $form = ['study_city' => 'تهران']; public ?string $done = null;
     protected function rules(): array { return ['form.full_name'=>'required|string','form.grade'=>'required|in:10,11,12,alumni','form.field'=>'required|in:math,science','form.school'=>'required','form.gpa'=>'nullable|numeric|between:0,20','form.study_city'=>'required','form.father_job'=>'nullable','form.province'=>'required','form.city'=>'required','form.area'=>'nullable','form.guardian_name'=>'required','form.guardian_phone'=>['required','regex:/^09\d{9}$/']]; }
     public function submit(): void { abort_unless(session()->has('otp_verified_phone'), 403); $data=$this->validate()['form']; $data['phone']=session('otp_verified_phone'); $bloggerId=session('ref_blogger_id'); $registration=app(\App\Actions\IssueRegistration::class)->handle($bloggerId ? \App\Models\Blogger::find($bloggerId) : null,$data); $this->done=$registration->ticket_code; }
 };

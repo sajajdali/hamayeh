@@ -13,17 +13,11 @@ class ChangeRegistrationStatus
 {
     public function handle(Registration $registration, User $actor, RegistrationStatus $status): Registration
     {
-        $current = $registration->status;
-        $allowed = match ($current) {
-            RegistrationStatus::Pending => [RegistrationStatus::Calling, RegistrationStatus::Approved, RegistrationStatus::Canceled],
-            RegistrationStatus::Calling => [RegistrationStatus::Approved, RegistrationStatus::Canceled],
-            RegistrationStatus::Approved => [RegistrationStatus::Canceled],
-            RegistrationStatus::Canceled => [RegistrationStatus::Pending],
-        };
-
-        if ($current !== $status && ! in_array($status, $allowed, true)) {
+        if (! $this->canTransition($registration, $status)) {
             throw ValidationException::withMessages(['status' => 'این تغییر وضعیت مجاز نیست.']);
         }
+
+        $current = $registration->status;
 
         if ($current === $status) {
             return $registration;
@@ -41,5 +35,17 @@ class ChangeRegistrationStatus
         ]);
 
         return $registration;
+    }
+
+    public function canTransition(Registration $registration, RegistrationStatus $status): bool
+    {
+        $allowed = match ($registration->status) {
+            RegistrationStatus::Pending => [RegistrationStatus::Calling, RegistrationStatus::Approved, RegistrationStatus::Canceled],
+            RegistrationStatus::Calling => [RegistrationStatus::Approved, RegistrationStatus::Canceled],
+            RegistrationStatus::Approved => [RegistrationStatus::Calling, RegistrationStatus::Canceled],
+            RegistrationStatus::Canceled => [RegistrationStatus::Pending, RegistrationStatus::Calling],
+        };
+
+        return $registration->status === $status || in_array($status, $allowed, true);
     }
 }

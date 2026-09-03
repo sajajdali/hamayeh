@@ -53,9 +53,13 @@ it('includes a central user-facing error handler for every panel action', functi
     $this->actingAs($manager)
         ->get(route('panel.registrations'))
         ->assertOk()
+        ->assertSee('window.panelNotify=', false)
+        ->assertSee('window.panelActionSuccess=', false)
         ->assertSee('window.panelNotifyError', false)
         ->assertSee('panelBloggerAction', false)
+        ->assertSee("location.origin + '/s/'", false)
         ->assertSee('panelRegistrationAction', false)
+        ->assertSee('\/panel\/r\/', false)
         ->assertSee('panelSmsTemplateAction', false)
         ->assertSee('panelAdminAction', false);
 });

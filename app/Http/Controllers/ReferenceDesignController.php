@@ -7,10 +7,13 @@ use App\Models\Blogger;
 use App\Models\Registration;
 use App\Models\SmsTemplate;
 use App\Models\User;
+use Carbon\CarbonImmutable;
+use Carbon\CarbonInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Vite;
@@ -19,6 +22,20 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ReferenceDesignController extends Controller
 {
+    private const EventStartsAtKey = 'event_starts_at';
+
+    private const LandingAgendaKey = 'landing_agenda';
+
+    private const LandingBenefitsKey = 'landing_benefits';
+
+    private const LandingContentKey = 'landing_content';
+
+    private const LandingTeachersKey = 'landing_teachers';
+
+    private const SeoKey = 'site_seo';
+
+    private const PublicSettingsCacheKey = 'public-landing:settings';
+
     public function admin(Request $request): Response
     {
         $actor = auth('web')->user() ?? auth('blogger')->user();
@@ -139,15 +156,44 @@ class ReferenceDesignController extends Controller
     {
         abort_unless($blogger->is_active, 404);
 
-        $html = Cache::remember('landing:v3:blogger:'.$blogger->getKey(), now()->addHour(), fn (): string => $this->design('Landing.dc.html', [
+        $eventStartsAt = $this->eventStartsAt();
+        $benefits = $this->landingBenefits();
+        $agenda = $this->landingAgenda();
+        $teachers = $this->landingTeachers();
+        $landing = $this->landingContent();
+
+        return $this->design('Landing.dc.html', [
             'علی صبوری' => $blogger->name,
             'a10' => $blogger->code,
-        ])->getContent());
-
-        return response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+            '۲۵ شهریور ۱۴۰۷' => $this->formatPersianDate($eventStartsAt),
+            '{{ eventStartsAt }}' => (string) ($eventStartsAt->getTimestamp() * 1000),
+            '{{ landingContent }}' => base64_encode(json_encode($landing, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)),
+            '{{ provinceCities }}' => base64_encode(json_encode(config('province_cities'), JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)),
+            '{{ otpRequestUrl }}' => route('otp.store'),
+            '{{ otpVerifyUrl }}' => route('otp.verify'),
+            '{{ otpLogoutUrl }}' => route('otp.logout'),
+            '{{ registrationStateUrl }}' => route('landing.registration-state', $blogger),
+            '{{ registrationStoreUrl }}' => route('landing.registrations.store', $blogger),
+            '{{ myTicketUrl }}' => route('landing.ticket', $blogger),
+            '{{ csrfToken }}' => csrf_token(),
+            '{{ landingBenefitsEyebrow }}' => $benefits['eyebrow'],
+            '{{ landingBenefitsTitle }}' => $benefits['title'],
+            '{{ landingBenefit0Title }}' => $benefits['items'][0]['title'],
+            '{{ landingBenefit0Description }}' => $benefits['items'][0]['description'],
+            '{{ landingBenefit1Title }}' => $benefits['items'][1]['title'],
+            '{{ landingBenefit1Description }}' => $benefits['items'][1]['description'],
+            '{{ landingBenefit2Title }}' => $benefits['items'][2]['title'],
+            '{{ landingBenefit2Description }}' => $benefits['items'][2]['description'],
+            '{{ landingBenefit3Title }}' => $benefits['items'][3]['title'],
+            '{{ landingBenefit3Description }}' => $benefits['items'][3]['description'],
+            '{{ landingAgendaEyebrow }}' => $agenda['eyebrow'],
+            '{{ landingAgendaTitle }}' => $agenda['title'],
+            '{{ landingAgendaItems }}' => base64_encode(json_encode($agenda['items'], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)),
+            '{{ landingTeachersContent }}' => base64_encode(json_encode($teachers, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)),
+        ]);
     }
 
-    public function ticket(Registration $registration): Response
+    public function ticket(Request $request, Registration $registration): Response
     {
         return $this->design('Ticket.dc.html', [
             'زهرا محمدی' => $registration->full_name,
@@ -157,9 +203,13 @@ class ReferenceDesignController extends Controller
             'تهران' => $registration->city,
             '۱۸.۷۵' => (string) $registration->gpa,
             'سعادت‌آباد' => $registration->area,
+            '۲۵ شهریور ۱۴۰۷' => $this->formatPersianDate($this->eventStartsAt()),
             'پایه دوازدهم' => 'پایه '.$registration->grade->label(),
             'رشته تجربی' => 'رشته '.$registration->field->label(),
             'a10-1' => $registration->ticket_code,
+            '{{ landingUrl }}' => $registration->blogger ? route('landing', $registration->blogger) : route('home'),
+            '{{ ticketActionsDisplay }}' => $request->boolean('render') ? 'none' : 'flex',
+            '{{ ticketCode }}' => $registration->ticket_code,
         ]);
     }
 
@@ -167,6 +217,7 @@ class ReferenceDesignController extends Controller
     {
         return response(File::get(base_path('design/support.js')), 200, [
             'Content-Type' => 'application/javascript; charset=UTF-8',
+            'Cache-Control' => 'public, max-age=3600',
         ]);
     }
 
@@ -174,7 +225,35 @@ class ReferenceDesignController extends Controller
     {
         abort_unless(in_array($asset, ['logo-genavehei.png', 'ostad-portrait.png'], true), 404);
 
-        return response()->file(base_path('design/assets/'.$asset));
+        return response()->file(base_path('design/assets/'.$asset), [
+            'Cache-Control' => 'public, max-age=31536000, immutable',
+        ]);
+    }
+
+    public function teacherImage(string $image): BinaryFileResponse
+    {
+        abort_unless(preg_match('/^[A-Za-z0-9_-]+\.(?:jpg|jpeg|png|webp)$/', $image) === 1, 404);
+
+        $path = 'teachers/'.$image;
+
+        abort_unless(Storage::disk('public')->exists($path), 404);
+
+        return response()->file(Storage::disk('public')->path($path), [
+            'Cache-Control' => 'public, max-age=31536000, immutable',
+        ]);
+    }
+
+    public function seoImage(string $image): BinaryFileResponse
+    {
+        abort_unless(preg_match('/^[A-Za-z0-9_-]+\.(?:jpg|jpeg|png|webp)$/', $image) === 1, 404);
+
+        $path = 'seo/'.$image;
+
+        abort_unless(Storage::disk('public')->exists($path), 404);
+
+        return response()->file(Storage::disk('public')->path($path), [
+            'Cache-Control' => 'public, max-age=31536000, immutable',
+        ]);
     }
 
     /** @param array<string, string> $replacements */
@@ -192,8 +271,136 @@ class ReferenceDesignController extends Controller
         $html = str_replace('<script src="'.$supportUrl.'"></script>', '__APP_SCRIPT__<script src="'.$supportUrl.'"></script>', $html);
         $html = str_replace('assets/', url('/design/assets/').'/', $html);
         $html = str_replace('__APP_SCRIPT__', $appScript, $html);
+        $html = str_replace('</head>', $this->seoMeta().'</head>', $html);
 
         return response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+    }
+
+    private function seoMeta(): string
+    {
+        $seo = json_decode((string) ($this->publicSettings()[self::SeoKey] ?? ''), true);
+        $seo = is_array($seo) ? array_replace(EventSettingsController::defaultSeo(), $seo) : EventSettingsController::defaultSeo();
+        $image = ! empty($seo['image_path'])
+            ? route('design.seo-image', ['image' => basename($seo['image_path'])])
+            : url('/design/assets/logo-genavehei.png');
+
+        return '<title>'.e($seo['site_title']).'</title>'
+            .'<meta name="description" content="'.e($seo['description']).'">'
+            .'<meta property="og:type" content="website">'
+            .'<meta property="og:title" content="'.e($seo['share_title']).'">'
+            .'<meta property="og:description" content="'.e($seo['share_description']).'">'
+            .'<meta property="og:image" content="'.e($image).'">'
+            .'<meta name="twitter:card" content="summary_large_image">'
+            .'<meta name="twitter:title" content="'.e($seo['share_title']).'">'
+            .'<meta name="twitter:description" content="'.e($seo['share_description']).'">'
+            .'<meta name="twitter:image" content="'.e($image).'">';
+    }
+
+    private function eventStartsAt(): CarbonImmutable
+    {
+        $timestamp = $this->publicSettings()[self::EventStartsAtKey] ?? null;
+
+        return $timestamp
+            ? CarbonImmutable::createFromTimestamp((int) $timestamp, config('app.timezone'))
+            : CarbonImmutable::create(2028, 9, 15, 9, 0, 0, config('app.timezone'));
+    }
+
+    /** @return array{eyebrow: string, title: string, items: array<int, array{title: string, description: string}>} */
+    private function landingBenefits(): array
+    {
+        $benefits = json_decode((string) ($this->publicSettings()[self::LandingBenefitsKey] ?? ''), true);
+
+        return is_array($benefits) && count($benefits['items'] ?? []) === 4
+            ? $benefits
+            : [
+                'eyebrow' => 'چرا باید در این گردهمایی باشی؟',
+                'title' => 'چهار چیزی که با خودت از سالن بیرون می‌بری',
+                'items' => [
+                    ['title' => 'برنامه‌ریزی واقعی', 'description' => 'یک برنامه هفتگی که با مدرسه، آزمون و زندگی واقعی‌ات جور دربیاید — نه جدول‌های آرمانی.'],
+                    ['title' => 'تکنیک تست‌زنی', 'description' => 'روش‌های مدیریت زمان و انتخاب تست در کنکور ریاضی و تجربی، با حل زنده روی صحنه.'],
+                    ['title' => 'امتحانات نهایی', 'description' => 'تأثیر معدل، نقشه مطالعه نهایی‌ها و اینکه کجا باید بین نهایی و کنکور تعادل بسازی.'],
+                    ['title' => 'انگیزه‌ی ماندگار', 'description' => 'هم‌مسیر شدن با هزاران داوطلب دیگر؛ همان چیزی که تنهایی مطالعه‌کردن از تو گرفته است.'],
+                ],
+            ];
+    }
+
+    /** @return array{eyebrow: string, title: string, items: array<int, array{time: string, title: string}>} */
+    private function landingAgenda(): array
+    {
+        $agenda = json_decode((string) ($this->publicSettings()[self::LandingAgendaKey] ?? ''), true);
+
+        return is_array($agenda) && count($agenda['items'] ?? []) >= 1 && count($agenda['items'] ?? []) <= 20
+            ? $agenda
+            : [
+                'eyebrow' => 'سرفصل‌های روز سمینار',
+                'title' => 'از صبح تا عصر، بدون حرف تکراری',
+                'items' => [
+                    ['time' => '۰۹:۰۰', 'title' => 'افتتاحیه و نقشه راه سال تحصیلی'],
+                    ['time' => '۱۰:۳۰', 'title' => 'تکنیک‌های مطالعه و تست‌زنی — ریاضی و تجربی'],
+                    ['time' => '۱۳:۰۰', 'title' => 'مدیریت استرس، خواب و تمرکز'],
+                    ['time' => '۱۵:۰۰', 'title' => 'پرسش و پاسخ زنده با استاد گناوه‌ای'],
+                ],
+            ];
+    }
+
+    /** @return array{eyebrow: string, title: string, description: string, items: array<int, array{name: string, subject: string, photo: string}>} */
+    private function landingTeachers(): array
+    {
+        $teachers = json_decode((string) ($this->publicSettings()[self::LandingTeachersKey] ?? ''), true);
+        $teachers = is_array($teachers) && count($teachers['items'] ?? []) >= 1 && count($teachers['items'] ?? []) <= 20
+            ? $teachers
+            : EventSettingsController::defaultTeachers();
+
+        return [
+            'eyebrow' => $teachers['eyebrow'],
+            'title' => $teachers['title'],
+            'description' => $teachers['description'],
+            'items' => collect($teachers['items'])->map(fn (array $teacher): array => [
+                'name' => $teacher['name'],
+                'subject' => $teacher['subject'],
+                'photo' => ! empty($teacher['photo_path'])
+                    ? route('design.teacher-image', ['image' => basename($teacher['photo_path'])])
+                    : url('/design/assets/ostad-portrait.png'),
+            ])->all(),
+        ];
+    }
+
+    /** @return array<string, mixed> */
+    private function landingContent(): array
+    {
+        $landing = json_decode((string) ($this->publicSettings()[self::LandingContentKey] ?? ''), true);
+
+        return is_array($landing) ? array_replace(EventSettingsController::defaultLanding(), $landing) : EventSettingsController::defaultLanding();
+    }
+
+    /** @return array<string, string> */
+    private function publicSettings(): array
+    {
+        return Cache::remember(self::PublicSettingsCacheKey, now()->addHour(), fn (): array => DB::table('settings')
+            ->whereIn('key', [
+                self::EventStartsAtKey,
+                self::LandingAgendaKey,
+                self::LandingBenefitsKey,
+                self::LandingContentKey,
+                self::LandingTeachersKey,
+                self::SeoKey,
+            ])
+            ->pluck('value', 'key')
+            ->all());
+    }
+
+    private function formatPersianDate(CarbonInterface $date): string
+    {
+        $formatter = new \IntlDateFormatter(
+            'fa_IR@calendar=persian',
+            \IntlDateFormatter::LONG,
+            \IntlDateFormatter::NONE,
+            config('app.timezone'),
+            \IntlDateFormatter::TRADITIONAL,
+            'd MMMM y',
+        );
+
+        return $formatter->format($date) ?: $date->locale('fa')->isoFormat('D MMMM YYYY');
     }
 
     /** @param array<string, mixed> $state @param array<string, string> $identity @param array<string, int> $statistics */
@@ -280,9 +487,12 @@ class ReferenceDesignController extends Controller
         $html = str_replace('assets/', url('/design/assets/').'/', $html);
         $html = str_replace('__APP_SCRIPT__', $appScript, $html);
 
-        $logout = '<script>window.panelError=async r=>{const b=await r.json().catch(()=>null);return Object.values((b&&b.errors)||{}).flat().join(" ")||"عملیات انجام نشد."};window.panelLogout=()=>fetch('.Js::from(route('panel.logout')).',{method:"POST",headers:{"X-CSRF-TOKEN":'.Js::from(csrf_token()).'}}).then(()=>location.assign('.Js::from(route('panel.login')).'));window.panelRegistrationAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/r/')).'+encodeURIComponent(code)+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));location.reload()});window.panelBloggerAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/bloggers/')).'+(code?encodeURIComponent(code):\'\')+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));location.reload()});window.panelBloggerAvatar=(code,file)=>{const body=new FormData();body.append("avatar",file);return fetch('.Js::from(url('/panel/bloggers/')).'+encodeURIComponent(code)+"/avatar",{method:"POST",headers:{"Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));location.reload()})};window.panelSmsTemplateAction=(id,data,method)=>fetch('.Js::from(url('/panel/sms-templates/')).'+(id?encodeURIComponent(id):\'\'),{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));location.reload()});window.panelAdminAction=(username,data,method)=>fetch('.Js::from(url('/panel/admins/')).'+(username?encodeURIComponent(username):\'\'),{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));location.reload()});window.panelActivityExport='.Js::from(route('panel.activity.export')).';</script>';
-        $errorNotifier = '<script>window.panelNotifyError=message=>window.alert(message||"عملیات انجام نشد.");["panelRegistrationAction","panelBloggerAction","panelBloggerAvatar","panelSmsTemplateAction","panelAdminAction"].forEach(name=>{const action=window[name];window[name]=async(...args)=>{try{return await action(...args)}catch(error){window.panelNotifyError(error.message);throw error}}});window.addEventListener("unhandledrejection",event=>{if(event.reason instanceof Error){window.panelNotifyError(event.reason.message);event.preventDefault()}});</script>';
-        $html = str_replace('</head>', $logout.$errorNotifier.'</head>', $html);
+        $notifications = <<<'HTML'
+<style>#panel-notification-stack{position:fixed;top:18px;right:18px;z-index:2147483647;display:flex;max-width:min(420px,calc(100vw - 36px));flex-direction:column;gap:10px;direction:rtl}.panel-notification{border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:13px 16px;color:#fff;font:700 13px/1.8 system-ui,sans-serif;box-shadow:0 18px 42px rgba(0,0,0,.35);transition:opacity .25s ease,transform .25s ease}.panel-notification--success{background:#07683e}.panel-notification--error{background:#9d1d29}.panel-notification--leaving{opacity:0;transform:translateY(-8px)}</style><script>window.panelNotify=(message,type="success")=>{let stack=document.getElementById("panel-notification-stack");if(!stack){stack=document.createElement("div");stack.id="panel-notification-stack";stack.setAttribute("aria-live","polite");document.body.append(stack)}const notification=document.createElement("div");notification.className="panel-notification panel-notification--"+(type==="error"?"error":"success");notification.textContent=message||"عملیات با موفقیت انجام شد.";stack.append(notification);window.setTimeout(()=>{notification.classList.add("panel-notification--leaving");window.setTimeout(()=>notification.remove(),250)},5000)};window.panelActionSuccess=()=>{window.panelNotify("تغییرات با موفقیت ذخیره شد.");window.setTimeout(()=>location.reload(),700)};</script>
+HTML;
+        $logout = '<script>window.panelError=async r=>{const b=await r.json().catch(()=>null);return Object.values((b&&b.errors)||{}).flat().join(" ")||"عملیات انجام نشد."};window.panelLogout=()=>fetch('.Js::from(route('panel.logout')).',{method:"POST",headers:{"X-CSRF-TOKEN":'.Js::from(csrf_token()).'}}).then(()=>location.assign('.Js::from(route('panel.login')).'));window.panelRegistrationAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/r').'/').'+encodeURIComponent(code)+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));window.panelActionSuccess()});window.panelBloggerAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/bloggers/')).'+(code?encodeURIComponent(code):\'\')+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));window.panelActionSuccess()});window.panelBloggerAvatar=(code,file)=>{const body=new FormData();body.append("avatar",file);return fetch('.Js::from(url('/panel/bloggers/')).'+encodeURIComponent(code)+"/avatar",{method:"POST",headers:{"Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));window.panelActionSuccess()})};window.panelSmsTemplateAction=(id,data,method)=>fetch('.Js::from(url('/panel/sms-templates/')).'+(id?encodeURIComponent(id):\'\'),{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));window.panelActionSuccess()});window.panelAdminAction=(username,data,method)=>fetch('.Js::from(url('/panel/admins/')).'+(username?encodeURIComponent(username):\'\'),{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));window.panelActionSuccess()});window.panelActivityExport='.Js::from(route('panel.activity.export')).';</script>';
+        $errorNotifier = '<script>window.panelNotifyError=message=>window.panelNotify(message||"عملیات انجام نشد.","error");["panelRegistrationAction","panelBloggerAction","panelBloggerAvatar","panelSmsTemplateAction","panelAdminAction"].forEach(name=>{const action=window[name];window[name]=async(...args)=>{try{return await action(...args)}catch(error){window.panelNotifyError(error.message);throw error}}});window.addEventListener("unhandledrejection",event=>{if(event.reason instanceof Error){window.panelNotifyError(event.reason.message);event.preventDefault()}});</script>';
+        $html = str_replace('</head>', $notifications.$logout.$errorNotifier.'</head>', $html);
 
         return response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
     }

@@ -9,8 +9,12 @@
 <x-dc>
 <helmet>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" />
+<link rel="icon" href="/favicon/favicon.ico" sizes="any" />
+<link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+<link rel="manifest" href="/favicon/site.webmanifest" />
+<link rel="stylesheet" href="/vendor/vazirmatn.css" />
 <style>
   html, body { margin:0; padding:0; background:#0a1531; }
   body { font-family:'Vazirmatn', system-ui, sans-serif; direction:rtl; -webkit-font-smoothing:antialiased; }
@@ -18,13 +22,14 @@
   a { color:#ff5c66; text-decoration:none; }
   a:hover { color:#ffffff; }
   @keyframes stampIn { from { opacity:0; transform:scale(.94) rotate(-1.5deg); } to { opacity:1; transform:none; } }
+  @keyframes buttonSpin { to { transform:rotate(360deg); } }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="/vendor/html-to-image.js"></script>
 </helmet>
 
 <div style="min-height:100vh; background:radial-gradient(800px 500px at 70% -10%, rgba(216,31,42,.3), transparent 60%), #0a1531; color:#eaf0ff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:40px 18px; container-type:inline-size">
 
-  <div ref="{{ ticketRef }}" style="width:100%; max-width:520px; background:#0b1533; border-radius:26px; overflow:hidden; position:relative; box-shadow:0 50px 90px -40px rgba(0,0,0,.95); border:1px solid rgba(255,255,255,.14); animation:stampIn .45s ease both">
+  <div id="ticket-card" ref="{{ ticketRef }}" style="width:100%; max-width:520px; background:#0b1533; border-radius:26px; overflow:hidden; position:relative; box-shadow:0 50px 90px -40px rgba(0,0,0,.95); border:1px solid rgba(255,255,255,.14); animation:stampIn .45s ease both">
     <div style="background:linear-gradient(120deg, #c4121f, #d81f2a 55%, #8f0e18); padding:16px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px">
       <div style="display:flex; align-items:center; gap:10px; min-width:0">
         <img src="assets/logo-genavehei.png" alt="" style="width:40px; height:40px; flex:none; object-fit:contain; background:#fff; border-radius:11px; padding:2px" />
@@ -50,10 +55,10 @@
       <span style="flex:none; width:4px; border-radius:4px; background:linear-gradient(#d81f2a, rgba(216,31,42,.25))"></span>
       <div style="min-width:0; flex:1">
         <div style="font-size:9.5px; color:#8b98ba; letter-spacing:.22em; font-weight:800; margin-bottom:6px">دارنده بلیط</div>
-        <div style="font-weight:900; font-size:clamp(18px,4.8cqw,23px); color:#fff; line-height:1.35; overflow-wrap:anywhere; margin-bottom:8px">زهرا محمدی</div>
+        <div style="font-family:Tahoma,Arial,sans-serif; font-weight:900; font-size:23px; color:#fff; line-height:1.35; white-space:nowrap; margin-bottom:8px">زهرا محمدی</div>
         <div style="display:flex; flex-wrap:wrap; gap:6px">
           <span style="font-size:11.5px; font-weight:700; color:#cdd7f0; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.13); border-radius:999px; padding:4px 11px">پایه دوازدهم</span>
-          <span style="font-size:11.5px; font-weight:700; color:#ffb3b9; background:rgba(216,31,42,.16); border:1px solid rgba(216,31,42,.4); border-radius:999px; padding:4px 11px">رشته تجربی</span>
+          <span style="font-size:10px; font-weight:700; color:#ffb3b9; background:rgba(216,31,42,.16); border:1px solid rgba(216,31,42,.4); border-radius:999px; padding:4px 9px; white-space:nowrap">رشته تجربی</span>
         </div>
       </div>
       <div style="flex:none; align-self:stretch; display:flex; flex-direction:column; justify-content:center; gap:6px; text-align:center; padding:12px 14px; border-radius:14px; background:rgba(6,14,36,.55); border:1px solid rgba(255,255,255,.13)">
@@ -67,7 +72,7 @@
       <div style="display:flex; align-items:baseline; gap:7px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.07); min-width:0">
         <span style="flex:none; font-size:10.5px; color:#8b98ba">همراه</span>
         <span style="flex:1 1 auto; min-width:12px; border-bottom:1px dotted rgba(255,255,255,.22); transform:translateY(-3px)"></span>
-        <span style="flex:0 1 auto; min-width:0; text-align:end; font-weight:800; font-size:12.5px; color:#fff; overflow-wrap:anywhere">رضا محمدی</span>
+        <span style="flex:0 0 auto; text-align:end; font-family:Tahoma,Arial,sans-serif; font-weight:800; font-size:12.5px; color:#fff; white-space:nowrap">رضا محمدی</span>
       </div>
       <div style="display:flex; align-items:baseline; gap:7px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.07); min-width:0">
         <span style="flex:none; font-size:10.5px; color:#8b98ba">شماره همراه</span>
@@ -77,7 +82,7 @@
       <div style="display:flex; align-items:baseline; gap:7px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.07); min-width:0">
         <span style="flex:none; font-size:10.5px; color:#8b98ba">مدرسه</span>
         <span style="flex:1 1 auto; min-width:12px; border-bottom:1px dotted rgba(255,255,255,.22); transform:translateY(-3px)"></span>
-        <span style="flex:0 1 auto; min-width:0; text-align:end; font-weight:800; font-size:12.5px; color:#fff; overflow-wrap:anywhere">فرزانگان</span>
+        <span style="flex:0 0 auto; text-align:end; font-family:Tahoma,Arial,sans-serif; font-weight:800; font-size:12.5px; color:#fff; white-space:nowrap">فرزانگان</span>
       </div>
       <div style="display:flex; align-items:baseline; gap:7px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.07); min-width:0">
         <span style="flex:none; font-size:10.5px; color:#8b98ba">شهر</span>
@@ -92,7 +97,7 @@
       <div style="display:flex; align-items:baseline; gap:7px; padding:8px 0; min-width:0">
         <span style="flex:none; font-size:10.5px; color:#8b98ba">محله</span>
         <span style="flex:1 1 auto; min-width:12px; border-bottom:1px dotted rgba(255,255,255,.22); transform:translateY(-3px)"></span>
-        <span style="flex:0 1 auto; min-width:0; text-align:end; font-weight:800; font-size:12.5px; color:#fff; overflow-wrap:anywhere">سعادت‌آباد</span>
+        <span style="flex:0 0 auto; text-align:end; font-family:Tahoma,Arial,sans-serif; font-weight:800; font-size:12.5px; color:#fff; white-space:nowrap">سعادت‌آباد</span>
       </div>
     </div>
 
@@ -107,7 +112,7 @@
       </div>
       <div style="min-width:0; flex:1">
         <div style="font-size:10.5px; color:#8b98ba; margin-bottom:4px">کد ورود اختصاصی</div>
-        <div style="direction:ltr; font-weight:900; font-size:clamp(24px,6.4cqw,32px); color:#fff; letter-spacing:.12em">a10-1</div>
+        <div style="direction:ltr; font-weight:900; font-size:32px; color:#fff; letter-spacing:.12em; white-space:nowrap">a10-1</div>
         <div style="font-size:11px; color:#ff8d96; font-weight:700; margin-top:6px">تا پایان مراسم نزد خود نگه دارید</div>
       </div>
       <div style="flex:none; display:flex; gap:3px; align-items:flex-end; height:56px">
@@ -117,35 +122,60 @@
 
     <div style="background:rgba(255,255,255,.05); border-top:1px solid rgba(255,255,255,.1); padding:11px 20px; display:flex; align-items:center; justify-content:space-between; gap:10px">
       <span style="font-size:11px; color:#8b98ba">وضعیت: در حال صدور نهایی</span>
-      <span style="direction:ltr; font-size:11px; color:#8b98ba">GENAVEHEI · a10-1</span>
+      <span style="direction:ltr; font-size:11px; color:#8b98ba; white-space:nowrap">GENAVEHEI · a10-1</span>
     </div>
   </div>
 
-  <div style="display:flex; gap:10px; width:100%; max-width:520px">
-    <button onClick="{{ downloadTicket }}" style="flex:1; background:#d81f2a; color:#fff; font-weight:800; font-size:15.5px; border:none; border-radius:14px; padding:15px; cursor:pointer; box-shadow:0 16px 34px -16px rgba(216,31,42,.9)" style-hover="background:#ef2f3b">دانلود بلیط</button>
+  <div style="display:{{ ticketActionsDisplay }}; gap:10px; width:100%; max-width:520px">
+    <a href="{{ landingUrl }}" style="flex:1; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.07); color:#cdd7f0; font-weight:800; font-size:15.5px; border:1px solid rgba(255,255,255,.18); border-radius:14px; padding:15px; cursor:pointer" style-hover="background:rgba(255,255,255,.14); color:#fff">بازگشت به صفحه اصلی</a>
+    <button onClick="{{ downloadTicket }}" disabled="{{ isDownloading }}" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; background:#d81f2a; color:#fff; font-family:inherit; font-weight:800; font-size:15.5px; border:none; border-radius:14px; padding:15px; cursor:pointer; box-shadow:0 16px 34px -16px rgba(216,31,42,.9); opacity:{{ downloadButtonOpacity }}" style-hover="background:#ef2f3b"><sc-if value="{{ isDownloading }}" hint-placeholder-val="{{ false }}"><span style="width:17px; height:17px; border:2px solid rgba(255,255,255,.42); border-top-color:#fff; border-radius:50%; animation:buttonSpin .7s linear infinite"></span></sc-if>{{ downloadLabel }}</button>
   </div>
 </div>
 
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:600,&quot;height&quot;:820}}">
 class Component extends DCLogic {
+  state = { downloading: false };
   ticket = React.createRef();
+  downloading = false;
 
   download = async () => {
-    const el = this.ticket.current;
-    if (!el || !window.html2canvas) return;
-    const canvas = await window.html2canvas(el, { backgroundColor: '#0a1531', scale: 2, useCORS: true });
-    const a = document.createElement('a');
-    a.download = 'ticket-a10-1.png';
-    a.href = canvas.toDataURL('image/png');
-    a.click();
+    if (this.downloading) return;
+    const ticket = this.ticket.current;
+    if (!ticket || !window.htmlToImage) return;
+    this.downloading = true;
+    this.setState({ downloading: true });
+    try {
+      if (document.fonts && document.fonts.ready) await document.fonts.ready;
+      const fontEmbedCSS = await window.htmlToImage.getFontEmbedCSS(ticket).catch(() => '');
+      const image = await window.htmlToImage.toPng(ticket, {
+        backgroundColor: '#0b1533',
+        cacheBust: true,
+        fontEmbedCSS,
+        pixelRatio: 3,
+      });
+      const link = document.createElement('a');
+      link.download = 'ticket-{{ ticketCode }}.png';
+      link.href = image;
+      link.click();
+    } catch (error) {
+      window.alert('دانلود بلیط ممکن نشد؛ لطفاً دوباره تلاش کنید.');
+    } finally {
+      this.downloading = false;
+      this.setState({ downloading: false });
+    }
   };
 
   renderVals() {
-    return { ticketRef: this.ticket, downloadTicket: this.download };
+    return {
+      ticketRef: this.ticket,
+      downloadTicket: this.download,
+      isDownloading: this.state.downloading,
+      downloadButtonOpacity: this.state.downloading ? .68 : 1,
+      downloadLabel: this.state.downloading ? 'در حال آماده‌سازی…' : 'دانلود بلیط',
+    };
   }
 }
-
 </script>
 </body>
 </html>

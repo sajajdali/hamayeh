@@ -31,7 +31,12 @@ class RecordRegistrationCall
                 'body' => 'نتیجه تماس: '.$result.($note ? "\n".$note : ''),
             ]);
 
-            $this->changeRegistrationStatus->handle($registration, $actor, $status);
+            $canUpdateStatusFromCall = in_array($registration->status, [RegistrationStatus::Pending, RegistrationStatus::Calling], true)
+                && $this->changeRegistrationStatus->canTransition($registration, $status);
+
+            if ($canUpdateStatusFromCall) {
+                $this->changeRegistrationStatus->handle($registration, $actor, $status);
+            }
 
             return $registration->fresh();
         });

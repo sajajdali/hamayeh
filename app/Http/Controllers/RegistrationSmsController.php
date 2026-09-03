@@ -17,7 +17,9 @@ class RegistrationSmsController extends Controller
 
         abort_unless($actor instanceof User, 403);
 
-        $template = SmsTemplate::query()->findOrFail($request->integer('template_id'));
+        $template = $request->filled('template_id')
+            ? SmsTemplate::query()->findOrFail($request->integer('template_id'))
+            : null;
         $message = $queueSms->handle($registration, $template, $actor, $request->string('recipient')->toString());
 
         return response()->json(['id' => $message->id], 202);

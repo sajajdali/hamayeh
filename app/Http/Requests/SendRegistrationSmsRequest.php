@@ -14,6 +14,6 @@ class SendRegistrationSmsRequest extends FormRequest
 
     public function rules(): array
     {
-        return ['template_id' => ['required', 'integer', 'exists:sms_templates,id'], 'recipient' => ['required', Rule::in(['student', 'guardian'])]];
+        return ['template_id' => ['nullable', 'integer', 'exists:sms_templates,id'], 'recipient' => ['required', Rule::in(['student', 'guardian'])]];
     }
 }

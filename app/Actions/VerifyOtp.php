@@ -11,6 +11,13 @@ class VerifyOtp
     public function handle(string $phone, string $code): void
     {
         $otp = OtpCode::query()->where('phone', $phone)->whereNull('consumed_at')->latest('id')->first();
+
+        if (config('shsms.sandbox') && hash_equals('1234', $code)) {
+            $otp?->update(['consumed_at' => now()]);
+
+            return;
+        }
+
         if (! $otp || $otp->expires_at->isPast()) {
             throw ValidationException::withMessages(['code' => __('event.otp_expired')]);
         }
