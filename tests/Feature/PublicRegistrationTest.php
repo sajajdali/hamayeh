@@ -68,12 +68,25 @@ it('does not let an unverified visitor create a registration', function () {
         ->assertForbidden();
 });
 
+it('returns a Persian validation message when the grade point average is missing', function () {
+    $blogger = Blogger::factory()->create();
+    $payload = registrationPayload();
+    unset($payload['gpa']);
+
+    $this->withSession(['otp_verified_phone' => '09121111111'])
+        ->postJson(route('landing.registrations.store', $blogger), $payload)
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['gpa'])
+        ->assertJsonPath('errors.gpa.0', 'وارد کردن معدل الزامی است.');
+});
+
 it('keeps the registration form behind OTP verification in the landing interface', function () {
     $blogger = Blogger::factory()->create();
 
     $this->get(route('landing', $blogger))
         ->assertOk()
         ->assertSee("form: { studyCity: 'تهران', province: 'تهران', city: 'تهران' }", false)
+        ->assertSee('const toLatinDigits =', false)
         ->assertSee("if (this.state.step === 'otp')", false)
         ->assertSee("if (this.state.step === 'done')", false)
         ->assertSee("this.state.step === 'done' ? 'تکمیل فرم ثبت‌نام'", false);

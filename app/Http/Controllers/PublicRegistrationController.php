@@ -43,20 +43,43 @@ class PublicRegistrationController extends Controller
             ], 409);
         }
 
-        $data = $request->validate([
-            'full_name' => ['required', 'string', 'max:255'],
-            'grade' => ['required', 'in:10,11,12'],
-            'field' => ['required', 'in:math,science'],
-            'school' => ['required', 'string', 'max:255'],
-            'gpa' => ['required', 'numeric', 'between:0,20'],
-            'study_city' => ['required', 'string', 'max:255'],
-            'father_job' => ['required', 'string', 'max:255'],
-            'province' => ['required', 'string', 'max:255'],
-            'city' => ['required', 'string', 'max:255'],
-            'area' => ['required', 'string', 'max:255'],
-            'guardian_name' => ['required', 'string', 'max:255'],
-            'guardian_phone' => ['required', 'regex:/^09\d{9}$/'],
-        ]);
+        $data = $request->validate(
+            [
+                'full_name' => ['required', 'string', 'max:255'],
+                'grade' => ['required', 'in:10,11,12'],
+                'field' => ['required', 'in:math,science'],
+                'school' => ['required', 'string', 'max:255'],
+                'gpa' => ['required', 'numeric', 'between:0,20'],
+                'study_city' => ['required', 'string', 'max:255'],
+                'father_job' => ['required', 'string', 'max:255'],
+                'province' => ['required', 'string', 'max:255'],
+                'city' => ['required', 'string', 'max:255'],
+                'area' => ['required', 'string', 'max:255'],
+                'guardian_name' => ['required', 'string', 'max:255'],
+                'guardian_phone' => ['required', 'regex:/^09\d{9}$/'],
+            ],
+            [
+                'required' => 'وارد کردن :attribute الزامی است.',
+                'numeric' => ':attribute باید به‌صورت عدد وارد شود.',
+                'between' => ':attribute باید بین :min تا :max باشد.',
+                'in' => 'گزینهٔ انتخاب‌شده برای :attribute معتبر نیست.',
+                'regex' => 'فرمت :attribute صحیح نیست.',
+            ],
+            [
+                'full_name' => 'نام و نام خانوادگی',
+                'grade' => 'پایه',
+                'field' => 'رشته',
+                'school' => 'مدرسه',
+                'gpa' => 'معدل',
+                'study_city' => 'شهر محل تحصیل',
+                'father_job' => 'شغل پدر',
+                'province' => 'استان',
+                'city' => 'شهر',
+                'area' => 'محله',
+                'guardian_name' => 'نام همراه',
+                'guardian_phone' => 'شماره همراه والدین',
+            ],
+        );
 
         $registration = $issueRegistration->handle($blogger, [...$data, 'phone' => $phone]);
         $queueRegistrationConfirmationSms->handle($registration);

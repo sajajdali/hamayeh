@@ -16,7 +16,7 @@ class AuthenticatePanel
     public function handle(Request $request, Closure $next): Response
     {
         if (! auth('web')->check() && ! auth('blogger')->check()) {
-            return redirect()->route('panel.login');
+            return redirect()->route('admin.login');
         }
 
         return $next($request);

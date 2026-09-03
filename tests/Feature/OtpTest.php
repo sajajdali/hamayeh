@@ -21,6 +21,13 @@ it('requests an OTP for a valid Iranian mobile number', function () {
     Notification::assertSentOnDemand(OtpCodeNotification::class);
 });
 
+it('returns a Persian validation message when the mobile number is missing', function () {
+    $this->postJson(route('otp.store'))
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['phone'])
+        ->assertJsonPath('errors.phone.0', 'وارد کردن شماره موبایل الزامی است.');
+});
+
 it('verifies the OTP and marks it as consumed', function () {
     OtpCode::query()->create([
         'phone' => '09121234567',

@@ -521,9 +521,11 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;bloggerName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;علی صبوری&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;معرف&quot;},&quot;bloggerCode&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;a10&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;معرف&quot;}}">
 const FA = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+const AR = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
 const fa = (n, pad) => String(pad ? String(n).padStart(2, '0') : n).replace(/\d/g, d => FA[+d]);
-const toEn = s => String(s).replace(/[۰-۹]/g, d => FA.indexOf(d)).replace(/[^\d]/g, '');
-const toDecimal = s => String(s).replace(/[۰-۹]/g, d => FA.indexOf(d)).replace('٫', '.').replace(/[^\d.]/g, '');
+const toLatinDigits = s => String(s).replace(/[۰-۹]/g, d => FA.indexOf(d)).replace(/[٠-٩]/g, d => AR.indexOf(d));
+const toEn = s => toLatinDigits(s).replace(/[^\d]/g, '');
+const toDecimal = s => toLatinDigits(s).replace(/[٫،,]/g, '.').replace(/[^\d.]/g, '');
 const landingContent = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob('{{ landingContent }}'), character => character.charCodeAt(0))));
 const landingAgendaItems = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob('{{ landingAgendaItems }}'), character => character.charCodeAt(0))));
 const teachers = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob('{{ landingTeachersContent }}'), character => character.charCodeAt(0))));

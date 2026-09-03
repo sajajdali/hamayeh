@@ -135,7 +135,7 @@
             <span style="font-size:12px; font-weight:700; color:#cdd7f0; white-space:nowrap">{{ meShort }}</span>
             <span style="{{ avatarStyle }}">{{ avatarInitial }}</span>
           </div>
-          <button onClick="{{ doLogout }}" style="flex:none; background:rgba(255,255,255,.06); color:#cdd7f0; border:1px solid rgba(255,255,255,.14); border-radius:11px; padding:9px 14px; font-size:12.5px; font-weight:700; cursor:pointer" style-hover="background:rgba(255,255,255,.14); color:#fff">خروج</button>
+          <form method="POST" action="{{ panelLogoutUrl }}" style="margin:0"><input type="hidden" name="_token" value="{{ panelLogoutToken }}" /><button type="submit" style="flex:none; background:rgba(255,255,255,.06); color:#cdd7f0; border:1px solid rgba(255,255,255,.14); border-radius:11px; padding:9px 14px; font-size:12.5px; font-weight:700; cursor:pointer">خروج</button></form>
         </div>
 
         <div data-nav="{{ navMobile }}" style="align-items:center; gap:9px">
@@ -178,7 +178,7 @@
               <sc-if value="{{ isStaff }}" hint-placeholder-val="{{ true }}">
                 <button onClick="{{ goLogs }}" style="{{ navLogsStyle }}">گزارش فعالیت</button>
               </sc-if>
-              <button onClick="{{ doLogout }}" style="margin-top:6px; text-align:right; background:rgba(216,31,42,.14); color:#ff8d96; border:1px solid rgba(216,31,42,.4); border-radius:12px; padding:12px 14px; font-size:13.5px; font-weight:800; cursor:pointer" style-hover="background:rgba(216,31,42,.26)">خروج از حساب</button>
+              <form method="POST" action="{{ panelLogoutUrl }}" style="margin:6px 0 0"><input type="hidden" name="_token" value="{{ panelLogoutToken }}" /><button type="submit" style="width:100%; text-align:right; background:rgba(216,31,42,.14); color:#ff8d96; border:1px solid rgba(216,31,42,.4); border-radius:12px; padding:12px 14px; font-size:13.5px; font-weight:800; cursor:pointer">خروج از حساب</button></form>
             </div>
           </div>
         </div>
@@ -213,7 +213,9 @@
           <div style="background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.11); border-radius:22px; padding:clamp(16px,2.4vw,22px)">
             <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:16px">
               <div style="font-weight:900; font-size:17px; color:#fff">لیست ثبت‌نام‌ها <span style="font-weight:700; font-size:13px; color:#8b98ba">({{ resultCount }} نفر)</span></div>
-              <button onClick="{{ exportCsv }}" style="background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.15); color:#cdd7f0; font-size:12.5px; font-weight:700; padding:9px 14px; border-radius:10px; cursor:pointer" style-hover="background:rgba(255,255,255,.15); color:#fff">خروجی CSV</button>
+              <sc-if value="{{ isStaff }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ exportCsv }}" style="background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.15); color:#cdd7f0; font-size:12.5px; font-weight:700; padding:9px 14px; border-radius:10px; cursor:pointer" style-hover="background:rgba(255,255,255,.15); color:#fff">خروجی CSV</button>
+              </sc-if>
             </div>
 
             <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr)); gap:10px; margin-bottom:16px">
@@ -224,6 +226,9 @@
                     <option value="{{ o.value }}">{{ o.label }}</option>
                   </sc-for>
                 </select>
+              </sc-if>
+              <sc-if value="{{ isBlogger }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; align-items:center; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:11px 13px; color:#cdd7f0; font-size:13.5px; font-weight:700">بلاگر: {{ bloggerFilterLabel }}</div>
               </sc-if>
               <select value="{{ fStatus }}" onChange="{{ onFStatus }}" style="background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.15); border-radius:12px; padding:11px 13px; color:#fff; font-size:13.5px; outline:none">
                 <option value="all">همه وضعیت‌ها</option>
@@ -430,6 +435,7 @@
                     </div>
                     <div data-mobile-list-actions style="display:flex; align-items:center; gap:8px">
                       <span style="{{ a.roleStyle }}">{{ a.roleLabel }}</span>
+                      <button onClick="{{ a.changeCredentials }}" style="background:rgba(31,111,216,.16); border:1px solid rgba(31,111,216,.4); color:#8fbcff; font-size:11px; font-weight:700; padding:5px 9px; border-radius:8px; cursor:pointer">ویرایش ورود</button>
                       <sc-if value="{{ a.removable }}" hint-placeholder-val="{{ false }}">
                         <button onClick="{{ a.remove }}" style="background:rgba(216,31,42,.14); border:1px solid rgba(216,31,42,.4); color:#ff8d96; font-size:11px; font-weight:700; padding:5px 9px; border-radius:8px; cursor:pointer" style-hover="background:rgba(216,31,42,.26)">حذف</button>
                       </sc-if>
@@ -572,8 +578,9 @@
             </div>
             <div style="display:flex; gap:9px; flex-wrap:wrap; margin-top:16px">
               <button onClick="{{ bg_copy }}" style="flex:1 1 150px; background:rgba(255,255,255,.07); color:#cdd7f0; font-weight:800; font-size:13.5px; border:1px solid rgba(255,255,255,.16); border-radius:12px; padding:12px; cursor:pointer" style-hover="background:rgba(255,255,255,.16); color:#fff">{{ bg_copyLabel }}</button>
-              <button onClick="{{ bg_toggle }}" style="{{ bg_toggleStyle }}">{{ bg_toggleLabel }}</button>
-              <button onClick="{{ bg_askDelete }}" style="flex:1 1 150px; background:rgba(216,31,42,.14); color:#ff8d96; font-weight:800; font-size:13.5px; border:1px solid rgba(216,31,42,.45); border-radius:12px; padding:12px; cursor:pointer" style-hover="background:rgba(216,31,42,.26)">حذف بلاگر</button>
+              <button onClick="{{ bg_changeCredentials }}" style="flex:1 1 150px; background:rgba(31,111,216,.16); color:#8fbcff; font-weight:800; font-size:13.5px; border:1px solid rgba(31,111,216,.45); border-radius:12px; padding:12px; cursor:pointer">تغییر نام کاربری و رمز</button>
+              <sc-if value="{{ bg_canToggle }}" hint-placeholder-val="{{ true }}"><button onClick="{{ bg_toggle }}" style="{{ bg_toggleStyle }}">{{ bg_toggleLabel }}</button></sc-if>
+              <sc-if value="{{ bg_canDelete }}" hint-placeholder-val="{{ true }}"><button onClick="{{ bg_askDelete }}" style="flex:1 1 150px; background:rgba(216,31,42,.14); color:#ff8d96; font-weight:800; font-size:13.5px; border:1px solid rgba(216,31,42,.45); border-radius:12px; padding:12px; cursor:pointer">حذف بلاگر</button></sc-if>
             </div>
           </div>
 
@@ -816,7 +823,7 @@ const DEFAULT_TPLS = [
 class Component extends DCLogic {
   state = {
     authed: false, me: null, user: '', pass: '', loginError: '',
-    tab: 'regs', bloggers: [], regs: [], admins: [], templates: [], selected: null,
+    tab: (typeof location !== 'undefined' && location.hash.slice(1)) || 'regs', bloggers: [], regs: [], admins: [], templates: [], selected: null,
     newName: '', newCode: '', newPhone: '', newSlug: '', newPass: '', formError: '', copied: '',
     openBlogger: null, confirmDelete: false, menuOpen: false, mobilePreview: false,
     pageRegs: 1, pageLogs: 1, pageBg: 1, pageBloggers: 1,
@@ -1013,6 +1020,14 @@ class Component extends DCLogic {
     };
   }
 
+  changeAdminCredentials = user => () => {
+    const username = prompt('نام کاربری جدید مدیر:', user);
+    if (username === null) return;
+    const password = prompt('رمز عبور جدید مدیر را وارد کنید:');
+    if (password === null) return;
+    window.panelAdminAction(user, '/credentials', { username, password }, 'PATCH');
+  };
+
   add = () => {
     const name = this.state.newName.trim();
     const code = this.state.newCode.trim().toLowerCase();
@@ -1032,6 +1047,16 @@ class Component extends DCLogic {
     const bloggers = this.state.bloggers.map(b => b.code === code ? Object.assign({}, b, { active: b.active === false }) : b);
     this.write('genavehei.bloggers', bloggers);
     this.setState({ bloggers });
+  };
+
+  changeBloggerCredentials = () => {
+    const blogger = this.state.bloggers.find(b => b.code === this.state.openBlogger);
+    if (!blogger) return;
+    const username = prompt('نام کاربری جدید بلاگر:', blogger.slug || blogger.code);
+    if (username === null) return;
+    const password = prompt('رمز عبور جدید بلاگر را وارد کنید:');
+    if (password === null) return;
+    window.panelBloggerAction(blogger.code, '/credentials', { username, password }, 'PATCH');
   };
 
   deleteBlogger = () => {
@@ -1155,6 +1180,7 @@ class Component extends DCLogic {
 
   renderVals() {
     const s = this.state;
+    window.panelActiveTab = s.tab;
     const t0 = this.dayStart(Date.now());
     const inRange = (list, from, to) => list.filter(r => r.at >= from && r.at < to).length;
     const rows = this.filtered();
@@ -1230,6 +1256,7 @@ class Component extends DCLogic {
       tabSmsStyle: this.tabStyle(s.tab === 'sms'),
       tabAdminsStyle: this.tabStyle(s.tab === 'admins'),
       tabLogsStyle: this.tabStyle(s.tab === 'logs'),
+      bloggerFilterLabel: isBlogger ? (s.me.name || s.me.code) : '',
 
       kpiTotal: fa(scopedRegs.length),
       kpiToday: fa(inRange(scopedRegs, t0, t0 + DAY)),
@@ -1294,6 +1321,9 @@ class Component extends DCLogic {
       bg_stateStyle: bg && bg.active === false
         ? { color: '#ff8d96', background: 'rgba(216,31,42,.16)', border: '1px solid rgba(216,31,42,.45)', borderRadius: '999px', padding: '4px 10px', fontSize: '11px', fontWeight: 800 }
         : { color: '#7ef0b0', background: 'rgba(126,240,176,.14)', border: '1px solid rgba(126,240,176,.4)', borderRadius: '999px', padding: '4px 10px', fontSize: '11px', fontWeight: 800 },
+      bg_changeCredentials: this.changeBloggerCredentials,
+      bg_canDelete: !!bg && bg.code !== 'a0',
+      bg_canToggle: !!bg && bg.code !== 'a0',
       bg_toggle: this.toggleBlogger,
       bg_toggleLabel: bg && bg.active === false ? 'فعال کردن بلاگر' : 'غیرفعال کردن بلاگر',
       bg_toggleStyle: bg && bg.active === false
@@ -1327,7 +1357,7 @@ class Component extends DCLogic {
         roleLabel: a.role === 'super' ? 'مدیر کل' : 'مدیر میانی',
         roleStyle: this.roleStyleOf(a.role),
         removable: !!s.me && a.user !== s.me.user,
-        remove: this.removeAdmin(a.user)
+        remove: this.removeAdmin(a.user), changeCredentials: this.changeAdminCredentials(a.user)
       })),
       adminName: s.adminName, adminUser: s.adminUser, adminPass: s.adminPass, adminError: s.adminError,
       onAdminName: e => this.setState({ adminName: e.target.value, adminError: '' }),

@@ -407,6 +407,11 @@ class ReferenceDesignController extends Controller
     private function adminDesign(array $state, array $identity, array $statistics): Response
     {
         $html = File::get(base_path('design/Admin.dc.html'));
+        $html = str_replace(
+            ['{{ panelLogoutUrl }}', '{{ panelLogoutToken }}'],
+            [route('panel.logout'), csrf_token()],
+            $html,
+        );
         $bootstrap = 'const serverState = '.Js::from($state).';'
             .'this.write(\'genavehei.bloggers\', serverState.bloggers);'
             .'this.write(\'genavehei.registrations\', serverState.regs);'
@@ -419,17 +424,20 @@ class ReferenceDesignController extends Controller
         $html = str_replace(['if (!bloggers || !bloggers.length)', 'if (!admins || !admins.length)', 'if (!templates || !templates.length)', 'if (!regs || !regs.length)'], 'if (false)', $html);
         $html = str_replace('doLogout: () => this.setState({ authed: false, me: null, user: \'\', pass: \'\', selected: null }),', 'doLogout: () => window.panelLogout(),', $html);
         $phaseSixActions = "createBlogger = () => { const name = this.state.newName.trim(); const code = this.state.newCode.trim().toLowerCase(); const slug = (this.state.newSlug.trim() || code).toLowerCase(); if (!name) return this.setState({ formError: 'نام بلاگر را وارد کنید.' }); if (!/^[a-z0-9]{4}$/.test(code)) return this.setState({ formError: 'کد اختصاصی باید دقیقاً ۴ حرف یا رقم انگلیسی باشد.' }); if (!/^[a-z0-9_-]{2,24}$/.test(slug)) return this.setState({ formError: 'آدرس کوتاه معتبر نیست.' }); window.panelBloggerAction('', '', { name, code, slug, phone: this.state.newPhone, password: this.state.newPass }, 'POST').catch(error => this.setState({ formError: error.message })); };\n"
+            ."changeBloggerCredentials = () => { const b = this.state.bloggers.find(b => b.code === this.state.openBlogger); if (!b) return; const username = prompt('نام کاربری جدید بلاگر را وارد کنید:', b.slug || b.code); if (username === null) return; const password = prompt('رمز عبور جدید بلاگر را وارد کنید (حداقل ۴ کاراکتر):'); if (password === null) return; window.panelBloggerAction(b.code, '/credentials', { username, password }, 'PATCH'); };\n"
             ."toggleBloggerBackend = () => { const b = this.state.bloggers.find(b => b.code === this.state.openBlogger); if (b) window.panelBloggerAction(b.code, '/toggle', {}, 'PATCH'); };\n"
-            ."deleteBloggerBackend = () => { const b = this.state.bloggers.find(b => b.code === this.state.openBlogger); if (b) window.panelBloggerAction(b.code, '', {}, 'DELETE'); };\n"
+            ."deleteBloggerBackend = () => { const b = this.state.bloggers.find(b => b.code === this.state.openBlogger); if (!b) return; const name = prompt('هشدار: همه ثبت‌نام‌های این بلاگر حذف می‌شوند. برای تأیید، نام «' + b.name + '» را دقیقاً وارد کنید:'); if (name === null) return; window.panelBloggerAction(b.code, '', { confirm_name: name }, 'DELETE'); };\n"
             ."uploadBloggerAvatar = (e) => { const b = this.state.bloggers.find(b => b.code === this.state.openBlogger); const file = e.target.files[0]; if (b && file) window.panelBloggerAvatar(b.code, file); };\n\n";
         $html = str_replace('  renderVals() {', '  '.$phaseSixActions.'  renderVals() {', $html);
         $html = str_replace([
             'addBlogger: this.add',
+            'bg_changeCredentials: this.changeBloggerCredentials',
             'bg_toggle: this.toggleBlogger',
             'bg_confirmDelete: this.deleteBlogger',
             'bg_pickAvatar: bg ? this.pickAvatar(bg.code) : (() => {})',
         ], [
             'addBlogger: this.createBlogger',
+            'bg_changeCredentials: this.changeBloggerCredentials',
             'bg_toggle: this.toggleBloggerBackend',
             'bg_confirmDelete: this.deleteBloggerBackend',
             'bg_pickAvatar: this.uploadBloggerAvatar',
@@ -443,6 +451,7 @@ class ReferenceDesignController extends Controller
         $html = str_replace('  renderVals() {', '  '.$phaseSevenActions.'  renderVals() {', $html);
         $html = str_replace(['addTemplate: this.addTemplate', 'sendToStudent: this.sendSms(\'student\')', 'sendToGuardian: this.sendSms(\'guardian\')', 'remove: this.removeTemplate(t.id)'], ['addTemplate: this.createSmsTemplate', 'sendToStudent: this.sendRegistrationSms(\'student\')', 'sendToGuardian: this.sendRegistrationSms(\'guardian\')', 'remove: this.deleteSmsTemplate(t.id)'], $html);
         $phaseEightActions = "createAdmin = () => window.panelAdminAction('', { name: this.state.adminName, username: this.state.adminUser, password: this.state.adminPass, role: this.state.adminRole }, 'POST');\n"
+            ."changeAdminCredentials = username => () => { const nextUsername = prompt('نام کاربری جدید مدیر:', username); if (nextUsername === null) return; const password = prompt('رمز عبور جدید مدیر را وارد کنید:'); if (password === null) return; window.panelAdminAction(username, '/credentials', { username: nextUsername, password }, 'PATCH'); };\n"
             ."deleteAdminBackend = (username) => () => window.panelAdminAction(username, {}, 'DELETE');\n\n";
         $html = str_replace('  renderVals() {', '  '.$phaseEightActions.'  renderVals() {', $html);
         $html = str_replace([
@@ -488,11 +497,28 @@ class ReferenceDesignController extends Controller
         $html = str_replace('__APP_SCRIPT__', $appScript, $html);
 
         $notifications = <<<'HTML'
-<style>#panel-notification-stack{position:fixed;top:18px;right:18px;z-index:2147483647;display:flex;max-width:min(420px,calc(100vw - 36px));flex-direction:column;gap:10px;direction:rtl}.panel-notification{border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:13px 16px;color:#fff;font:700 13px/1.8 system-ui,sans-serif;box-shadow:0 18px 42px rgba(0,0,0,.35);transition:opacity .25s ease,transform .25s ease}.panel-notification--success{background:#07683e}.panel-notification--error{background:#9d1d29}.panel-notification--leaving{opacity:0;transform:translateY(-8px)}</style><script>window.panelNotify=(message,type="success")=>{let stack=document.getElementById("panel-notification-stack");if(!stack){stack=document.createElement("div");stack.id="panel-notification-stack";stack.setAttribute("aria-live","polite");document.body.append(stack)}const notification=document.createElement("div");notification.className="panel-notification panel-notification--"+(type==="error"?"error":"success");notification.textContent=message||"عملیات با موفقیت انجام شد.";stack.append(notification);window.setTimeout(()=>{notification.classList.add("panel-notification--leaving");window.setTimeout(()=>notification.remove(),250)},5000)};window.panelActionSuccess=()=>{window.panelNotify("تغییرات با موفقیت ذخیره شد.");window.setTimeout(()=>location.reload(),700)};</script>
+<style>#panel-notification-stack{position:fixed;top:18px;right:18px;z-index:2147483647;display:flex;max-width:min(420px,calc(100vw - 36px));flex-direction:column;gap:10px;direction:rtl}.panel-notification{border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:13px 16px;color:#fff;font:700 13px/1.8 system-ui,sans-serif;box-shadow:0 18px 42px rgba(0,0,0,.35);transition:opacity .25s ease,transform .25s ease}.panel-notification--success{background:#07683e}.panel-notification--error{background:#9d1d29}.panel-notification--leaving{opacity:0;transform:translateY(-8px)}</style><script>window.panelNotify=(message,type="success")=>{let stack=document.getElementById("panel-notification-stack");if(!stack){stack=document.createElement("div");stack.id="panel-notification-stack";stack.setAttribute("aria-live","polite");document.body.append(stack)}const notification=document.createElement("div");notification.className="panel-notification panel-notification--"+(type==="error"?"error":"success");notification.textContent=message||"عملیات با موفقیت انجام شد.";stack.append(notification);window.setTimeout(()=>{notification.classList.add("panel-notification--leaving");window.setTimeout(()=>notification.remove(),250)},5000)};window.panelActionSuccess=()=>{window.panelNotify("تغییرات با موفقیت ذخیره شد.");location.hash=window.panelActiveTab||"regs";window.setTimeout(()=>location.reload(),700)};</script>
 HTML;
         $logout = '<script>window.panelError=async r=>{const b=await r.json().catch(()=>null);return Object.values((b&&b.errors)||{}).flat().join(" ")||"عملیات انجام نشد."};window.panelLogout=()=>fetch('.Js::from(route('panel.logout')).',{method:"POST",headers:{"X-CSRF-TOKEN":'.Js::from(csrf_token()).'}}).then(()=>location.assign('.Js::from(route('panel.login')).'));window.panelRegistrationAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/r').'/').'+encodeURIComponent(code)+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));window.panelActionSuccess()});window.panelBloggerAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/bloggers/')).'+(code?encodeURIComponent(code):\'\')+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));window.panelActionSuccess()});window.panelBloggerAvatar=(code,file)=>{const body=new FormData();body.append("avatar",file);return fetch('.Js::from(url('/panel/bloggers/')).'+encodeURIComponent(code)+"/avatar",{method:"POST",headers:{"Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));window.panelActionSuccess()})};window.panelSmsTemplateAction=(id,data,method)=>fetch('.Js::from(url('/panel/sms-templates/')).'+(id?encodeURIComponent(id):\'\'),{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));window.panelActionSuccess()});window.panelAdminAction=(username,data,method)=>fetch('.Js::from(url('/panel/admins/')).'+(username?encodeURIComponent(username):\'\'),{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));window.panelActionSuccess()});window.panelActivityExport='.Js::from(route('panel.activity.export')).';</script>';
+        $logoutDestination = match ($identity['role']) {
+            'blogger' => route('blogger.login'),
+            'mid' => route('sales-manager.login'),
+            default => route('admin.login'),
+        };
+        $logout = str_replace(
+            'location.assign('.Js::from(route('panel.login')).')',
+            'location.assign('.Js::from($logoutDestination).')',
+            $logout,
+        );
+        $bloggerActions = '<script>window.panelBloggerAction=(code,suffix,data,method)=>fetch('.Js::from(url('/panel/bloggers')).'+"/"+(code?encodeURIComponent(code):"")+suffix,{method,headers:{"Content-Type":"application/json","Accept":"application/json","X-CSRF-TOKEN":'.Js::from(csrf_token()).'},body:JSON.stringify(data)}).then(async r=>{if(!r.ok)throw new Error(await window.panelError(r));window.panelActionSuccess()});</script>';
+        $logout = str_replace(
+            Js::from(url('/panel/bloggers/'))->toHtml(),
+            Js::from(url('/panel/bloggers').'/')->toHtml(),
+            $logout,
+        );
+        $logoutForm = '<script>window.panelLogout=()=>{const form=document.createElement("form");form.method="POST";form.action='.Js::from(route('panel.logout')).';const token=document.createElement("input");token.type="hidden";token.name="_token";token.value='.Js::from(csrf_token()).';form.append(token);document.body.append(form);form.submit();};</script>';
         $errorNotifier = '<script>window.panelNotifyError=message=>window.panelNotify(message||"عملیات انجام نشد.","error");["panelRegistrationAction","panelBloggerAction","panelBloggerAvatar","panelSmsTemplateAction","panelAdminAction"].forEach(name=>{const action=window[name];window[name]=async(...args)=>{try{return await action(...args)}catch(error){window.panelNotifyError(error.message);throw error}}});window.addEventListener("unhandledrejection",event=>{if(event.reason instanceof Error){window.panelNotifyError(event.reason.message);event.preventDefault()}});</script>';
-        $html = str_replace('</head>', $notifications.$logout.$errorNotifier.'</head>', $html);
+        $html = str_replace('</head>', $notifications.$logout.$logoutForm.$bloggerActions.$errorNotifier.'</head>', $html);
 
         return response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
     }

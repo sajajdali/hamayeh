@@ -20,6 +20,18 @@ it('shows a blogger only their own registrations in the panel', function () {
         ->assertDontSee($otherRegistration->ticket_code);
 });
 
+it('returns a blogger to the blogger login page after logout', function () {
+    $blogger = Blogger::factory()->create();
+
+    $this->actingAs($blogger, 'blogger')
+        ->withSession(['login_portal' => 'blogger'])
+        ->post(route('panel.logout'))
+        ->assertRedirect(route('blogger.login'));
+
+    $this->assertGuest('blogger');
+    $this->assertGuest('web');
+});
+
 it('forbids a mid-level manager from opening the administrators panel', function () {
     $manager = User::factory()->create(['role' => 'mid']);
 
@@ -61,5 +73,7 @@ it('includes a central user-facing error handler for every panel action', functi
         ->assertSee('panelRegistrationAction', false)
         ->assertSee('\/panel\/r\/', false)
         ->assertSee('panelSmsTemplateAction', false)
-        ->assertSee('panelAdminAction', false);
+        ->assertSee('panelAdminAction', false)
+        ->assertSee('action="'.route('panel.logout').'"', false)
+        ->assertSee('name="_token"', false);
 });

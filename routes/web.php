@@ -3,6 +3,7 @@
 use App\Http\Controllers\ActivityLogExportController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BloggerController;
+use App\Http\Controllers\DefaultLandingController;
 use App\Http\Controllers\EventSettingsController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\OtpController;
@@ -15,8 +16,11 @@ use App\Http\Controllers\RegistrationStatusController;
 use App\Http\Controllers\SmsTemplateController;
 use Illuminate\Support\Facades\Route;
 
-Route::livewire('/', 'pages::panel-login')->name('home');
-Route::livewire('/panel/login', 'pages::panel-login')->name('panel.login');
+Route::get('/', DefaultLandingController::class)->name('home');
+Route::livewire('/admin', 'pages::portal-login')->name('admin.login');
+Route::livewire('/blogger', 'pages::portal-login')->name('blogger.login');
+Route::livewire('/sales_manager', 'pages::portal-login')->name('sales-manager.login');
+Route::redirect('/panel/login', '/admin')->name('panel.login');
 Route::post('/panel/logout', LogoutController::class)->name('panel.logout');
 Route::post('/otp', [OtpController::class, 'store'])->middleware('throttle:10,1')->name('otp.store');
 Route::post('/otp/verify', [OtpController::class, 'verify'])->middleware('throttle:10,1')->name('otp.verify');
@@ -26,11 +30,13 @@ Route::get('/panel/admins', [ReferenceDesignController::class, 'admin'])->middle
 Route::get('/panel/settings', [EventSettingsController::class, 'edit'])->middleware(['auth.panel', 'super'])->name('panel.event-settings.edit');
 Route::put('/panel/settings', [EventSettingsController::class, 'update'])->middleware(['auth.panel', 'super'])->name('panel.event-settings.update');
 Route::post('/panel/admins', [AdminController::class, 'store'])->middleware(['auth.panel', 'super'])->name('panel.admins.store');
+Route::patch('/panel/admins/{user:username}/credentials', [AdminController::class, 'updateCredentials'])->middleware(['auth.panel', 'super'])->name('panel.admins.credentials.update');
 Route::patch('/panel/admins/{user:username}/toggle', [AdminController::class, 'toggle'])->middleware(['auth.panel', 'super'])->name('panel.admins.toggle');
 Route::delete('/panel/admins/{user:username}', [AdminController::class, 'destroy'])->middleware(['auth.panel', 'super'])->name('panel.admins.destroy');
 Route::get('/panel/activity/export', ActivityLogExportController::class)->middleware(['auth.panel', 'staff'])->name('panel.activity.export');
 Route::post('/panel/registrations/export/excel', RegistrationExcelExportController::class)->middleware(['auth.panel', 'staff'])->name('panel.registrations.export.excel');
 Route::post('/panel/bloggers', [BloggerController::class, 'store'])->middleware(['auth.panel', 'staff'])->name('panel.bloggers.store');
+Route::patch('/panel/bloggers/{blogger:code}/credentials', [BloggerController::class, 'updateCredentials'])->middleware(['auth.panel', 'staff'])->name('panel.bloggers.credentials.update');
 Route::patch('/panel/bloggers/{blogger:code}/toggle', [BloggerController::class, 'toggle'])->middleware(['auth.panel', 'staff'])->name('panel.bloggers.toggle');
 Route::post('/panel/bloggers/{blogger:code}/avatar', [BloggerController::class, 'avatar'])->middleware(['auth.panel', 'staff'])->name('panel.bloggers.avatar');
 Route::delete('/panel/bloggers/{blogger:code}', [BloggerController::class, 'destroy'])->middleware(['auth.panel', 'super'])->name('panel.bloggers.destroy');
