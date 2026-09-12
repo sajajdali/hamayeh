@@ -24,6 +24,7 @@ class UpdateEventDateRequest extends FormRequest
     {
         return [
             'event_date' => ['nullable', 'date_format:Y-m-d'],
+            'event_time' => ['nullable', 'date_format:H:i'],
             'benefits' => ['sometimes', 'array:eyebrow,title,items'],
             'benefits.eyebrow' => ['required_with:benefits', 'string', 'max:80'],
             'benefits.title' => ['required_with:benefits', 'string', 'max:150'],
@@ -53,7 +54,7 @@ class UpdateEventDateRequest extends FormRequest
             'seo.image_path' => ['nullable', 'string', 'max:255'],
             'seo.image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'landing' => ['sometimes', 'array:hero,audience,faq,reservation'],
-            'landing.hero' => ['required_with:landing', 'array:brand_title,brand_subtitle,cta_label,eyebrow,title,description,date_label,capacity_label,capacity_value,cost_label,cost_value'],
+            'landing.hero' => ['required_with:landing', 'array:brand_title,brand_subtitle,cta_label,eyebrow,title,description,date_label,capacity_label,capacity_value,cost_label,original_cost_value,cost_value'],
             'landing.hero.*' => ['required_with:landing.hero', 'string', 'max:1000'],
             'landing.audience' => ['required_with:landing', 'array:eyebrow,title,items'],
             'landing.audience.eyebrow' => ['required_with:landing.audience', 'string', 'max:150'],

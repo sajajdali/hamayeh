@@ -55,7 +55,7 @@ class EventSettingsController extends Controller
         if ($updatesDate) {
             $eventStartsAt = CarbonImmutable::createFromFormat(
                 'Y-m-d H:i',
-                $request->string('event_date')->toString().' 09:00',
+                $request->string('event_date')->toString().' '.$request->string('event_time', '09:00')->toString(),
                 config('app.timezone'),
             );
 
@@ -201,14 +201,15 @@ class EventSettingsController extends Controller
                 'brand_title' => 'گروه آموزشی استاد محسن گناوه‌ای',
                 'brand_subtitle' => 'GENAVEHEI EDUCATIONAL GROUP',
                 'cta_label' => 'ثبت‌نام رایگان',
-                'eyebrow' => 'سمینار موفقیت در کنکور و امتحانات نهایی',
-                'title' => 'بزرگ‌ترین گردهمایی داوطلبین کنکور رشته‌های ریاضی و تجربی؛ پایه‌های دهم، یازدهم، دوازدهم و فارغ‌التحصیلان سال‌های گذشته در کشور',
+                'eyebrow' => 'دعوت شدید به',
+                'title' => 'بزرگ‌ترین همایش کنکور و امتحانات نهایی کشور',
                 'description' => 'یک روز کامل، روی صحنه‌ای که مسیر کنکور و امتحانات نهایی‌ات را عوض می‌کند: برنامه‌ریزی واقعی، تکنیک‌های تست‌زنی، مدیریت استرس و نقشه راه رشته‌های ریاضی و تجربی.',
                 'date_label' => 'تاریخ برگزاری',
                 'capacity_label' => 'ظرفیت سالن',
                 'capacity_value' => 'محدود',
-                'cost_label' => 'هزینه',
-                'cost_value' => 'حضور رایگان',
+                'cost_label' => 'هزینه ثبت‌نام',
+                'original_cost_value' => '۳,۰۰۰,۰۰۰ تومان',
+                'cost_value' => 'رایگان',
             ],
             'audience' => [
                 'eyebrow' => 'این سمینار به درد چه کسانی می‌خورد؟',

@@ -19,12 +19,12 @@
             <div class="rounded-3xl border border-white/15 bg-[linear-gradient(150deg,rgba(216,31,42,.2),rgba(255,255,255,.04))] p-6 shadow-[0_40px_80px_-50px_rgba(0,0,0,.95)] sm:p-8">
                 <span class="inline-flex rounded-full border border-rose-300/25 bg-rose-400/10 px-3 py-1 text-xs font-black text-rose-200">تنظیمات زمان‌بندی</span>
                 <h1 class="mt-5 text-3xl font-black tracking-tight text-white sm:text-4xl">تاریخ برگزاری گردهمایی</h1>
-                <p class="mt-4 max-w-xl text-sm leading-8 text-[#cdd7f0]">تاریخ رویداد را به‌شکل شمسی انتخاب کنید. شمارش معکوس سایت برای ساعت ۹ صبح روز انتخاب‌شده به‌روزرسانی می‌شود.</p>
+                <p class="mt-4 max-w-xl text-sm leading-8 text-[#cdd7f0]">تاریخ و ساعت رویداد را انتخاب کنید. شمارش معکوس سایت برای همین لحظه به‌روزرسانی می‌شود.</p>
 
                 <div class="mt-7 grid gap-3 sm:grid-cols-2">
                     <div class="rounded-2xl border border-white/10 bg-[#060e24]/60 p-4">
                         <p class="text-xs font-bold text-[#8b98ba]">زمان شروع شمارش</p>
-                        <p class="mt-2 text-sm font-black text-white">۹:۰۰ صبح، به وقت تهران</p>
+                        <p class="mt-2 text-sm font-black text-white">{{ $eventStartsAt->format('H:i') }}، به وقت تهران</p>
                     </div>
                     <div class="rounded-2xl border border-white/10 bg-[#060e24]/60 p-4">
                         <p class="text-xs font-bold text-[#8b98ba]">نمایش در سایت</p>
@@ -55,6 +55,14 @@
                             <span class="inline-flex items-center gap-2 text-sm font-extrabold text-rose-200 transition group-hover:text-rose-100"><span aria-hidden="true">⌄</span> تقویم</span>
                         </button>
                         @error('event_date')
+                            <p class="text-sm font-bold text-rose-300">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="space-y-2.5">
+                        <label for="event-time" class="block text-sm font-bold text-[#cdd7f0]">ساعت برگزاری</label>
+                        <input id="event-time" name="event_time" type="time" value="{{ old('event_time', $eventStartsAt->format('H:i')) }}" class="w-full rounded-2xl border border-white/15 bg-[#060e24]/80 px-4 py-4 text-base font-black text-white outline-none transition focus:border-rose-400 focus:ring-4 focus:ring-rose-400/15">
+                        @error('event_time')
                             <p class="text-sm font-bold text-rose-300">{{ $message }}</p>
                         @enderror
                     </div>
@@ -346,7 +354,7 @@
                 <section class="rounded-3xl border border-white/15 bg-white/[.055] p-5 sm:p-6">
                     <h2 class="text-base font-black text-white">متن‌های بالای صفحه</h2>
                     <div class="mt-5 grid gap-4 md:grid-cols-2">
-                        @foreach (['brand_title' => 'نام مجموعه', 'brand_subtitle' => 'نام انگلیسی مجموعه', 'cta_label' => 'متن دکمه ثبت‌نام', 'eyebrow' => 'تیتر کوچک رویداد', 'date_label' => 'عنوان تاریخ', 'capacity_label' => 'عنوان ظرفیت', 'capacity_value' => 'مقدار ظرفیت', 'cost_label' => 'عنوان هزینه', 'cost_value' => 'مقدار هزینه'] as $field => $label)
+                        @foreach (['brand_title' => 'نام مجموعه', 'brand_subtitle' => 'نام انگلیسی مجموعه', 'cta_label' => 'متن دکمه ثبت‌نام', 'eyebrow' => 'تیتر کوچک رویداد', 'date_label' => 'عنوان تاریخ', 'capacity_label' => 'عنوان ظرفیت', 'capacity_value' => 'مقدار ظرفیت', 'cost_label' => 'عنوان هزینه', 'original_cost_value' => 'مبلغ قبل از تخفیف (خط‌خورده)', 'cost_value' => 'مقدار هزینه'] as $field => $label)
                             <label class="block space-y-2">
                                 <span class="text-xs font-bold text-[#cdd7f0]">{{ $label }}</span>
                                 <input name="landing[hero][{{ $field }}]" value="{{ old("landing.hero.{$field}", $landing['hero'][$field]) }}" class="w-full rounded-xl border border-white/15 bg-[#060e24]/80 px-3.5 py-3 text-sm font-bold text-white outline-none transition focus:border-rose-400 focus:ring-4 focus:ring-rose-400/15">
