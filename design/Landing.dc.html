@@ -17,6 +17,7 @@
 <link rel="stylesheet" href="/vendor/vazirmatn.css" />
 <style>
   html, body { margin:0; padding:0; background:#0a1531; }
+  html { scroll-behavior:smooth; }
   body { font-family:'Vazirmatn', system-ui, sans-serif; direction:rtl; -webkit-font-smoothing:antialiased; }
   * { box-sizing:border-box; }
   a { color:#ff5c66; text-decoration:none; }
@@ -30,12 +31,20 @@
   @keyframes stampIn { from { opacity:0; transform:scale(.94) rotate(-1.5deg); } to { opacity:1; transform:none; } }
   @keyframes riseIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
   @keyframes buttonSpin { to { transform:rotate(360deg); } }
+  @keyframes nameShine { 0% { background-position:220% 0; } 100% { background-position:-60% 0; } }
+  .shine-name { display:inline-block; color:#fff; background-image:linear-gradient(110deg, #fff 40%, #ffe9a8 50%, #fff 60%); background-size:260% 100%; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:nameShine 2.4s cubic-bezier(.4,0,.2,1) .9s 1 both; }
   .teacher-grid { display:grid !important; grid-template-columns:repeat(2, minmax(0, 1fr)); justify-content:center; }
   .teacher-grid > article { width:100% !important; min-width:0; }
   .otp-request-row { flex-wrap:wrap; }
   .otp-request-row input { min-width:0; }
+  .hero-grid { grid-template-areas:"title" "price" "form" "stats" "photo" "more"; }
+  .hero-title { text-align:center; }
   @container (min-width:560px) {
     .teacher-grid { grid-template-columns:repeat(auto-fit, minmax(160px, 184px)); }
+  }
+  @container (min-width:920px) {
+    .hero-grid { grid-template-columns:1.05fr 1fr; grid-template-areas:"title photo" "price photo" "form photo" "stats photo" "more photo"; }
+    .hero-title { text-align:right; }
   }
   @container (max-width:460px) {
     .landing-header { gap:8px !important; }
@@ -71,73 +80,71 @@
     </div>
   </header>
 
-  <section style="max-width:1240px; margin:0 auto; padding:20px clamp(16px,4cqw,32px) 8px; display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr)); gap:clamp(24px,4cqw,44px); align-items:center">
-    <div style="animation:riseIn .6s ease both; display:flex; flex-direction:column">
-      <div style="display:inline-flex; align-items:center; gap:10px; border:1px solid rgba(216,31,42,.55); background:rgba(216,31,42,.14); color:#ffb3b9; font-weight:700; font-size:13px; padding:7px 14px; border-radius:999px; margin-bottom:16px; order:1; align-self:flex-start">
-        <span style="width:8px; height:8px; border-radius:50%; background:#ff3b47; box-shadow:0 0 0 4px rgba(255,59,71,.22)"></span>
-        {{ landing.hero.eyebrow }}
+  <section class="hero-grid" style="max-width:1240px; margin:0 auto; padding:20px clamp(16px,4cqw,32px) 8px; display:grid; gap:clamp(22px,3.8cqw,32px) clamp(24px,4cqw,44px); animation:riseIn .6s ease both">
+
+    <h1 class="hero-title" style="grid-area:title; margin:0; font-size:clamp(15.5px,4cqw,32px); line-height:1.5; font-weight:900; letter-spacing:0; text-wrap:pretty; color:#fff">
+      <span style="color:#ff8d96; font-weight:700">{{ landing.hero.eyebrow }}</span> {{ landing.hero.title }}
+    </h1>
+
+    <div style="grid-area:price; background:linear-gradient(160deg, rgba(126,240,176,.14), rgba(255,255,255,.03)); border:1px solid rgba(126,240,176,.32); border-radius:18px; padding:16px 18px; display:flex; flex-direction:column; gap:12px">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px">
+        <span style="font-size:13px; font-weight:600; color:#9dabcd">{{ landing.hero.cost_label }}</span>
+        <span style="text-decoration:line-through; font-weight:700; font-size:14px; color:#8b98ba; white-space:nowrap">{{ landing.hero.original_cost_value }}</span>
       </div>
-
-      <h1 style="order:2; margin:0 0 16px; font-size:clamp(19.5px,4.9cqw,38px); line-height:1.55; font-weight:900; letter-spacing:0; text-wrap:pretty; color:#fff">
-        {{ landing.hero.title }}
-      </h1>
-
-      <p style="order:4; margin:0 0 22px; font-size:clamp(13.5px,3.5cqw,17px); line-height:1.85; color:#b6c4e4; max-width:56ch; text-wrap:pretty">
-        {{ landing.hero.description }}
-      </p>
-
-      <div style="order:5; display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(6px,2cqw,10px); margin-bottom:26px">
-        <div style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); padding:10px clamp(8px,2.4cqw,14px); border-radius:12px; flex-direction:column; align-items:flex-start; gap:2px; min-width:0">
-          <span style="font-size:clamp(9.5px,2.6cqw,11.5px); color:#93a2c6">{{ landing.hero.date_label }}</span>
-          <span style="font-weight:800; font-size:clamp(11.5px,3.1cqw,15px); color:#fff; white-space:nowrap">۲۵ شهریور ۱۴۰۷</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); padding:10px clamp(8px,2.4cqw,14px); border-radius:12px; flex-direction:column; align-items:flex-start; gap:2px; min-width:0">
-          <span style="font-size:clamp(9.5px,2.6cqw,11.5px); color:#93a2c6">{{ landing.hero.capacity_label }}</span>
-          <span style="font-weight:800; font-size:clamp(11.5px,3.1cqw,15px); color:#fff; white-space:nowrap">{{ landing.hero.capacity_value }}</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); padding:10px clamp(8px,2.4cqw,14px); border-radius:12px; flex-direction:column; align-items:flex-start; gap:2px; min-width:0">
-          <span style="font-size:clamp(9.5px,2.6cqw,11.5px); color:#93a2c6">{{ landing.hero.cost_label }}</span>
-          <span style="font-weight:800; font-size:clamp(11.5px,3.1cqw,15px); color:#7ef0b0; white-space:nowrap">{{ landing.hero.cost_value }}</span>
-        </div>
-      </div>
-
-      <div id="ثبت-نام" style="order:{{ cardOrder }}; margin-bottom:26px; background:linear-gradient(180deg, rgba(255,255,255,.1), rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.16); border-radius:20px; padding:clamp(16px,4cqw,21px); box-shadow:0 30px 60px -46px rgba(0,0,0,.9); max-width:520px">
-        <sc-if value="{{ isPhoneStep }}" hint-placeholder-val="{{ true }}">
-          <div>
-            <div style="font-weight:800; font-size:clamp(16px,4.4cqw,19px); color:#fff; margin-bottom:6px">برای ثبت‌نام شماره موبایل خود را وارد کنید</div>
-            <div style="font-size:13px; color:#9dabcd; margin-bottom:18px">کد تأیید چهاررقمی به همین شماره پیامک می‌شود.</div>
-            <div class="otp-request-row" style="display:flex; gap:10px; align-items:stretch">
-              <input value="{{ phone }}" onChange="{{ onPhone }}" onKeyDown="{{ onPhoneKey }}" type="tel" inputMode="numeric" autoComplete="tel" lang="en" dir="ltr" data-phone-input placeholder="09123456789" style="flex:1; direction:ltr; text-align:center; letter-spacing:.1em; font-size:clamp(15px,4cqw,18px); font-weight:700; color:#fff; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.18); border-radius:14px; padding:14px 12px; outline:none" style-focus="border-color:#ff4b57" />
-              <button onClick="{{ sendOtp }}" disabled="{{ isSendingOtp }}" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; background:#d81f2a; color:#fff; font-weight:800; font-size:clamp(13.5px,3.6cqw,16px); border:none; border-radius:14px; padding:0 clamp(14px,4.5cqw,26px); cursor:pointer; white-space:nowrap; flex:none; box-shadow:0 14px 32px -14px rgba(216,31,42,.9); opacity:{{ sendButtonOpacity }}" style-hover="background:#ef2f3b"><sc-if value="{{ isSendingOtp }}" hint-placeholder-val="{{ false }}"><span style="width:15px; height:15px; border:2px solid rgba(255,255,255,.42); border-top-color:#fff; border-radius:50%; animation:buttonSpin .7s linear infinite"></span></sc-if>{{ sendOtpLabel }}</button>
-            </div>
-            <sc-if value="{{ error }}" hint-placeholder-val="{{ false }}">
-              <div style="margin-top:12px; font-size:13px; color:#ff8d96; font-weight:600">{{ error }}</div>
-            </sc-if>
-          </div>
-        </sc-if>
-
-        <sc-if value="{{ isDoneStep }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex; flex-direction:column; gap:14px">
-            <div style="display:flex; align-items:center; gap:10px">
-              <span style="width:30px; height:30px; flex:none; border-radius:50%; background:rgba(126,240,176,.14); color:#7ef0b0; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:900">✓</span>
-              <div>
-                <div style="font-weight:800; font-size:16px; color:#fff; line-height:1.5">{{ accountTitle }}</div>
-                <div style="font-size:12.5px; color:#9dabcd; line-height:1.8">{{ accountDescription }}</div>
-              </div>
-            </div>
-            <sc-if value="{{ isRegistered }}" hint-placeholder-val="{{ false }}">
-              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; border-top:1px solid rgba(255,255,255,.1); padding-top:12px">
-                <span style="font-size:12px; color:#8e9abd">{{ accountCodeLabel }}</span>
-                <span style="direction:ltr; font-weight:800; font-size:15px; color:#fff; letter-spacing:.08em">{{ userCode }}</span>
-              </div>
-            </sc-if>
-            <button onClick="{{ primaryAction }}" style="width:100%; background:#d81f2a; color:#fff; font-weight:800; font-size:14px; border:none; border-radius:12px; padding:12px 16px; cursor:pointer; box-shadow:0 12px 26px -16px rgba(216,31,42,.85)" style-hover="background:#ef2f3b">{{ primaryCta }}</button>
-          </div>
-        </sc-if>
+      <div style="font-size:12.5px; line-height:1.9; color:#cdd7f0">به‌خاطر دعوت <b class="shine-name">{{ bloggerLabel }}</b>، {{ landing.hero.cost_label }} برایتان رایگان شده.</div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; border-top:1px dashed rgba(126,240,176,.35); padding-top:12px">
+        <span style="font-size:13.5px; font-weight:800; color:#eaf0ff; white-space:nowrap">هزینه قابل پرداخت</span>
+        <span style="font-weight:900; font-size:clamp(18px,4.6cqw,23px); color:#7ef0b0; white-space:nowrap">{{ landing.hero.cost_value }}</span>
       </div>
     </div>
 
-    <div style="position:relative; display:flex; justify-content:center; align-items:flex-end">
+    <div id="ثبت-نام" style="grid-area:form; background:linear-gradient(180deg, rgba(255,255,255,.1), rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.16); border-radius:20px; padding:clamp(16px,4cqw,21px); box-shadow:0 30px 60px -46px rgba(0,0,0,.9)">
+      <sc-if value="{{ isPhoneStep }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="font-weight:800; font-size:clamp(16px,4.4cqw,19px); color:#fff; margin-bottom:6px; text-align:center">برای ثبت‌نام شماره موبایل خود را وارد کنید</div>
+          <div style="font-size:13px; color:#9dabcd; margin-bottom:18px">کد تأیید چهاررقمی به همین شماره پیامک می‌شود.</div>
+          <div class="otp-request-row" style="display:flex; gap:10px; align-items:stretch">
+            <input value="{{ phone }}" onChange="{{ onPhone }}" onKeyDown="{{ onPhoneKey }}" type="tel" inputMode="numeric" autoComplete="tel" lang="en" dir="ltr" data-phone-input placeholder="09123456789" style="flex:1; direction:ltr; text-align:center; letter-spacing:.1em; font-size:clamp(15px,4cqw,18px); font-weight:700; color:#fff; background:rgba(6,14,36,.75); border:1.5px solid rgba(255,255,255,.18); border-radius:14px; padding:14px 12px; outline:none" style-focus="border-color:#ff4b57" />
+            <button onClick="{{ sendOtp }}" disabled="{{ isSendingOtp }}" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; background:#d81f2a; color:#fff; font-weight:800; font-size:clamp(13.5px,3.6cqw,16px); border:none; border-radius:14px; padding:0 clamp(14px,4.5cqw,26px); cursor:pointer; white-space:nowrap; flex:none; box-shadow:0 14px 32px -14px rgba(216,31,42,.9); opacity:{{ sendButtonOpacity }}" style-hover="background:#ef2f3b"><sc-if value="{{ isSendingOtp }}" hint-placeholder-val="{{ false }}"><span style="width:15px; height:15px; border:2px solid rgba(255,255,255,.42); border-top-color:#fff; border-radius:50%; animation:buttonSpin .7s linear infinite"></span></sc-if>{{ sendOtpLabel }}</button>
+          </div>
+          <sc-if value="{{ error }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:12px; font-size:13px; color:#ff8d96; font-weight:600">{{ error }}</div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isDoneStep }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:14px">
+          <div style="display:flex; align-items:center; gap:10px">
+            <span style="width:30px; height:30px; flex:none; border-radius:50%; background:rgba(126,240,176,.14); color:#7ef0b0; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:900">✓</span>
+            <div>
+              <div style="font-weight:800; font-size:16px; color:#fff; line-height:1.5">{{ accountTitle }}</div>
+              <div style="font-size:12.5px; color:#9dabcd; line-height:1.8">{{ accountDescription }}</div>
+            </div>
+          </div>
+          <sc-if value="{{ isRegistered }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; border-top:1px solid rgba(255,255,255,.1); padding-top:12px">
+              <span style="font-size:12px; color:#8e9abd">{{ accountCodeLabel }}</span>
+              <span style="direction:ltr; font-weight:800; font-size:15px; color:#fff; letter-spacing:.08em">{{ userCode }}</span>
+            </div>
+          </sc-if>
+          <button onClick="{{ primaryAction }}" style="width:100%; background:#d81f2a; color:#fff; font-weight:800; font-size:14px; border:none; border-radius:12px; padding:12px 16px; cursor:pointer; box-shadow:0 12px 26px -16px rgba(216,31,42,.85)" style-hover="background:#ef2f3b">{{ primaryCta }}</button>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="grid-area:stats; display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(6px,2cqw,10px)">
+      <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:2px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); padding:10px clamp(8px,2.4cqw,14px); border-radius:12px; min-width:0">
+        <span style="font-size:clamp(9.5px,2.6cqw,11.5px); color:#93a2c6">{{ landing.hero.date_label }}</span>
+        <span style="font-weight:800; font-size:clamp(11px,3cqw,15px); color:#fff; line-height:1.5; text-wrap:balance">۲۵ شهریور ۱۴۰۷</span>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:2px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); padding:10px clamp(8px,2.4cqw,14px); border-radius:12px; min-width:0">
+        <span style="font-size:clamp(9.5px,2.6cqw,11.5px); color:#93a2c6">{{ landing.hero.capacity_label }}</span>
+        <span style="font-weight:800; font-size:clamp(11px,3cqw,15px); color:#fff; line-height:1.5; text-wrap:balance">{{ landing.hero.capacity_value }}</span>
+      </div>
+    </div>
+
+    <div style="grid-area:photo; align-self:center; position:relative; display:flex; justify-content:center; align-items:flex-end">
       <div style="position:absolute; inset:auto 6% 4% 6%; height:78%; border-radius:999px 999px 40px 40px; background:radial-gradient(closest-side, rgba(216,31,42,.95), rgba(216,31,42,0)); filter:blur(6px); animation:glowPulse 5.5s ease-in-out infinite"></div>
       <img src="assets/ostad-portrait.png" alt="استاد محسن گناوه‌ای" style="position:relative; width:100%; max-width:420px; border-radius:28px 28px 0 0; object-fit:cover; filter:drop-shadow(0 40px 60px rgba(0,0,0,.6))" />
       <div style="position:absolute; bottom:18px; right:8px; background:rgba(8,17,42,.86); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.16); border-radius:18px; padding:12px 16px; display:flex; align-items:center; gap:12px">
@@ -148,137 +155,148 @@
         </div>
       </div>
     </div>
+
+    <button onClick="{{ toggleInfo }}" aria-expanded="{{ infoExpandedAttr }}" aria-controls="اطلاعات-بیشتر" style="grid-area:more; justify-self:start; display:inline-flex; align-items:center; gap:5px; background:#d81f2a; border:1px solid #d81f2a; color:#fff; font-weight:700; font-size:12px; padding:6px 13px; border-radius:999px; cursor:pointer" style-hover="background:#ef2f3b; border-color:#ef2f3b; color:#fff">{{ moreInfoLabel }}<span aria-hidden="true" style="{{ moreInfoIconStyle }}">⌄</span></button>
+
   </section>
 
-  <section style="max-width:1240px; margin:clamp(28px,4cqw,44px) auto 0; padding:0 clamp(16px,4cqw,32px)">
-    <div style="background:linear-gradient(90deg, rgba(216,31,42,.22), rgba(255,255,255,.05)); border:1px solid rgba(255,255,255,.14); border-radius:22px; padding:clamp(16px,4.5cqw,22px) clamp(14px,4.5cqw,26px); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px">
-      <div style="flex:1 1 190px; display:flex; align-items:center; gap:9px; font-weight:700; font-size:clamp(14px,3.8cqw,17px); color:#eaf0ff"><span style="width:7px; height:7px; border-radius:50%; background:#ff3b47; box-shadow:0 0 0 4px rgba(255,59,71,.2); flex:none"></span>زمان باقی‌مانده تا گردهمایی</div>
-      <div style="flex:1 1 300px; max-width:480px; min-width:0; display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(6px,2cqw,10px)">
-        <div style="min-width:0; text-align:center; background:rgba(6,14,36,.7); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:clamp(9px,2.4cqw,11px) 4px">
-          <div style="font-weight:900; font-size:clamp(19px,5cqw,24px); color:#fff">{{ cdDays }}</div>
-          <div style="font-size:clamp(10px,2.8cqw,12px); color:#93a2c6; margin-top:2px">روز</div>
-        </div>
-        <div style="min-width:0; text-align:center; background:rgba(6,14,36,.7); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:clamp(9px,2.4cqw,11px) 4px">
-          <div style="font-weight:900; font-size:clamp(19px,5cqw,24px); color:#fff">{{ cdHours }}</div>
-          <div style="font-size:clamp(10px,2.8cqw,12px); color:#93a2c6; margin-top:2px">ساعت</div>
-        </div>
-        <div style="min-width:0; text-align:center; background:rgba(6,14,36,.7); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:clamp(9px,2.4cqw,11px) 4px">
-          <div style="font-weight:900; font-size:clamp(19px,5cqw,24px); color:#fff">{{ cdMinutes }}</div>
-          <div style="font-size:clamp(10px,2.8cqw,12px); color:#93a2c6; margin-top:2px">دقیقه</div>
-        </div>
-        <div style="min-width:0; text-align:center; background:rgba(6,14,36,.7); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:clamp(9px,2.4cqw,11px) 4px">
-          <div style="font-weight:900; font-size:clamp(19px,5cqw,24px); color:#ff4b57">{{ cdSeconds }}</div>
-          <div style="font-size:clamp(10px,2.8cqw,12px); color:#93a2c6; margin-top:2px">ثانیه</div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <section id="اطلاعات-بیشتر" style="max-width:1240px; margin:0 auto; padding:0 clamp(16px,4cqw,32px)">
+    <div style="{{ infoPanelStyle }}">
+      <div style="{{ infoPanelInnerStyle }}">
 
-  <section style="max-width:1240px; margin:clamp(40px,6cqw,64px) auto 0; padding:0 clamp(16px,4cqw,32px)">
-    <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">{{ landingBenefitsEyebrow }}</div>
-    <h2 style="margin:0 0 24px; font-size:clamp(20px,5.2cqw,30px); font-weight:900; color:#fff; line-height:1.5">{{ landingBenefitsTitle }}</h2>
-    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,262px),1fr)); gap:18px">
-      <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:20px; padding:22px" style-hover="border-color:rgba(216,31,42,.6)">
-        <div style="width:44px; height:44px; border-radius:14px; background:rgba(216,31,42,.18); color:#ff6b75; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; margin-bottom:14px">۱</div>
-        <div style="font-weight:800; font-size:17px; color:#fff; margin-bottom:8px">{{ landingBenefit0Title }}</div>
-        <div style="font-size:14px; line-height:1.95; color:#aebbdb">{{ landingBenefit0Description }}</div>
-      </div>
-      <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:20px; padding:22px" style-hover="border-color:rgba(216,31,42,.6)">
-        <div style="width:44px; height:44px; border-radius:14px; background:rgba(216,31,42,.18); color:#ff6b75; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; margin-bottom:14px">۲</div>
-        <div style="font-weight:800; font-size:17px; color:#fff; margin-bottom:8px">{{ landingBenefit1Title }}</div>
-        <div style="font-size:14px; line-height:1.95; color:#aebbdb">{{ landingBenefit1Description }}</div>
-      </div>
-      <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:20px; padding:22px" style-hover="border-color:rgba(216,31,42,.6)">
-        <div style="width:44px; height:44px; border-radius:14px; background:rgba(216,31,42,.18); color:#ff6b75; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; margin-bottom:14px">۳</div>
-        <div style="font-weight:800; font-size:17px; color:#fff; margin-bottom:8px">{{ landingBenefit2Title }}</div>
-        <div style="font-size:14px; line-height:1.95; color:#aebbdb">{{ landingBenefit2Description }}</div>
-      </div>
-      <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:20px; padding:22px" style-hover="border-color:rgba(216,31,42,.6)">
-        <div style="width:44px; height:44px; border-radius:14px; background:rgba(216,31,42,.18); color:#ff6b75; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; margin-bottom:14px">۴</div>
-        <div style="font-weight:800; font-size:17px; color:#fff; margin-bottom:8px">{{ landingBenefit3Title }}</div>
-        <div style="font-size:14px; line-height:1.95; color:#aebbdb">{{ landingBenefit3Description }}</div>
-      </div>
-    </div>
-  </section>
-
-  <section style="max-width:1240px; margin:clamp(40px,6cqw,64px) auto 0; padding:0 clamp(16px,4cqw,32px); display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:clamp(24px,4cqw,44px); align-items:center">
-    <div>
-      <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">{{ landingAgendaEyebrow }}</div>
-      <h2 style="margin:0 0 20px; font-size:clamp(20px,5.2cqw,30px); font-weight:900; color:#fff; line-height:1.5">{{ landingAgendaTitle }}</h2>
-      <div style="display:flex; flex-direction:column; gap:12px">
-        <sc-for list="{{ agendaItems }}" as="item" hint-placeholder-count="4">
-          <div style="display:flex; gap:16px; align-items:center; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:16px 18px">
-            <span style="direction:ltr; font-weight:800; font-size:15px; color:#ff8d96; min-width:58px">{{ item.time }}</span>
-            <span style="font-size:15px; color:#e3eaff; font-weight:600">{{ item.title }}</span>
+        <section>
+          <div style="background:linear-gradient(90deg, rgba(216,31,42,.22), rgba(255,255,255,.05)); border:1px solid rgba(255,255,255,.14); border-radius:22px; padding:clamp(16px,4.5cqw,22px) clamp(14px,4.5cqw,26px); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px">
+            <div style="flex:1 1 190px; display:flex; align-items:center; gap:9px; font-weight:700; font-size:clamp(14px,3.8cqw,17px); color:#eaf0ff"><span style="width:7px; height:7px; border-radius:50%; background:#ff3b47; box-shadow:0 0 0 4px rgba(255,59,71,.2); flex:none"></span>زمان باقی‌مانده تا گردهمایی</div>
+            <div style="flex:1 1 300px; max-width:480px; min-width:0; display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(6px,2cqw,10px)">
+              <div style="min-width:0; text-align:center; background:rgba(6,14,36,.7); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:clamp(9px,2.4cqw,11px) 4px">
+                <div style="font-weight:900; font-size:clamp(19px,5cqw,24px); color:#fff">{{ cdDays }}</div>
+                <div style="font-size:clamp(10px,2.8cqw,12px); color:#93a2c6; margin-top:2px">روز</div>
+              </div>
+              <div style="min-width:0; text-align:center; background:rgba(6,14,36,.7); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:clamp(9px,2.4cqw,11px) 4px">
+                <div style="font-weight:900; font-size:clamp(19px,5cqw,24px); color:#fff">{{ cdHours }}</div>
+                <div style="font-size:clamp(10px,2.8cqw,12px); color:#93a2c6; margin-top:2px">ساعت</div>
+              </div>
+              <div style="min-width:0; text-align:center; background:rgba(6,14,36,.7); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:clamp(9px,2.4cqw,11px) 4px">
+                <div style="font-weight:900; font-size:clamp(19px,5cqw,24px); color:#fff">{{ cdMinutes }}</div>
+                <div style="font-size:clamp(10px,2.8cqw,12px); color:#93a2c6; margin-top:2px">دقیقه</div>
+              </div>
+              <div style="min-width:0; text-align:center; background:rgba(6,14,36,.7); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:clamp(9px,2.4cqw,11px) 4px">
+                <div style="font-weight:900; font-size:clamp(19px,5cqw,24px); color:#ff4b57">{{ cdSeconds }}</div>
+                <div style="font-size:clamp(10px,2.8cqw,12px); color:#93a2c6; margin-top:2px">ثانیه</div>
+              </div>
+            </div>
           </div>
-        </sc-for>
-      </div>
-    </div>
-    <div style="background:linear-gradient(160deg, rgba(216,31,42,.2), rgba(255,255,255,.05)); border:1px solid rgba(255,255,255,.14); border-radius:24px; padding:30px">
-      <div style="font-weight:900; font-size:22px; color:#fff; margin-bottom:14px">بلیط ورود، اختصاصی برای خودت</div>
-      <div style="font-size:15px; line-height:2.1; color:#c3cfeb; margin-bottom:22px">پس از تکمیل فرم ثبت‌نام، یک کد اختصاصی و بلیط ورود به نامت صادر می‌شود. این کد را تا پایان مراسم نزد خود نگه دار — ورود به سالن فقط با همان کد است.</div>
-      <div style="background:#060e24; border:1px solid rgba(255,255,255,.16); border-radius:18px; padding:20px; display:flex; align-items:center; justify-content:space-between; gap:18px">
-        <div>
-          <div style="font-size:12px; color:#7c89ab; margin-bottom:6px">نمونه کد بلیط</div>
-          <div style="direction:ltr; font-weight:900; font-size:26px; color:#fff; letter-spacing:.1em">a10-1</div>
-        </div>
-        <div style="display:flex; gap:5px; align-items:flex-end; height:52px">
-          <span style="width:3px; height:100%; background:#fff"></span><span style="width:2px; height:70%; background:#8b98ba"></span><span style="width:5px; height:100%; background:#fff"></span><span style="width:2px; height:55%; background:#8b98ba"></span><span style="width:3px; height:90%; background:#fff"></span><span style="width:6px; height:100%; background:#fff"></span><span style="width:2px; height:62%; background:#8b98ba"></span><span style="width:3px; height:100%; background:#fff"></span>
-        </div>
-      </div>
-    </div>
-  </section>
+        </section>
 
-  <section style="max-width:1240px; margin:clamp(40px,6cqw,64px) auto 0; padding:0 clamp(16px,4cqw,32px)">
-    <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">{{ landing.audience.eyebrow }}</div>
-    <h2 style="margin:0 0 22px; font-size:clamp(20px,5.2cqw,30px); font-weight:900; color:#fff; line-height:1.5">{{ landing.audience.title }}</h2>
-    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,262px),1fr)); gap:14px">
-      <sc-for list="{{ landing.audience.items }}" as="item" hint-placeholder-count="3">
-        <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:18px; padding:20px">
-          <div style="font-weight:800; font-size:16px; color:#fff; margin-bottom:8px">{{ item.title }}</div>
-          <div style="font-size:14px; line-height:1.95; color:#aebbdb">{{ item.description }}</div>
-        </div>
-      </sc-for>
-    </div>
-  </section>
-
-  <section style="max-width:1240px; margin:clamp(56px,8cqw,88px) auto 0; padding:0 clamp(16px,4cqw,32px); text-align:center">
-    <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">{{ teachers.eyebrow }}</div>
-    <h2 style="margin:0; font-size:clamp(22px,5.8cqw,34px); font-weight:900; color:#fff; line-height:1.5">{{ teachers.title }}</h2>
-    <p style="max-width:720px; margin:14px auto 28px; font-size:clamp(13px,3.5cqw,16px); line-height:2; color:#aebbdb">{{ teachers.description }}</p>
-    <div class="teacher-grid" style="gap:clamp(12px,2.2cqw,18px)">
-      <sc-for list="{{ teachers.items }}" as="teacher" hint-placeholder-count="10">
-        <article style="width:min(100%, 184px); min-height:240px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.13); border-radius:21px; padding:18px 14px" style-hover="border-color:rgba(216,31,42,.56); transform:translateY(-3px)">
-          <div style="width:116px; height:116px; overflow:hidden; border-radius:50%; padding:4px; background:linear-gradient(145deg, #ff8d96, #2d3d78 45%, #ffb36d); box-shadow:0 12px 26px -18px rgba(0,0,0,.95); margin-bottom:14px">
-            <img src="{{ teacher.photo }}" alt="{{ teacher.name }}" style="width:100%; height:100%; display:block; object-fit:cover; object-position:top center; border-radius:50%; background:#fff" />
+        <section>
+          <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">{{ landingBenefitsEyebrow }}</div>
+          <h2 style="margin:0 0 24px; font-size:clamp(20px,5.2cqw,30px); font-weight:900; color:#fff; line-height:1.5">{{ landingBenefitsTitle }}</h2>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,262px),1fr)); gap:18px">
+            <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:20px; padding:22px" style-hover="border-color:rgba(216,31,42,.6)">
+              <div style="width:44px; height:44px; border-radius:14px; background:rgba(216,31,42,.18); color:#ff6b75; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; margin-bottom:14px">۱</div>
+              <div style="font-weight:800; font-size:17px; color:#fff; margin-bottom:8px">{{ landingBenefit0Title }}</div>
+              <div style="font-size:14px; line-height:1.95; color:#aebbdb">{{ landingBenefit0Description }}</div>
+            </div>
+            <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:20px; padding:22px" style-hover="border-color:rgba(216,31,42,.6)">
+              <div style="width:44px; height:44px; border-radius:14px; background:rgba(216,31,42,.18); color:#ff6b75; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; margin-bottom:14px">۲</div>
+              <div style="font-weight:800; font-size:17px; color:#fff; margin-bottom:8px">{{ landingBenefit1Title }}</div>
+              <div style="font-size:14px; line-height:1.95; color:#aebbdb">{{ landingBenefit1Description }}</div>
+            </div>
+            <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:20px; padding:22px" style-hover="border-color:rgba(216,31,42,.6)">
+              <div style="width:44px; height:44px; border-radius:14px; background:rgba(216,31,42,.18); color:#ff6b75; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; margin-bottom:14px">۳</div>
+              <div style="font-weight:800; font-size:17px; color:#fff; margin-bottom:8px">{{ landingBenefit2Title }}</div>
+              <div style="font-size:14px; line-height:1.95; color:#aebbdb">{{ landingBenefit2Description }}</div>
+            </div>
+            <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:20px; padding:22px" style-hover="border-color:rgba(216,31,42,.6)">
+              <div style="width:44px; height:44px; border-radius:14px; background:rgba(216,31,42,.18); color:#ff6b75; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px; margin-bottom:14px">۴</div>
+              <div style="font-weight:800; font-size:17px; color:#fff; margin-bottom:8px">{{ landingBenefit3Title }}</div>
+              <div style="font-size:14px; line-height:1.95; color:#aebbdb">{{ landingBenefit3Description }}</div>
+            </div>
           </div>
-          <div style="font-size:12px; font-weight:800; color:#ff8d96; margin-bottom:9px"><span style="font-size:15px; line-height:0">•</span> {{ teacher.subject }}</div>
-          <div style="font-size:14px; font-weight:900; color:#fff; line-height:1.7">{{ teacher.name }}</div>
-        </article>
-      </sc-for>
-    </div>
-  </section>
+        </section>
 
-  <section style="max-width:1240px; margin:clamp(40px,6cqw,64px) auto 0; padding:0 clamp(16px,4cqw,32px)">
-    <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">{{ landing.faq.eyebrow }}</div>
-    <h2 style="margin:0 0 22px; font-size:clamp(20px,5.2cqw,30px); font-weight:900; color:#fff; line-height:1.5">{{ landing.faq.title }}</h2>
-    <div style="display:flex; flex-direction:column; gap:10px; max-width:860px">
-      <sc-for list="{{ landing.faq.items }}" as="item" hint-placeholder-count="3">
-        <details style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:16px 18px">
-          <summary style="cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:12px; font-weight:700; font-size:clamp(14px,3.8cqw,16px); color:#fff">{{ item.question }}<span style="color:#ff6b75; font-weight:900">+</span></summary>
-          <div style="margin-top:12px; font-size:14px; line-height:2; color:#aebbdb">{{ item.answer }}</div>
-        </details>
-      </sc-for>
-    </div>
-  </section>
+        <section style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:clamp(24px,4cqw,44px); align-items:center">
+          <div>
+            <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">{{ landingAgendaEyebrow }}</div>
+            <h2 style="margin:0 0 20px; font-size:clamp(20px,5.2cqw,30px); font-weight:900; color:#fff; line-height:1.5">{{ landingAgendaTitle }}</h2>
+            <div style="display:flex; flex-direction:column; gap:12px">
+              <sc-for list="{{ agendaItems }}" as="item" hint-placeholder-count="4">
+                <div style="display:flex; gap:16px; align-items:center; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:16px 18px">
+                  <span style="direction:ltr; font-weight:800; font-size:15px; color:#ff8d96; min-width:58px">{{ item.time }}</span>
+                  <span style="font-size:15px; color:#e3eaff; font-weight:600">{{ item.title }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="background:linear-gradient(160deg, rgba(216,31,42,.2), rgba(255,255,255,.05)); border:1px solid rgba(255,255,255,.14); border-radius:24px; padding:30px">
+            <div style="font-weight:900; font-size:22px; color:#fff; margin-bottom:14px">بلیط ورود، اختصاصی برای خودت</div>
+            <div style="font-size:15px; line-height:2.1; color:#c3cfeb; margin-bottom:22px">پس از تکمیل فرم ثبت‌نام، یک کد اختصاصی و بلیط ورود به نامت صادر می‌شود. این کد را تا پایان مراسم نزد خود نگه دار — ورود به سالن فقط با همان کد است.</div>
+            <div style="background:#060e24; border:1px solid rgba(255,255,255,.16); border-radius:18px; padding:20px; display:flex; align-items:center; justify-content:space-between; gap:18px">
+              <div>
+                <div style="font-size:12px; color:#7c89ab; margin-bottom:6px">نمونه کد بلیط</div>
+                <div style="direction:ltr; font-weight:900; font-size:26px; color:#fff; letter-spacing:.1em">a10-1</div>
+              </div>
+              <div style="display:flex; gap:5px; align-items:flex-end; height:52px">
+                <span style="width:3px; height:100%; background:#fff"></span><span style="width:2px; height:70%; background:#8b98ba"></span><span style="width:5px; height:100%; background:#fff"></span><span style="width:2px; height:55%; background:#8b98ba"></span><span style="width:3px; height:90%; background:#fff"></span><span style="width:6px; height:100%; background:#fff"></span><span style="width:2px; height:62%; background:#8b98ba"></span><span style="width:3px; height:100%; background:#fff"></span>
+              </div>
+            </div>
+          </div>
+        </section>
 
-  <section style="max-width:1240px; margin:clamp(40px,6cqw,64px) auto 0; padding:0 clamp(16px,4cqw,32px) 72px">
-    <div style="display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:24px; padding:28px 30px">
-      <div>
-        <div style="font-weight:900; font-size:24px; color:#fff; margin-bottom:8px">{{ landing.reservation.title }}</div>
-        <div style="font-size:14px; color:#aebbdb">{{ landing.reservation.description }}</div>
+        <section>
+          <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">{{ landing.audience.eyebrow }}</div>
+          <h2 style="margin:0 0 22px; font-size:clamp(20px,5.2cqw,30px); font-weight:900; color:#fff; line-height:1.5">{{ landing.audience.title }}</h2>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,262px),1fr)); gap:14px">
+            <sc-for list="{{ landing.audience.items }}" as="item" hint-placeholder-count="3">
+              <div style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:18px; padding:20px">
+                <div style="font-weight:800; font-size:16px; color:#fff; margin-bottom:8px">{{ item.title }}</div>
+                <div style="font-size:14px; line-height:1.95; color:#aebbdb">{{ item.description }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+
+        <section style="text-align:center">
+          <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">{{ teachers.eyebrow }}</div>
+          <h2 style="margin:0; font-size:clamp(22px,5.8cqw,34px); font-weight:900; color:#fff; line-height:1.5">{{ teachers.title }}</h2>
+          <p style="max-width:720px; margin:14px auto 28px; font-size:clamp(13px,3.5cqw,16px); line-height:2; color:#aebbdb">{{ teachers.description }}</p>
+          <div class="teacher-grid" style="gap:clamp(12px,2.2cqw,18px)">
+            <sc-for list="{{ teachers.items }}" as="teacher" hint-placeholder-count="10">
+              <article style="width:min(100%, 184px); min-height:240px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.13); border-radius:21px; padding:18px 14px" style-hover="border-color:rgba(216,31,42,.56); transform:translateY(-3px)">
+                <div style="width:116px; height:116px; overflow:hidden; border-radius:50%; padding:4px; background:linear-gradient(145deg, #ff8d96, #2d3d78 45%, #ffb36d); box-shadow:0 12px 26px -18px rgba(0,0,0,.95); margin-bottom:14px">
+                  <img src="{{ teacher.photo }}" alt="{{ teacher.name }}" style="width:100%; height:100%; display:block; object-fit:cover; object-position:top center; border-radius:50%; background:#fff" />
+                </div>
+                <div style="font-size:12px; font-weight:800; color:#ff8d96; margin-bottom:9px"><span style="font-size:15px; line-height:0">•</span> {{ teacher.subject }}</div>
+                <div style="font-size:14px; font-weight:900; color:#fff; line-height:1.7">{{ teacher.name }}</div>
+              </article>
+            </sc-for>
+          </div>
+        </section>
+
+        <section>
+          <div style="font-size:13px; font-weight:700; color:#ff8d96; letter-spacing:.08em; margin-bottom:10px">{{ landing.faq.eyebrow }}</div>
+          <h2 style="margin:0 0 22px; font-size:clamp(20px,5.2cqw,30px); font-weight:900; color:#fff; line-height:1.5">{{ landing.faq.title }}</h2>
+          <div style="display:flex; flex-direction:column; gap:10px; max-width:860px">
+            <sc-for list="{{ landing.faq.items }}" as="item" hint-placeholder-count="3">
+              <details style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:16px 18px">
+                <summary style="cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:12px; font-weight:700; font-size:clamp(14px,3.8cqw,16px); color:#fff">{{ item.question }}<span style="color:#ff6b75; font-weight:900">+</span></summary>
+                <div style="margin-top:12px; font-size:14px; line-height:2; color:#aebbdb">{{ item.answer }}</div>
+              </details>
+            </sc-for>
+          </div>
+        </section>
+
+        <section>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:24px; padding:28px 30px">
+            <div>
+              <div style="font-weight:900; font-size:24px; color:#fff; margin-bottom:8px">{{ landing.reservation.title }}</div>
+              <div style="font-size:14px; color:#aebbdb">{{ landing.reservation.description }}</div>
+            </div>
+            <button onClick="{{ primaryAction }}" style="background:#d81f2a; color:#fff; font-family:inherit; font-weight:800; font-size:16px; padding:15px 32px; border:0; border-radius:14px; cursor:pointer; box-shadow:0 14px 32px -14px rgba(216,31,42,.9)" style-hover="background:#ef2f3b; color:#fff">{{ primaryCta }}</button>
+          </div>
+        </section>
+
       </div>
-      <button onClick="{{ primaryAction }}" style="background:#d81f2a; color:#fff; font-family:inherit; font-weight:800; font-size:16px; padding:15px 32px; border:0; border-radius:14px; cursor:pointer; box-shadow:0 14px 32px -14px rgba(216,31,42,.9)" style-hover="background:#ef2f3b; color:#fff">{{ primaryCta }}</button>
     </div>
   </section>
 
@@ -540,7 +558,7 @@ const myTicketUrl = '{{ myTicketUrl }}';
 const csrfToken = '{{ csrfToken }}';
 
 class Component extends DCLogic {
-  state = { step: 'phone', phone: '', otp: '', error: '', now: Date.now(), code: '', blogger: null, page: 'landing', form: { studyCity: 'تهران', province: 'تهران', city: 'تهران' }, formError: '', submitted: false, registered: false, ticketUrl: '', sendingOtp: false, verifyingOtp: false, submitting: false };
+  state = { step: 'phone', phone: '', otp: '', error: '', now: Date.now(), code: '', blogger: null, page: 'landing', infoOpen: false, form: { studyCity: 'تهران', province: 'تهران', city: 'تهران' }, formError: '', submitted: false, registered: false, ticketUrl: '', sendingOtp: false, verifyingOtp: false, submitting: false };
   otpInput = React.createRef();
 
   componentDidMount() {
@@ -738,6 +756,16 @@ class Component extends DCLogic {
     document.getElementById('ثبت-نام')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
+  toggleInfo = () => {
+    this.setState(prev => ({ infoOpen: !prev.infoOpen }), () => {
+      if (this.state.infoOpen) {
+        window.setTimeout(() => {
+          window.scrollBy({ top: 220, behavior: 'smooth' });
+        }, 550);
+      }
+    });
+  };
+
   logout = async () => {
     try {
       await fetch(otpLogoutUrl, { method: 'POST', headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken } });
@@ -773,8 +801,14 @@ class Component extends DCLogic {
       landing: landingContent,
       agendaItems: landingAgendaItems,
       teachers,
-      isLanding: this.state.page !== 'register',
+      isLanding: this.state.page === 'landing',
       isRegister: this.state.page === 'register',
+      infoExpandedAttr: this.state.infoOpen ? 'true' : 'false',
+      moreInfoLabel: this.state.infoOpen ? 'بستن اطلاعات همایش' : 'اطلاعات بیشتر دربارهٔ همایش',
+      moreInfoIconStyle: { display: 'inline-block', transition: 'transform .25s ease', transform: this.state.infoOpen ? 'rotate(180deg)' : 'none' },
+      infoPanelStyle: { display: 'grid', gridTemplateRows: this.state.infoOpen ? 'minmax(0,1fr)' : 'minmax(0,0fr)', transition: 'grid-template-rows .5s cubic-bezier(.4,0,.2,1)', overflow: 'hidden' },
+      infoPanelInnerStyle: { minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 'clamp(40px,6cqw,64px)', paddingTop: 'clamp(28px,4cqw,44px)', paddingBottom: 'clamp(40px,6cqw,64px)' },
+      toggleInfo: this.toggleInfo,
       isSubmitted: !!this.state.submitted,
       notSubmitted: !this.state.submitted,
       isRegistered: !!this.state.registered,
@@ -807,8 +841,7 @@ class Component extends DCLogic {
       t_guardianPhone: F.guardianPhone || '—',
       t_serial: 'GENAVEHEI · ' + (this.state.code || ''),
       downloadTicket: this.download,
-      backToLanding: () => this.setState({ page: 'landing' }),
-      cardOrder: 3,
+      backToLanding: () => { this.setState({ page: 'landing' }); try { window.scrollTo(0, 0); } catch (e) {} },
       resendDisabled: left > 0 || this.state.sendingOtp,
       resendHint: left > 0 ? 'ارسال مجدد تا ' + fa(Math.floor(left / 60), true) + ':' + fa(left % 60, true) : (this.state.sendingOtp ? 'در حال ارسال…' : 'امکان ارسال مجدد کد'),
       resendStyle: left > 0
