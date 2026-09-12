@@ -77,8 +77,7 @@ class ReferenceDesignController extends Controller
         $registrations = $filtered
             ->with(['blogger:id,name,code', 'activityLogs.actor'])
             ->latest()
-            ->paginate(15)
-            ->withQueryString();
+            ->get();
 
         $isBlogger = $actor instanceof Blogger;
         $state = [
@@ -99,7 +98,7 @@ class ReferenceDesignController extends Controller
                 ])->values(),
             'templates' => $isBlogger ? collect() : SmsTemplate::query()->where('is_active', true)->get()
                 ->map(fn (SmsTemplate $template): array => ['id' => (string) $template->id, 'name' => $template->name, 'text' => $template->body])->values(),
-            'regs' => $registrations->getCollection()->map(fn (Registration $registration): array => [
+            'regs' => $registrations->map(fn (Registration $registration): array => [
                 'code' => $registration->ticket_code,
                 'blogger' => $registration->blogger?->code,
                 'name' => $registration->full_name,
@@ -397,10 +396,10 @@ class ReferenceDesignController extends Controller
             \IntlDateFormatter::NONE,
             config('app.timezone'),
             \IntlDateFormatter::TRADITIONAL,
-            'd MMMM y',
+            'd MMMM y، ساعت H:mm',
         );
 
-        return $formatter->format($date) ?: $date->locale('fa')->isoFormat('D MMMM YYYY');
+        return $formatter->format($date) ?: $date->locale('fa')->isoFormat('D MMMM YYYY، ساعت HH:mm');
     }
 
     /** @param array<string, mixed> $state @param array<string, string> $identity @param array<string, int> $statistics */
